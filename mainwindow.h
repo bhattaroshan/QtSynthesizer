@@ -2,14 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QGraphicsRectItem>
-#include <QGraphicsEllipseItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QSplitter>
-
-#include "timelinewidget.h"
-#include "customrect.h"
+#include <QObject>
+#include "block.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,14 +19,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void onItemDragged(Block *item);
+
+protected:
+
 private:
-    void resizeEvent(QResizeEvent *event) override;
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
-    CustomRect *itemRect;
-    QGraphicsEllipseItem *itemEllipse;
     QGraphicsView *graphicsView;
-    TimelineWidget *m_timelineWidget;
-
+    QList<Block *> m_blocks;
 };
 #endif // MAINWINDOW_H

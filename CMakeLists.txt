@@ -15,14 +15,10 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-#        customgraphics.h customgraphics.cpp
-        customrect.h customrect.cpp
-        timelinewidget.h timelinewidget.cpp
-        track.h track.cpp
+    main.cpp
+    mainwindow.h mainwindow.cpp
+    mainwindow.ui
+    block.h block.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
