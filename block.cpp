@@ -71,6 +71,7 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             rect.setRect(rect.left()-1,rect.top(),1,20);
             QList<QGraphicsItem*> intersectingItems = scene()->items(rect,Qt::IntersectsItemBoundingRect);
             if(intersectingItems.length()>=1){
+                //considering there can only one intersecting item
                 QRectF iRect = intersectingItems[0]->sceneBoundingRect();
                 x = iRect.left()+iRect.width();
             }

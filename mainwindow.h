@@ -5,6 +5,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QObject>
+#include <QSpacerItem>
+#include <QVBoxLayout>
 #include "block.h"
 
 QT_BEGIN_NAMESPACE
@@ -20,11 +22,19 @@ public:
     ~MainWindow();
 
 protected:
+    void resizeEvent(QResizeEvent *event) override;
+
+public slots:
+    void resizeSlot();
+    void onOkayClicked();
 
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QGraphicsView *graphicsView;
-    QList<Block *> m_blocks;
+
+    QSpacerItem *spacer1;
+    QWidget *window;
+    QVBoxLayout *mainLayout;
 };
 #endif // MAINWINDOW_H
