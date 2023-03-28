@@ -19,9 +19,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-public slots:
-    void onItemDragged(Block *item);
-
 protected:
 
 private:

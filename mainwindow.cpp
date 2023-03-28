@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     for(int i=0;i<m_blocks.length();++i){
         scene->addItem(m_blocks[i]);
-        connect(m_blocks[i],&Block::onItemDrag,this,&MainWindow::onItemDragged);
     }
 
 
@@ -51,16 +50,3 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::onItemDragged(Block *item)
-{
-    QList<QRectF> res;
-    for(int i =0;i<m_blocks.length();++i){
-        if(m_blocks[i]!=item){
-            QRectF r = QRectF(m_blocks[i]->x(),m_blocks[i]->y(),
-                              m_blocks[i]->rect().width(),m_blocks[i]->rect().height());
-            res.push_back(r);
-        }
-    }
-
-    item->getAllBlocksInfo(res);
-}

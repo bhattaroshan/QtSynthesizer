@@ -31,7 +31,7 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     emit onItemDrag(this);
 
     if(m_dragEnabled){
-        setRect(0,0,event->scenePos().x()-this->x(),20);
+        setRect(0,0,event->pos().x(),20); //intersection not checked while scaling the track
     }else{
         int mouseY = event->pos().y();
         int mouseX = event->pos().x();
@@ -43,7 +43,6 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             rect.setTop(rect.y()+20);
             rect.setBottom(rect.bottom()+20);
             QList<QGraphicsItem*> intersectingItems = scene()->items(rect,Qt::IntersectsItemBoundingRect);
-            qDebug()<<intersectingItems;
             if(intersectingItems.length()<1){
                 y+=20;
             }
@@ -52,22 +51,34 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             rect.setTop(rect.y()-20);
             rect.setBottom(rect.bottom()-20);
             QList<QGraphicsItem*> intersectingItems = scene()->items(rect,Qt::IntersectsItemBoundingRect);
-            qDebug()<<"up = "<<intersectingItems;
             if(intersectingItems.length()<1){
                 y-=20;
             }
         }
 
-        rect = sceneBoundingRect();
 
+        rect = sceneBoundingRect();
         if(mouseX>m_lastMouseClickPos.x()){ //dragging item to the right
+            rect.setRect(rect.right(),rect.top(),1,20);
+            QList<QGraphicsItem*> intersectingItems = scene()->items(rect,Qt::IntersectsItemBoundingRect);
+            if(intersectingItems.length()>=1){
+                //considering there can only one intersecting item
+                QRectF iRect = intersectingItems[0]->sceneBoundingRect();
+                x = iRect.left()-this->rect().width();
+            }
 
         }else{ //dragging item to the left
+            rect.setRect(rect.left()-1,rect.top(),1,20);
+            QList<QGraphicsItem*> intersectingItems = scene()->items(rect,Qt::IntersectsItemBoundingRect);
+            if(intersectingItems.length()>=1){
+                QRectF iRect = intersectingItems[0]->sceneBoundingRect();
+                x = iRect.left()+iRect.width();
+            }
         }
 
 
+
         setPos(x,y);
-        m_lastMouseMovePos = event->pos();
         //QGraphicsItem::mouseMoveEvent(event);
     }
 }
@@ -91,7 +102,6 @@ void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
             m_dragEnabled = true;
         }else{
             m_lastMouseClickPos = event->pos();
-            m_lastMouseClickPosScene = event->scenePos();
         }
     }
     QGraphicsItem::mousePressEvent(event);

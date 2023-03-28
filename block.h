@@ -22,8 +22,6 @@ protected:
 
     QList<QRectF> m_rectangle;
     QPointF m_lastMouseClickPos = QPointF(0,0);
-    QPointF m_lastMouseClickPosScene = QPointF(0,0);
-    QPointF m_lastMouseMovePos = QPointF(0,0);
 
 signals:
     void onItemDrag(Block *item);
