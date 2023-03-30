@@ -78,7 +78,7 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         }
 
 
-
+        qDebug()<<x<<" , "<<y;
         setPos(x,y);
         //QGraphicsItem::mouseMoveEvent(event);
     }

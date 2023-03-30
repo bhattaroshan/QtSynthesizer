@@ -1,15 +1,16 @@
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QMouseEvent>
+#include <QtCharts/QtCharts>
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
+#include "block.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
 
     scene = new QGraphicsScene();
     graphicsView = new QGraphicsView(scene);
@@ -22,16 +23,37 @@ MainWindow::MainWindow(QWidget *parent)
     QPushButton *btn1 = new QPushButton("OK");
     connect(btn1,&QPushButton::clicked,this,&MainWindow::onOkayClicked);
     QPushButton *btn2 = new QPushButton("Cancel");
+    QPushButton *btn3 = new QPushButton("Test");
     btn1->setMaximumWidth(200);
     btn2->setMaximumWidth(200);
     buttonsLayout->addWidget(btn1);
     buttonsLayout->addWidget(btn2);
+    buttonsLayout->addWidget(btn3);
 
     spacer1 = new QSpacerItem(0,this->height()*0.6,QSizePolicy::Expanding);
 
 
+    QLineSeries *series = new QLineSeries();
+    series->append(0, 6);
+    series->append(2, 4);
+    series->append(3, 8);
+    series->append(7, 4);
+    series->append(10, 5);
+    *series << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
+    QChart *chart = new QChart();
+    //chart->legend()->hide();
+    chart->addSeries(series);
+    chart->createDefaultAxes();
+    chart->setTitle("Simple line chart example");
+    chart->setBackgroundBrush(QBrush(QColor(25,25,25)));
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setMinimumHeight(300);
+    //chartView->setStyleSheet("background-color:#0f0f0f;");
+
     mainLayout->addLayout(buttonsLayout);
-    mainLayout->addSpacerItem(spacer1);
+    mainLayout->addWidget(chartView);
+    //mainLayout->addSpacerItem(spacer1);
     mainLayout->addWidget(graphicsView);
 
     window = new QWidget();
@@ -52,7 +74,6 @@ void MainWindow::onOkayClicked(){
 
 MainWindow::~MainWindow()
 {
-    delete ui;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -78,10 +99,11 @@ void MainWindow::resizeSlot(){
     }
 
     scene->setSceneRect(0,0,w+100,h+50);
-    qreal height = this->height()*0.7;
-    if(this->height()>800) {
-        height=this->height()*0.8;
-    }
-    spacer1->changeSize(0,height,QSizePolicy::Minimum,QSizePolicy::Expanding);
-    mainLayout->invalidate();
+
+    //qreal height = this->height()*0.7;
+    //if(this->height()>800) {
+    //    height=this->height()*0.8;
+    //}
+    //spacer1->changeSize(0,height,QSizePolicy::Minimum,QSizePolicy::Expanding);
+    //mainLayout->invalidate();
 }

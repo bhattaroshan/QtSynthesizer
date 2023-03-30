@@ -7,11 +7,7 @@
 #include <QObject>
 #include <QSpacerItem>
 #include <QVBoxLayout>
-#include "block.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
@@ -29,7 +25,6 @@ public slots:
     void onOkayClicked();
 
 private:
-    Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QGraphicsView *graphicsView;
 
