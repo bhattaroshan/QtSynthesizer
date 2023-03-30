@@ -15,6 +15,7 @@ protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
     QColor m_brushColor;
 
@@ -23,8 +24,12 @@ protected:
     QList<QRectF> m_rectangle;
     QPointF m_lastMouseClickPos = QPointF(0,0);
 
+    int m_frequency = 220;
+    QGraphicsTextItem *m_frequencyText;
+
 signals:
     void onItemDrag(Block *item);
+    void onItemDoubleClicked();
 
 };
 

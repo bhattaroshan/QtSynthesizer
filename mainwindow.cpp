@@ -7,6 +7,8 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include "block.h"
+#include "graph.h"
+#include "signaldialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
-    QPushButton *btn1 = new QPushButton("OK");
+    QPushButton *btn1 = new QPushButton("Add Track");
     connect(btn1,&QPushButton::clicked,this,&MainWindow::onOkayClicked);
     QPushButton *btn2 = new QPushButton("Cancel");
     QPushButton *btn3 = new QPushButton("Test");
@@ -33,26 +35,16 @@ MainWindow::MainWindow(QWidget *parent)
     spacer1 = new QSpacerItem(0,this->height()*0.6,QSizePolicy::Expanding);
 
 
-    QLineSeries *series = new QLineSeries();
-    series->append(0, 6);
-    series->append(2, 4);
-    series->append(3, 8);
-    series->append(7, 4);
-    series->append(10, 5);
-    *series << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
-    QChart *chart = new QChart();
-    //chart->legend()->hide();
-    chart->addSeries(series);
-    chart->createDefaultAxes();
-    chart->setTitle("Simple line chart example");
-    chart->setBackgroundBrush(QBrush(QColor(25,25,25)));
-    QChartView *chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setMinimumHeight(300);
-    //chartView->setStyleSheet("background-color:#0f0f0f;");
+    QVector<QPair<qreal,qreal>> coordinates;
+    qreal step = 1.0/44100.0;
+    for(int x=0;x<44100;++x){
+        qreal y = sin(2*M_PI*x*step);
+        coordinates.append({x,y});
+    }
+    Graph *graph = new Graph(coordinates);
 
     mainLayout->addLayout(buttonsLayout);
-    mainLayout->addWidget(chartView);
+    mainLayout->addWidget(graph);
     //mainLayout->addSpacerItem(spacer1);
     mainLayout->addWidget(graphicsView);
 
@@ -60,15 +52,19 @@ MainWindow::MainWindow(QWidget *parent)
     window->setLayout(mainLayout);
     setCentralWidget(window);
 
-    setMouseTracking(true);
-    graphicsView->setMouseTracking(true);
-
 }
 
 void MainWindow::onOkayClicked(){
     Block *b = new Block();
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
+    connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
+}
+
+void MainWindow::onTrackDoubleClicked()
+{
+    SignalDialog *dialog = new SignalDialog(this);
+    dialog->show();
 }
 
 

@@ -12,11 +12,13 @@ Graph::Graph(QVector<QPair<qreal, qreal> > coordinates, QWidget *parent)
 
     QChart *chart = new QChart();
     chart->addSeries(series);
+    chart->legend()->hide();
+    chart->setBackgroundBrush(QBrush(QColor(25,25,25)));
 
-    chartView = new QChartView(chart);
+    setChart(chart);
 }
 
 Graph::~Graph(){
-    delete chartView;
+    //delete chartView;
 }
 

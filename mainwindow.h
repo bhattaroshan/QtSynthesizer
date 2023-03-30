@@ -23,6 +23,7 @@ protected:
 public slots:
     void resizeSlot();
     void onOkayClicked();
+    void onTrackDoubleClicked();
 
 private:
     QGraphicsScene *scene;

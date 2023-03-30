@@ -12,7 +12,6 @@ public:
     ~Graph();
 
 protected:
-    QChartView *chartView;
 };
 
 #endif // GRAPH_H
