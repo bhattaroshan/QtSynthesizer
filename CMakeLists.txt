@@ -20,6 +20,7 @@ set(PROJECT_SOURCES
     block.h block.cpp
     graph.h graph.cpp
     signaldialog.h signaldialog.cpp
+    signalvector.h signalvector.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

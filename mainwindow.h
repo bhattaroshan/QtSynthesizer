@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <signaldialog.h>
 #include "block.h"
+#include "signalvector.h"
 
 
 class MainWindow : public QMainWindow
@@ -25,7 +26,7 @@ protected:
     SignalDialog *signalDialog = nullptr;
 
 public slots:
-    void resizeSlot();
+    QPair<qreal,qreal> resizeSlot();
     void onOkayClicked();
     void onTrackDoubleClicked(int);
     void setTrackFrequency(int);
@@ -39,5 +40,7 @@ private:
     QVBoxLayout *mainLayout;
 
     QVector<Block*> m_blocks;
+    QVector<QRectF> m_graphBar;
+    SignalVector *signal;
 };
 #endif // MAINWINDOW_H

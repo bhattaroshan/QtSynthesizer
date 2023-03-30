@@ -7,16 +7,16 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include "graph.h"
+#include <QGraphicsLineItem>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    signal = new SignalVector();
 
     scene = new QGraphicsScene();
     graphicsView = new QGraphicsView(scene);
     scene->setSceneRect(0,0,this->width(),this->height());
-
-
 
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
@@ -32,14 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     spacer1 = new QSpacerItem(0,this->height()*0.6,QSizePolicy::Expanding);
 
-
-    QVector<QPair<qreal,qreal>> coordinates;
-    qreal step = 1.0/44100.0;
-    for(int x=0;x<44100;++x){
-        qreal y = sin(2*M_PI*x*step);
-        coordinates.append({x,y});
-    }
-    Graph *graph = new Graph(coordinates);
+    Graph *graph = new Graph(signal->generateSinWave(220,1000));
 
     mainLayout->addLayout(buttonsLayout);
     mainLayout->addWidget(graph);
@@ -49,7 +42,6 @@ MainWindow::MainWindow(QWidget *parent)
     window = new QWidget();
     window->setLayout(mainLayout);
     setCentralWidget(window);
-
 }
 
 void MainWindow::onOkayClicked(){
@@ -86,10 +78,11 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     resizeSlot();
+
     QMainWindow::resizeEvent(event);
 }
 
-void MainWindow::resizeSlot(){
+QPair<qreal,qreal> MainWindow::resizeSlot(){
     qreal w = this->width();
     qreal h = this->height();
 
@@ -105,12 +98,24 @@ void MainWindow::resizeSlot(){
         }
     }
 
-    scene->setSceneRect(0,0,w+100,h+50);
+    int new_width = w+100;
+    int new_height = h+50;
+    scene->setSceneRect(0,0,new_width,new_height);
 
-    //qreal height = this->height()*0.7;
-    //if(this->height()>800) {
-    //    height=this->height()*0.8;
-    //}
-    //spacer1->changeSize(0,height,QSizePolicy::Minimum,QSizePolicy::Expanding);
-    //mainLayout->invalidate();
+    int barCount =	(new_width/50)-1;
+    int graphBarLength = m_graphBar.size();
+
+    if(barCount>graphBarLength){  //new line plotting is needed here
+        for(int i=50+(graphBarLength*50);i<new_width;i+=50){
+            QRectF points = QRectF(i,0,i,new_height);
+            m_graphBar.append(points);
+            QGraphicsLineItem *line = new QGraphicsLineItem(points.x(),points.y(),points.width(),points.height());
+            line->setZValue(-100);
+            line->setPen(QPen(QColor(128,128,128,20)));
+            scene->addItem(line);
+        }
+    }
+
+
+    return {w+100,h+50};
 }
