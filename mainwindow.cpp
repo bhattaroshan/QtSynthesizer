@@ -6,9 +6,7 @@
 #include <QtCharts/QtCharts>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
-#include "block.h"
 #include "graph.h"
-#include "signaldialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -56,15 +54,28 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::onOkayClicked(){
     Block *b = new Block();
+    m_blocks.append(b); //keep track of all the tracks for future use
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
     connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
 }
 
-void MainWindow::onTrackDoubleClicked()
+void MainWindow::onTrackDoubleClicked(int frequency)
 {
-    SignalDialog *dialog = new SignalDialog(this);
-    dialog->show();
+    dialogAssociatedToTrack = sender();
+    if(signalDialog==nullptr){
+        delete signalDialog;
+    }
+
+    signalDialog = new SignalDialog(frequency);
+    signalDialog->show();
+
+    connect(signalDialog,&SignalDialog::dialogValues,this,&MainWindow::setTrackFrequency);
+}
+
+void MainWindow::setTrackFrequency(int frequency)
+{
+    dynamic_cast<Block*>(dialogAssociatedToTrack)->setFrequency(frequency);
 }
 
 

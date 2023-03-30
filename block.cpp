@@ -36,6 +36,11 @@ void Block::getAllBlocksInfo(QList<QRectF> blockRect)
     m_rectangle = blockRect;
 }
 
+int Block::getFrequency()
+{
+    return m_frequency;
+}
+
 
 void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -166,7 +171,14 @@ void Block::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void Block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit onItemDoubleClicked();
-    qDebug()<<"mouse double clicked here";
+    emit onItemDoubleClicked(m_frequency);
     QGraphicsRectItem::mouseDoubleClickEvent(event);
+}
+
+void Block::setFrequency(int frequency)
+{
+    m_frequency = frequency;
+    m_frequencyText->setPlainText(QString::number(m_frequency));
+    QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
+    m_frequencyText->setPos(textPos);
 }

@@ -1,32 +1,26 @@
 #include "signaldialog.h"
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QShortcut>
 
-SignalDialog::SignalDialog(QWidget *parent)
+SignalDialog::SignalDialog(int defaultFrequency, QWidget *parent)
     :QDialog(parent)
 {
     setFixedSize(400,300);
     setWindowModality(Qt::ApplicationModal);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    mainLayout = new QVBoxLayout();
+    buttonLayout = new QHBoxLayout();
 
-    QHBoxLayout *signalLayout = new QHBoxLayout();
-    QLabel *signalLabel = new QLabel("Signal (Hz)");
-    QSpinBox *signalEdit = new QSpinBox();
+    signalLayout = new QHBoxLayout();
+    signalLabel = new QLabel("Signal (Hz)");
+    signalEdit = new QSpinBox();
     signalEdit->setRange(1,20000);
+    signalEdit->setValue(defaultFrequency);
     signalLayout->addWidget(signalLabel);
     signalLayout->addWidget(signalEdit);
 
-    QPushButton *okButton = new QPushButton("OK");
-    QShortcut *okShortcut = new QShortcut(QKeySequence(Qt::Key_Enter),this);
-    connect(okButton,&QPushButton::clicked,this,&SignalDialog::close);
+    okButton = new QPushButton("OK");
+    connect(okButton,&QPushButton::clicked,this,&SignalDialog::okClicked);
 
-    QPushButton *cancelButton = new QPushButton("Cancel");
+    cancelButton = new QPushButton("Cancel");
     buttonLayout->addWidget(okButton);
     buttonLayout->addWidget(cancelButton);
 
@@ -38,5 +32,6 @@ SignalDialog::SignalDialog(QWidget *parent)
 
 void SignalDialog::okClicked()
 {
-
+    emit dialogValues(signalEdit->value());
+    close();
 }

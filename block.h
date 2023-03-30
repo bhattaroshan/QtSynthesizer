@@ -9,6 +9,7 @@ class Block:public QObject, public QGraphicsRectItem
 public:
     Block(QGraphicsItem *parent=nullptr);
     void getAllBlocksInfo(QList<QRectF> blockRect);
+    int getFrequency();
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
@@ -27,9 +28,12 @@ protected:
     int m_frequency = 220;
     QGraphicsTextItem *m_frequencyText;
 
+public slots:
+    void setFrequency(int);
+
 signals:
     void onItemDrag(Block *item);
-    void onItemDoubleClicked();
+    void onItemDoubleClicked(int);
 
 };
 

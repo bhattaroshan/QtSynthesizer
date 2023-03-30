@@ -2,14 +2,33 @@
 #define SIGNALDIALOG_H
 
 #include <QDialog>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QSpinBox>
+#include <QPushButton>
 
 class SignalDialog:public QDialog
 {
+    Q_OBJECT
 public:
-    SignalDialog(QWidget *parent=nullptr);
+    SignalDialog(int defaultFrequency,QWidget *parent=nullptr);
+
+protected:
+    QVBoxLayout *mainLayout;
+    QHBoxLayout *buttonLayout;
+
+    QHBoxLayout *signalLayout;
+    QLabel *signalLabel;
+    QSpinBox *signalEdit;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
 
 private slots:
     void okClicked();
+
+signals:
+    void dialogValues(int);
 };
 
 #endif // SIGNALDIALOG_H
