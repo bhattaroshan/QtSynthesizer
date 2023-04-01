@@ -9,9 +9,9 @@ class Graph:public QChartView
 {
     Q_OBJECT
 public:
-    Graph(QVector<QPair<qreal,qreal>> coordinates, QWidget *parent=nullptr);
-    void zoomInX();
+    Graph(QVector<QPointF> coordinates, QWidget *parent=nullptr);
     ~Graph();
+    void update(QVector<QPointF> coordinates);
 
 protected:
     void wheelEvent(QWheelEvent *event) override;
@@ -20,6 +20,8 @@ protected:
 
     qreal mFactor=1.0;
     QPointF m_lastMousePos;
+    QLineSeries *m_series;
+    QChart *m_chart;
 };
 
 #endif // GRAPH_H

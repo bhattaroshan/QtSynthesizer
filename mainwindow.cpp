@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     QPushButton *btn1 = new QPushButton("Add Track");
     connect(btn1,&QPushButton::clicked,this,&MainWindow::onOkayClicked);
     QPushButton *btn2 = new QPushButton("Cancel");
+    connect(btn2,&QPushButton::clicked,this,&MainWindow::onCancelClicked);
     QPushButton *btn3 = new QPushButton("Test");
     btn1->setMaximumWidth(200);
     btn2->setMaximumWidth(200);
@@ -32,10 +33,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     spacer1 = new QSpacerItem(0,this->height()*0.6,QSizePolicy::Expanding);
 
-    Graph *graph = new Graph(signal->generateSinWave(220,1000));
+    //auto sig = signal->generateSinWave(220,1000);
+    //signal->addSignalToContainer(sig,0);
+    //qDebug()<<signal->scaleSignalDown(100);
+    //auto res = signal->scaleSignalDown(50);
+    //qDebug()<<"the size of scale down signal is ="<<res.size();
+    m_graph = new Graph(signal->getSignal());
 
     mainLayout->addLayout(buttonsLayout);
-    mainLayout->addWidget(graph);
+    mainLayout->addWidget(m_graph);
     //mainLayout->addSpacerItem(spacer1);
     mainLayout->addWidget(graphicsView);
 
@@ -50,6 +56,21 @@ void MainWindow::onOkayClicked(){
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
     connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
+
+    //signal->clear();
+    auto sig = signal->generateSinWave(220,1000);
+    signal->addSignalToContainer(sig,0);
+    m_graph->update(signal->getSignal());
+
+}
+
+void MainWindow::onCancelClicked(){
+    signal->clear();
+    auto sig = signal->generateSinWave(440,1000);
+    signal->addSignalToContainer(sig,0);
+    //auto res = signal->scaleSignalDown(100);
+    //qDebug()<<"the size of scale down signal is ="<<res.size();
+    m_graph->update(signal->getSignal());
 }
 
 void MainWindow::onTrackDoubleClicked(int frequency)

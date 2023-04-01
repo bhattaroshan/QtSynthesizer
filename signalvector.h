@@ -3,16 +3,23 @@
 
 #include<QVector>
 #include<QPair>
+#include <QtGui>
 
 class SignalVector
 {
 public:
     SignalVector();
-    QVector<QPair<qreal,qreal>> generateSinWave(int frequency,int milliseconds);
+    QVector<QPointF> generateSinWave(int frequency,int milliseconds);
+    void addSignalToContainer(QVector<QPointF> signal, int start);
+    int getIndexFromTime(int milliseconds);
+    QVector<QPointF> scaleSignalDown(int distance);
+    void clear();
+    QVector<QPointF> getSignal();
+
 
 private:
     int m_sampleRate = 44100;
-    QVector<QPair<qreal,qreal>> m_signal;
+    QVector<QPointF> m_signal;
 };
 
 #endif // SIGNALVECTOR_H
