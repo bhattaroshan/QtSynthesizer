@@ -86,9 +86,32 @@ void MainWindow::onTrackDoubleClicked(int frequency)
     connect(signalDialog,&SignalDialog::dialogValues,this,&MainWindow::setTrackFrequency);
 }
 
-void MainWindow::setTrackFrequency(int frequency)
+//this is triggered when Okay is clicked on any dialog
+void MainWindow::setTrackFrequency(int currentFrequency, int lastFrequency)
 {
-    dynamic_cast<Block*>(dialogAssociatedToTrack)->setFrequency(frequency);
+    Block *activeTrack = dynamic_cast<Block*>(dialogAssociatedToTrack);
+    activeTrack->setFrequency(currentFrequency);
+
+    if(currentFrequency!=lastFrequency){
+        signal->clear();
+        QList<QGraphicsItem*> items = scene->items();
+        for(auto item:items){
+            QGraphicsRectItem *rectItem = dynamic_cast<QGraphicsRectItem*>(item);
+            if(rectItem){
+                Block *b = dynamic_cast<Block*>(rectItem);
+                int trackWidth = b->boundingRect().width();
+                qDebug()<<"my width is ========"<<trackWidth;
+                auto sig = signal->generateSinWave(b->getFrequency(),trackWidth*2);
+                signal->addSignalToContainer(sig,0);
+            }
+        }
+        m_graph->update(signal->getSignal());
+//        auto sig = signal->generateSinWave(lastFrequency,1000);
+//        signal->reduceSignalFromContainer(sig,0);
+//        sig = signal->generateSinWave(currentFrequency,1000);
+//        signal->addSignalToContainer(sig,0);
+//        m_graph->update(signal->getSignal());
+    }
 }
 
 

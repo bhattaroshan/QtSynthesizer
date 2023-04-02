@@ -22,19 +22,65 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
 {
     int signalLength = m_signal.size();
     int newSignalLength = signal.size()+start;
-    qDebug()<<"new signal length ="<<newSignalLength;
-    if(newSignalLength>=signalLength){
+    if(newSignalLength>signalLength){
         m_signal.resize(newSignalLength);
+        qDebug()<<"no problem till here";
         for(int i=signalLength;i<m_signal.size();++i){ //reset added buffer to zero
-            m_signal[i] = QPointF(0,0);
+            m_signal[i] = QPointF(i,0);
+        }
+        qDebug()<<"did i come till here";
+    }
+
+    //add new signal to existing container
+    for(int i=start;i<signal.size();++i){
+        m_signal[i]=QPointF(i,m_signal[i].y()+signal[i].y());
+    }
+
+    qDebug()<<"how about here then";
+    for(int i=start;i<signal.size();++i){
+        if(m_maxSignalValue<m_signal[i].y()){
+            m_maxSignalValue = m_signal[i].y();
+        }
+        if(m_signal[i].y()<m_minSignalValue){
+            m_minSignalValue = m_signal[i].y();
+        }
+    }
+    qDebug()<<"and this one!";
+
+    qreal scaleFactor = 1.0/qMax(qAbs(m_maxSignalValue),qAbs(m_minSignalValue));
+
+    for(int i=start;i<signal.size();++i){
+        m_signal[i].setY(m_signal[i].y()*scaleFactor);
+    }
+    qDebug()<<"how about the last one dude";
+
+}
+
+void SignalVector::reduceSignalFromContainer(QVector<QPointF> signal, int start)
+{
+    qreal new_length = start+signal.size();
+    qreal length = m_signal.size();
+    for(int i=start;i<new_length;++i){
+        if(i>=length) break; //cannot perform calculation above this point
+        m_signal[i] = QPointF(i,m_signal[i].y()-signal[i].y());
+    }
+
+    for(int i=start;i<new_length;++i){
+        if(i>=length) break; //cannot perform calculation above this point
+        if(m_maxSignalValue<m_signal[i].y()){
+            m_maxSignalValue = m_signal[i].y();
+        }
+        if(m_signal[i].y()<m_minSignalValue){
+            m_minSignalValue = m_signal[i].y();
         }
     }
 
-    for(int i=0;i<signal.size();i+=100) qDebug()<<signal[i];
-    //add new signal to existing container
+    qreal scaleFactor = 1.0/qMax(qAbs(m_maxSignalValue),qAbs(m_minSignalValue));
+
     for(int i=start;i<signal.size();++i){
-        m_signal[i] += signal[i];
+        m_signal[i].setY(m_signal[i].y()*scaleFactor);
     }
+
 
 }
 

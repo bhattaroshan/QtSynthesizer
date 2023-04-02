@@ -3,6 +3,7 @@
 SignalDialog::SignalDialog(int defaultFrequency, QWidget *parent)
     :QDialog(parent)
 {
+    m_previousValue = defaultFrequency;
     setFixedSize(400,300);
     setWindowModality(Qt::ApplicationModal);
 
@@ -32,6 +33,6 @@ SignalDialog::SignalDialog(int defaultFrequency, QWidget *parent)
 
 void SignalDialog::okClicked()
 {
-    emit dialogValues(signalEdit->value());
+    emit dialogValues(signalEdit->value(),m_previousValue);
     close();
 }

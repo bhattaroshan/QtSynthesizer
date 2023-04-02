@@ -23,12 +23,13 @@ protected:
     QSpinBox *signalEdit;
     QPushButton *okButton;
     QPushButton *cancelButton;
+    qreal m_previousValue = 0;
 
 private slots:
     void okClicked();
 
 signals:
-    void dialogValues(int);
+    void dialogValues(int updatedFrequency, int lastFrequency);
 };
 
 #endif // SIGNALDIALOG_H
