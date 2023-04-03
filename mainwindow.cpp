@@ -101,8 +101,12 @@ void MainWindow::setTrackFrequency(int currentFrequency, int lastFrequency)
                 Block *b = dynamic_cast<Block*>(rectItem);
                 int trackWidth = b->boundingRect().width();
                 qDebug()<<"my width is ========"<<trackWidth;
+                qDebug()<<b->x();
+
                 auto sig = signal->generateSinWave(b->getFrequency(),trackWidth*2);
-                signal->addSignalToContainer(sig,0);
+                int index = signal->getIndexFromTime(b->x()*10);
+                if(index<0) index=0;
+                signal->addSignalToContainer(sig,index);
             }
         }
         m_graph->update(signal->getSignal());

@@ -24,11 +24,9 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
     int newSignalLength = signal.size()+start;
     if(newSignalLength>signalLength){
         m_signal.resize(newSignalLength);
-        qDebug()<<"no problem till here";
         for(int i=signalLength;i<m_signal.size();++i){ //reset added buffer to zero
             m_signal[i] = QPointF(i,0);
         }
-        qDebug()<<"did i come till here";
     }
 
     //add new signal to existing container
@@ -36,7 +34,6 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
         m_signal[i]=QPointF(i,m_signal[i].y()+signal[i].y());
     }
 
-    qDebug()<<"how about here then";
     for(int i=start;i<signal.size();++i){
         if(m_maxSignalValue<m_signal[i].y()){
             m_maxSignalValue = m_signal[i].y();
@@ -45,14 +42,12 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
             m_minSignalValue = m_signal[i].y();
         }
     }
-    qDebug()<<"and this one!";
 
     qreal scaleFactor = 1.0/qMax(qAbs(m_maxSignalValue),qAbs(m_minSignalValue));
 
     for(int i=start;i<signal.size();++i){
         m_signal[i].setY(m_signal[i].y()*scaleFactor);
     }
-    qDebug()<<"how about the last one dude";
 
 }
 

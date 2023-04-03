@@ -8,14 +8,11 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     m_series = new QLineSeries();
     //int length = coordinates.size();
-    int length = 441000;
-
-    //m_series->append(coordinates.mid(0,coordinates.size()));
-    //QVector<
-    //m_series->append()
-    for(int i=coordinates.size();i<length;++i){
-        m_series->append(QPointF(i,0));
+    QVector<QPointF> v;
+    for(int i=0;i<m_length;++i){
+        v.push_back({(qreal)i,0});
     }
+    m_series->append(v);
 
     m_chart = new QChart();
     m_chart->addSeries(m_series);
@@ -53,6 +50,7 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     QRectF rect = chart()->plotArea();
     rect.setWidth(mFactor*rect.width());
     chart()->zoomIn(rect);
+
 }
 
 Graph::~Graph(){
@@ -61,43 +59,9 @@ Graph::~Graph(){
 
 void Graph::update(QVector<QPointF> coordinates)
 {
-    //m_series->clear();
-    //m_series->remove(0,coordinates.length());
-    //qDebug()<<"loading files";
-    //QValueAxis* yaxis = qobject_cast<QValueAxis*>(chart()->axisY(m_series));
-    //if (yaxis) {
-    //    yaxis->setRange(-1, 1);
-    //}
-    int length = m_series->count();
-    qDebug()<<"my length is "<<length;
-    qDebug()<<"coordinates size is = "<<coordinates.size();
-    //int cs = coordinates.size();
+    m_series->replace(coordinates.mid(0,m_length));
 
-    qDebug()<<"i started with replace";
-    m_series->replace(coordinates.mid(0,length));
-    qDebug()<<"I completed replace";
-
-    if(coordinates.size()>length) {
-        qDebug()<<"I entered extra space";
-        QVector<QPointF> res = coordinates.mid(length);
-        m_series->append(res);
-        qDebug()<<"This one took me more time";
-    }
-
-//    if(length>=coordinates.size()){
-//        m_series->replace(coordinates);
-//    }else{
-//        m_series->replace(coordinates.mid(0,length));
-//        m_series->append(coordinates.mid(length));
-//    }
-
-//    for(int i=0;i<coordinates.length();++i){
-//        m_series->append(coordinates[i].x(),coordinates[i].y());
-//        if(i%1000==0)
-//            qDebug()<<"progress = "<<i;
-//    }
-    //repaint();
-}
+ }
 
 void Graph::wheelEvent(QWheelEvent *event)
 {
@@ -123,6 +87,7 @@ void Graph::mousePressEvent(QMouseEvent *event)
             m_lastMousePos = event->pos();
             event->accept();
         }
+    QChartView::mousePressEvent(event);
 }
 
 void Graph::mouseMoveEvent(QMouseEvent *event)

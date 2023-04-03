@@ -22,6 +22,7 @@ protected:
     QPointF m_lastMousePos;
     QLineSeries *m_series;
     QChart *m_chart;
+    int m_length = 44100;
 };
 
 #endif // GRAPH_H
