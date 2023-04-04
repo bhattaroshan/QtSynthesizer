@@ -22,27 +22,19 @@ MainWindow::MainWindow(QWidget *parent)
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     QPushButton *btn1 = new QPushButton("Add Track");
     connect(btn1,&QPushButton::clicked,this,&MainWindow::onOkayClicked);
-    QPushButton *btn2 = new QPushButton("Cancel");
+    QPushButton *btn2 = new QPushButton(">");
+    btn2->setFixedSize(30,40);
     connect(btn2,&QPushButton::clicked,this,&MainWindow::onCancelClicked);
     QPushButton *btn3 = new QPushButton("Test");
-    btn1->setMaximumWidth(200);
-    btn2->setMaximumWidth(200);
     buttonsLayout->addWidget(btn1);
     buttonsLayout->addWidget(btn2);
     buttonsLayout->addWidget(btn3);
 
-    spacer1 = new QSpacerItem(0,this->height()*0.6,QSizePolicy::Expanding);
 
-    //auto sig = signal->generateSinWave(220,1000);
-    //signal->addSignalToContainer(sig,0);
-    //qDebug()<<signal->scaleSignalDown(100);
-    //auto res = signal->scaleSignalDown(50);
-    //qDebug()<<"the size of scale down signal is ="<<res.size();
     m_graph = new Graph(signal->getSignal());
 
-    mainLayout->addLayout(buttonsLayout);
     mainLayout->addWidget(m_graph);
-    //mainLayout->addSpacerItem(spacer1);
+    mainLayout->addLayout(buttonsLayout);
     mainLayout->addWidget(graphicsView);
 
     window = new QWidget();
@@ -58,12 +50,6 @@ void MainWindow::onOkayClicked(){
     connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
     connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
 
-    //signal->clear();
-//    int index = signal->getIndexFromTime(b->x()*10);
-//    if(index<0) index=0;
-//    auto sig = signal->generateSinWave(220,b->boundingRect().width()*2);
-//    signal->addSignalToContainer(sig,index);
-//    m_graph->update(signal->getSignal());
     updateGraph();
 
 }
@@ -78,7 +64,7 @@ void MainWindow::onCancelClicked(){
 void MainWindow::onTrackDoubleClicked(int frequency)
 {
     dialogAssociatedToTrack = sender();
-    if(signalDialog==nullptr){
+    if(signalDialog!=nullptr){
         delete signalDialog;
     }
 
@@ -88,19 +74,26 @@ void MainWindow::onTrackDoubleClicked(int frequency)
     connect(signalDialog,&SignalDialog::dialogValues,this,&MainWindow::setTrackFrequency);
 }
 
-void MainWindow::updateGraph(){
-    signal->clear();
+QList<Block*> MainWindow::getAllTracks(){
     QList<QGraphicsItem*> items = scene->items();
+    QList<Block*> blocks;
     for(auto item:items){
         QGraphicsRectItem *rectItem = dynamic_cast<QGraphicsRectItem*>(item);
         if(rectItem){
-            Block *b = dynamic_cast<Block*>(rectItem);
-            int trackWidth = b->boundingRect().width();
-            auto sig = signal->generateSinWave(b->getFrequency(),trackWidth*10);
-            int index = signal->getIndexFromTime(b->x()*10);
-            if(index<0) index=0;
-            signal->addSignalToContainer(sig,index);
+            blocks.append(dynamic_cast<Block*>(rectItem));
         }
+    }
+    return blocks;
+}
+
+void MainWindow::updateGraph(){
+    signal->clear();
+    for(auto b:getAllTracks()){
+        int trackWidth = b->boundingRect().width();
+        auto sig = signal->generateSinWave(b->getFrequency(),trackWidth*10);
+        int index = signal->getIndexFromTime(b->x()*10);
+        if(index<0) index=0;
+        signal->addSignalToContainer(sig,index);
     }
     signal->normalizeSignal();
     m_graph->update(signal->getSignal());

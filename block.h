@@ -2,6 +2,7 @@
 #define BLOCK_H
 #include <QGraphicsItem>
 #include <QGraphicsSceneHoverEvent>
+#include <QMenu>
 
 class Block:public QObject, public QGraphicsRectItem
 {
@@ -17,6 +18,8 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+    QList<QGraphicsRectItem*> getAllTracks(QRectF rect);
 
     QColor m_brushColor;
 

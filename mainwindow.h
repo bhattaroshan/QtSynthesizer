@@ -33,12 +33,12 @@ public slots:
     void onTrackDoubleClicked(int);
     void setTrackFrequency(int currentFrequency, int lastFrequency);
     void updateGraph();
+    QList<Block*> getAllTracks();
 
 private:
     QGraphicsScene *scene;
     QGraphicsView *graphicsView;
 
-    QSpacerItem *spacer1;
     QWidget *window;
     QVBoxLayout *mainLayout;
 

@@ -23,7 +23,6 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
     int signalLength = m_signal.size();
     int newSignalLength = signal.size()+start;
     if(newSignalLength>signalLength){
-        qDebug()<<"my length is increased";
         m_signal.resize(newSignalLength);
         for(int i=signalLength;i<m_signal.size();++i){ //reset added buffer to zero
             m_signal[i] = QPointF(i,0);
