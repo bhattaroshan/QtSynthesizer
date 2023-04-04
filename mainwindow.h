@@ -32,6 +32,7 @@ public slots:
     void onCancelClicked();
     void onTrackDoubleClicked(int);
     void setTrackFrequency(int currentFrequency, int lastFrequency);
+    void updateGraph();
 
 private:
     QGraphicsScene *scene;

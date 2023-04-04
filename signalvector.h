@@ -11,6 +11,7 @@ public:
     SignalVector();
     QVector<QPointF> generateSinWave(int frequency,int milliseconds);
     void addSignalToContainer(QVector<QPointF> signal, int start);
+    void normalizeSignal();
     void reduceSignalFromContainer(QVector<QPointF> signal, int start);
     int getIndexFromTime(int milliseconds);
     QVector<QPointF> scaleSignalDown(int distance);

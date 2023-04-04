@@ -34,6 +34,7 @@ public slots:
 signals:
     void onItemDrag(Block *item);
     void onItemDoubleClicked(int);
+    void trackUpdated();
 
 };
 

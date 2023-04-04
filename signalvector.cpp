@@ -23,6 +23,7 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
     int signalLength = m_signal.size();
     int newSignalLength = signal.size()+start;
     if(newSignalLength>signalLength){
+        qDebug()<<"my length is increased";
         m_signal.resize(newSignalLength);
         for(int i=signalLength;i<m_signal.size();++i){ //reset added buffer to zero
             m_signal[i] = QPointF(i,0);
@@ -30,11 +31,15 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
     }
 
     //add new signal to existing container
-    for(int i=start;i<signal.size();++i){
-        m_signal[i]=QPointF(i,m_signal[i].y()+signal[i].y());
+    for(int i=0;i<signal.size();++i){
+        m_signal[start+i]=QPointF(start+i,m_signal[start+i].y()+signal[i].y());
     }
 
-    for(int i=start;i<signal.size();++i){
+}
+
+void SignalVector::normalizeSignal()
+{
+    for(int i=0;i<m_signal.size();++i){
         if(m_maxSignalValue<m_signal[i].y()){
             m_maxSignalValue = m_signal[i].y();
         }
@@ -45,10 +50,9 @@ void SignalVector::addSignalToContainer(QVector<QPointF> signal, int start)
 
     qreal scaleFactor = 1.0/qMax(qAbs(m_maxSignalValue),qAbs(m_minSignalValue));
 
-    for(int i=start;i<signal.size();++i){
+    for(int i=0;i<m_signal.size();++i){
         m_signal[i].setY(m_signal[i].y()*scaleFactor);
     }
-
 }
 
 void SignalVector::reduceSignalFromContainer(QVector<QPointF> signal, int start)
@@ -83,7 +87,6 @@ int SignalVector::getIndexFromTime(int milliseconds)
 {
     int index = (milliseconds*44100)/1000;
     return index;
-
 }
 
 QVector<QPointF> SignalVector::scaleSignalDown(int distance){

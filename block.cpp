@@ -15,7 +15,7 @@ Block::Block(QGraphicsItem *parent)
 
     setPen(Qt::NoPen);
     setBrush(m_brushColor);
-    setRect(0,0,100,20);
+    setRect(0,0,50,20);
     setPos(0,0);
 
     m_frequencyText = new QGraphicsTextItem(QString::number(m_frequency),this);
@@ -165,6 +165,7 @@ void Block::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
    if(event->button()==Qt::LeftButton){
        m_dragEnabled = false;
+       emit trackUpdated();
    }
    QGraphicsItem::mouseReleaseEvent(event);
 }

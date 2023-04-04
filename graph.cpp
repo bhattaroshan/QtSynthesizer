@@ -8,11 +8,11 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     m_series = new QLineSeries();
     //int length = coordinates.size();
-    QVector<QPointF> v;
-    for(int i=0;i<m_length;++i){
-        v.push_back({(qreal)i,0});
-    }
-    m_series->append(v);
+//    QVector<QPointF> v;
+//    for(int i=0;i<m_length;++i){
+//        v.push_back({(qreal)i,0});
+//    }
+//    m_series->append(v);
 
     m_chart = new QChart();
     m_chart->addSeries(m_series);
@@ -22,7 +22,7 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     QValueAxis *xAxis = new QValueAxis;
     xAxis->setRange(0,44100);
     xAxis->setGridLineVisible(false);
-    xAxis->setLabelsVisible(false);
+    //xAxis->setLabelsVisible(false);
     xAxis->setLineVisible(false);
     m_chart->addAxis(xAxis,Qt::AlignBottom);
     m_series->attachAxis(xAxis);
@@ -43,7 +43,7 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     setChart(m_chart);
     this->setMouseTracking(true);
 
-//    chart()->zoomReset();
+    chart()->zoomReset();
 
     mFactor *= 0.05;
 
@@ -54,12 +54,15 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
 }
 
 Graph::~Graph(){
-    //delete chartView;
 }
 
 void Graph::update(QVector<QPointF> coordinates)
 {
-    m_series->replace(coordinates.mid(0,m_length));
+    m_series->clear();
+    m_series->blockSignals(true);
+    m_series->append(coordinates.mid(0,coordinates.size()-1));
+    m_series->blockSignals(false);
+    m_series->append(coordinates[coordinates.size()-1]);
 
  }
 

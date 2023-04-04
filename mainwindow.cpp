@@ -56,11 +56,15 @@ void MainWindow::onOkayClicked(){
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
     connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
+    connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
 
     //signal->clear();
-    auto sig = signal->generateSinWave(220,1000);
-    signal->addSignalToContainer(sig,0);
-    m_graph->update(signal->getSignal());
+//    int index = signal->getIndexFromTime(b->x()*10);
+//    if(index<0) index=0;
+//    auto sig = signal->generateSinWave(220,b->boundingRect().width()*2);
+//    signal->addSignalToContainer(sig,index);
+//    m_graph->update(signal->getSignal());
+    updateGraph();
 
 }
 
@@ -68,8 +72,6 @@ void MainWindow::onCancelClicked(){
     signal->clear();
     auto sig = signal->generateSinWave(440,1000);
     signal->addSignalToContainer(sig,0);
-    //auto res = signal->scaleSignalDown(100);
-    //qDebug()<<"the size of scale down signal is ="<<res.size();
     m_graph->update(signal->getSignal());
 }
 
@@ -86,6 +88,24 @@ void MainWindow::onTrackDoubleClicked(int frequency)
     connect(signalDialog,&SignalDialog::dialogValues,this,&MainWindow::setTrackFrequency);
 }
 
+void MainWindow::updateGraph(){
+    signal->clear();
+    QList<QGraphicsItem*> items = scene->items();
+    for(auto item:items){
+        QGraphicsRectItem *rectItem = dynamic_cast<QGraphicsRectItem*>(item);
+        if(rectItem){
+            Block *b = dynamic_cast<Block*>(rectItem);
+            int trackWidth = b->boundingRect().width();
+            auto sig = signal->generateSinWave(b->getFrequency(),trackWidth*10);
+            int index = signal->getIndexFromTime(b->x()*10);
+            if(index<0) index=0;
+            signal->addSignalToContainer(sig,index);
+        }
+    }
+    signal->normalizeSignal();
+    m_graph->update(signal->getSignal());
+}
+
 //this is triggered when Okay is clicked on any dialog
 void MainWindow::setTrackFrequency(int currentFrequency, int lastFrequency)
 {
@@ -93,28 +113,7 @@ void MainWindow::setTrackFrequency(int currentFrequency, int lastFrequency)
     activeTrack->setFrequency(currentFrequency);
 
     if(currentFrequency!=lastFrequency){
-        signal->clear();
-        QList<QGraphicsItem*> items = scene->items();
-        for(auto item:items){
-            QGraphicsRectItem *rectItem = dynamic_cast<QGraphicsRectItem*>(item);
-            if(rectItem){
-                Block *b = dynamic_cast<Block*>(rectItem);
-                int trackWidth = b->boundingRect().width();
-                qDebug()<<"my width is ========"<<trackWidth;
-                qDebug()<<b->x();
-
-                auto sig = signal->generateSinWave(b->getFrequency(),trackWidth*2);
-                int index = signal->getIndexFromTime(b->x()*10);
-                if(index<0) index=0;
-                signal->addSignalToContainer(sig,index);
-            }
-        }
-        m_graph->update(signal->getSignal());
-//        auto sig = signal->generateSinWave(lastFrequency,1000);
-//        signal->reduceSignalFromContainer(sig,0);
-//        sig = signal->generateSinWave(currentFrequency,1000);
-//        signal->addSignalToContainer(sig,0);
-//        m_graph->update(signal->getSignal());
+        updateGraph();
     }
 }
 
