@@ -11,6 +11,8 @@ public:
     Block(int x,int y,QGraphicsItem *parent=nullptr);
     void getAllBlocksInfo(QList<QRectF> blockRect);
     int getFrequency();
+    QColor getColor();
+    void handleDraggable(qreal);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;

@@ -41,6 +41,17 @@ int Block::getFrequency()
     return m_frequency;
 }
 
+QColor Block::getColor()
+{
+    return m_brushColor;
+}
+
+void Block::handleDraggable(qreal x){
+    m_width = x;
+    setRect(0,0,m_width,m_height); //intersection not checked while scaling the track
+    QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
+    m_frequencyText->setPos(textPos);
+}
 
 void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -48,10 +59,7 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
          emit onItemDrag(this);
 
         if(m_dragEnabled){
-            m_width = event->pos().x();
-            setRect(0,0,m_width,m_height); //intersection not checked while scaling the track
-            QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
-            m_frequencyText->setPos(textPos);
+            handleDraggable(event->pos().x());
         }else{
             int mouseY = event->pos().y();
             int mouseX = event->pos().x();

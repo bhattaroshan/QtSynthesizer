@@ -105,27 +105,84 @@ void MainWindow::onTrackDoubleClicked(int frequency,QColor color)
 void MainWindow::onTrackSingleClicked()
 {
     Block* currentTrack = dynamic_cast<Block*>(sender());
+    m_lastClickedTrack = currentTrack;
+
     QList<Block*> tracks = getAllTracks();
     for(auto track:tracks){
         if(track==currentTrack){
             track->setZValue(1);
             track->setOutline(true);
 
+            int frequency = track->getFrequency();
+            int time = track->boundingRect().width()*10;
+            QColor color = track->getColor();
+
             //add dockWidget settings for track
             QVBoxLayout *mainLayout = new QVBoxLayout();
 
+            QHBoxLayout *typeLayout = new QHBoxLayout();
+            QLabel *typeLabel = new QLabel("Type");
+            QComboBox *typeCombo = new QComboBox();
+            typeCombo->addItem("Sin Wave");
+            typeCombo->addItem("Triangluar Wave");
+            typeCombo->addItem("RAW Audio");
+            typeCombo->addItem("WAV Audio");
+            typeLayout->addWidget(typeLabel);
+            typeLayout->addWidget(typeCombo);
+
+
+            QHBoxLayout *transformLayout = new QHBoxLayout();
+            QLabel *transformXLabel = new QLabel("X");
+
+            if(m_transformXSpin!=nullptr) delete m_transformXSpin;
+            m_transformXSpin = new QSpinBox();
+            m_transformXSpin->setRange(0,100000);
+            m_transformXSpin->setValue(track->x());
+
+            auto transformXLambda = [=](){
+                track->setPos(m_transformXSpin->value(),track->y());
+                updateGraph();
+            };
+            connect(m_transformXSpin,&QSpinBox::valueChanged,this,transformXLambda);
+            connect(m_transformXSpin,&QSpinBox::editingFinished,this,transformXLambda);
+
+            transformLayout->addWidget(transformXLabel);
+            transformLayout->addWidget(m_transformXSpin);
+
             QHBoxLayout *timeLayout = new QHBoxLayout();
             QLabel *timeLabel = new QLabel("Time (ms)");
-            QSpinBox *timeSpin = new QSpinBox();
-            timeSpin->setRange(1,100000);
+
+            if(m_timeSpin!=nullptr) delete m_timeSpin;
+            m_timeSpin = new QSpinBox();
+            m_timeSpin->setRange(300,100000);
+            m_timeSpin->setValue(time);
+            auto timeLambda = [=](){
+                track->handleDraggable(m_timeSpin->value()/10);
+                updateGraph();
+            };
+            connect(m_timeSpin,&QSpinBox::valueChanged,this,timeLambda);
+            connect(m_timeSpin,&QSpinBox::editingFinished,this,timeLambda);
+
             timeLayout->addWidget(timeLabel);
-            timeLayout->addWidget(timeSpin);
+            timeLayout->addWidget(m_timeSpin);
 
             QHBoxLayout *frequencyLayout = new QHBoxLayout();
             QLabel *frequencyLabel = new QLabel("Frequency (Hz)");
             QSpinBox *frequencySpin = new QSpinBox();
             frequencySpin->setRange(1,20000);
-            frequencySpin->setValue(track->getFrequency());
+            frequencySpin->setValue(frequency);
+
+            auto frequencyLambda = [=](){
+                qreal value = frequencySpin->value();
+                if(track->getFrequency()!=value){
+                    track->setFrequency(value);
+                    updateGraph();
+                }
+            };
+
+            connect(frequencySpin,&QSpinBox::editingFinished,this,frequencyLambda);
+            connect(frequencySpin,&QSpinBox::valueChanged,this,frequencyLambda);
+
             frequencyLayout->addWidget(frequencyLabel);
             frequencyLayout->addWidget(frequencySpin);
 
@@ -153,15 +210,38 @@ void MainWindow::onTrackSingleClicked()
                                               "background: #101010;"
                                               "}"
                                               );
+            connect(colorBtn,&QPushButton::clicked,this,[=](){
+                QColor newColor = QColorDialog::getColor(color);
+                if(newColor.isValid()){
+                    track->setColor(newColor);
+                }
+            });
+
             colorLayout->addWidget(colorLabel);
             colorLayout->addWidget(colorBtn);
 
+            QHBoxLayout *deleteLayout = new QHBoxLayout();
+            QPushButton *deleteBtn = new QPushButton("Delete Track");
+            connect(deleteBtn,&QPushButton::clicked,this,[=](){
+                auto response = QMessageBox::warning(this,"Warning!!!","Are you sure you want to delete this track ?",QMessageBox::Ok|QMessageBox::Cancel);
+                if(response == QMessageBox::Ok){
+                    scene->removeItem(track);
+                    updateGraph();
+                    m_dockWidget->setWidget(nullptr);
+                }
+            });
+            deleteLayout->addWidget(deleteBtn);
+
+
             QSpacerItem *spacer = new QSpacerItem(0,200,QSizePolicy::Minimum,QSizePolicy::Expanding);
 
+            mainLayout->addLayout(typeLayout);
+            mainLayout->addLayout(transformLayout);
             mainLayout->addLayout(timeLayout);
             mainLayout->addLayout(frequencyLayout);
             mainLayout->addLayout(phaseLayout);
             mainLayout->addLayout(colorLayout);
+            mainLayout->addLayout(deleteLayout);
             mainLayout->addSpacerItem(spacer);
 
             QWidget *widget = new QWidget();
@@ -182,8 +262,7 @@ void MainWindow::onGraphicsViewMousePressed()
     for(auto track:tracks){
         track->setOutline(false);
     }
-    QWidget *widget = new QWidget();
-    m_dockWidget->setWidget(widget);
+    m_dockWidget->setWidget(nullptr);
     //disable all other settings and enable general settings
 }
 
@@ -240,6 +319,15 @@ QPair<qreal,qreal> MainWindow::resizeSlot(){
     qreal w = this->width();
     qreal h = this->height();
 
+    if(m_transformXSpin) {
+        m_transformXSpin->setValue(m_lastClickedTrack->x());
+    }
+
+    if(m_timeSpin){
+        qDebug()<<"I keep coming here";
+        m_timeSpin->setValue(m_lastClickedTrack->boundingRect().width()*10);
+    }
+
     QList<QGraphicsItem*> items = scene->items();
     for(auto item:items){
         qreal new_width = item->x()+item->boundingRect().width();
@@ -279,8 +367,6 @@ QPair<qreal,qreal> MainWindow::resizeSlot(){
             scene->addItem(bar);
         }
     }
-
-
 
     return {w+100,h+50};
 }

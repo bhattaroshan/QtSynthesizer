@@ -7,12 +7,6 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     setRenderHint(QPainter::Antialiasing);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     m_series = new QLineSeries();
-    //int length = coordinates.size();
-//    QVector<QPointF> v;
-//    for(int i=0;i<m_length;++i){
-//        v.push_back({(qreal)i,0});
-//    }
-//    m_series->append(v);
 
     m_chart = new QChart();
     m_chart->addSeries(m_series);
@@ -58,11 +52,14 @@ Graph::~Graph(){
 
 void Graph::update(QVector<QPointF> coordinates)
 {
+
     m_series->clear();
     m_series->blockSignals(true);
     m_series->append(coordinates.mid(0,coordinates.size()-1));
     m_series->blockSignals(false);
-    m_series->append(coordinates[coordinates.size()-1]);
+    if(coordinates.size()-1>0){
+        m_series->append(coordinates[coordinates.size()-1]);
+    }
 
  }
 
@@ -73,9 +70,7 @@ void Graph::wheelEvent(QWheelEvent *event)
     mFactor *= event->angleDelta().y() > 0 ? 0.5 : 2;
 
     QRectF rect = chart()->plotArea();
-    //QPointF c = chart()->plotArea().center();
     rect.setWidth(mFactor*rect.width());
-    //rect.moveCenter(c);
     chart()->zoomIn(rect);
 
     QChartView::wheelEvent(event);

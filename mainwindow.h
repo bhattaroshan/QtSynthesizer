@@ -56,5 +56,9 @@ private:
     QRectF m_barRect;
     SignalVector *signal;
     Graph *m_graph;
+
+
+    QSpinBox *m_transformXSpin = nullptr;
+    QSpinBox *m_timeSpin = nullptr;
 };
 #endif // MAINWINDOW_H
