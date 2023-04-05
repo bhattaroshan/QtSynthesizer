@@ -8,7 +8,7 @@ class Block:public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    Block(QGraphicsItem *parent=nullptr);
+    Block(int x,int y,QGraphicsItem *parent=nullptr);
     void getAllBlocksInfo(QList<QRectF> blockRect);
     int getFrequency();
 
@@ -29,14 +29,19 @@ protected:
     QPointF m_lastMouseClickPos = QPointF(0,0);
 
     int m_frequency = 220;
+    int m_height = 20;
+    int m_width = 50;
     QGraphicsTextItem *m_frequencyText;
 
 public slots:
     void setFrequency(int);
+    void setColor(QColor);
+    void setOutline(bool flag);
 
 signals:
     void onItemDrag(Block *item);
-    void onItemDoubleClicked(int);
+    void onItemDoubleClicked(int frequency,QColor color);
+    void onItemSingleClick();
     void trackUpdated();
 
 };

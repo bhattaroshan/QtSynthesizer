@@ -21,6 +21,9 @@ set(PROJECT_SOURCES
     graph.h graph.cpp
     signaldialog.h signaldialog.cpp
     signalvector.h signalvector.cpp
+    customgraphicsscene.h customgraphicsscene.cpp
+    customgraphicsview.h customgraphicsview.cpp
+    assets/assets.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

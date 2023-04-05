@@ -11,6 +11,8 @@
 #include "block.h"
 #include "signalvector.h"
 #include "graph.h"
+#include "customgraphicsscene.h"
+#include "customgraphicsview.h"
 
 
 class MainWindow : public QMainWindow
@@ -28,22 +30,30 @@ protected:
 
 public slots:
     QPair<qreal,qreal> resizeSlot();
-    void onOkayClicked();
+    void onAddTrackClicked();
     void onCancelClicked();
-    void onTrackDoubleClicked(int);
-    void setTrackFrequency(int currentFrequency, int lastFrequency);
+    void onTrackDoubleClicked(int frequency,QColor color);
+    void onTrackSingleClicked();
+    void setTrackProperties(int,int,QColor);
     void updateGraph();
     QList<Block*> getAllTracks();
+    void onGraphicsViewMousePressed();
 
 private:
-    QGraphicsScene *scene;
-    QGraphicsView *graphicsView;
+    CustomGraphicsScene *scene;
+    CustomGraphicsView *graphicsView;
+    //QGraphicsScene *scene;
+    //QGraphicsView *graphicsView;
 
     QWidget *window;
     QVBoxLayout *mainLayout;
 
+    QDockWidget *m_dockWidget;
+
     QVector<Block*> m_blocks;
+    Block *m_lastClickedTrack = nullptr;
     QVector<QRectF> m_graphBar;
+    QRectF m_barRect;
     SignalVector *signal;
     Graph *m_graph;
 };

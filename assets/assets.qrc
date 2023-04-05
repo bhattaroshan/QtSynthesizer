@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>color-picker.png</file>
+    </qresource>
+</RCC>

@@ -7,12 +7,20 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QPushButton>
+#include <QColorDialog>
+
+struct DialogProperties{
+    int currentFrequency;
+    int lastFrequency;
+    QColor color;
+};
 
 class SignalDialog:public QDialog
 {
     Q_OBJECT
 public:
-    SignalDialog(int defaultFrequency,QWidget *parent=nullptr);
+    SignalDialog(int defaultFrequency,QColor color, QWidget *parent=nullptr);
+
 
 protected:
     QVBoxLayout *mainLayout;
@@ -21,15 +29,23 @@ protected:
     QHBoxLayout *signalLayout;
     QLabel *signalLabel;
     QSpinBox *signalEdit;
+
+    QHBoxLayout *colorLayout;
+    QLabel *signalColor;
+    QPushButton *signalColorPickBtn;
+
     QPushButton *okButton;
     QPushButton *cancelButton;
     qreal m_previousValue = 0;
+    QColor m_color;
 
 private slots:
     void okClicked();
+    void cancelClicked();
+    void onColorPickerClicked();
 
 signals:
-    void dialogValues(int updatedFrequency, int lastFrequency);
+    void updateDialogProperties(int,int,QColor);
 };
 
 #endif // SIGNALDIALOG_H
