@@ -182,7 +182,50 @@ void Block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
-    menu.addAction("Note");
+    QMenu noteMenu("Note");
+    QAction *c4Action = noteMenu.addAction("C4");
+    QAction *d4Action = noteMenu.addAction("D4");
+    QAction *e4Action = noteMenu.addAction("E4");
+    QAction *f4Action = noteMenu.addAction("F4");
+    QAction *g4Action = noteMenu.addAction("G4");
+    QAction *a4Action = noteMenu.addAction("A4");
+    QAction *b4Action = noteMenu.addAction("B4");
+    QAction *c5Action = noteMenu.addAction("C5");
+
+    connect(c4Action,&QAction::triggered,this,[=](){
+        setFrequency(261);
+       emit trackUpdated();
+    });
+    connect(d4Action,&QAction::triggered,this,[=](){
+        setFrequency(293);
+       emit trackUpdated();
+    });
+    connect(e4Action,&QAction::triggered,this,[=](){
+        setFrequency(329);
+       emit trackUpdated();
+    });
+    connect(f4Action,&QAction::triggered,this,[=](){
+        setFrequency(349);
+       emit trackUpdated();
+    });
+    connect(g4Action,&QAction::triggered,this,[=](){
+        setFrequency(392);
+       emit trackUpdated();
+    });
+    connect(a4Action,&QAction::triggered,this,[=](){
+        setFrequency(440);
+       emit trackUpdated();
+    });
+    connect(b4Action,&QAction::triggered,this,[=](){
+        setFrequency(493);
+       emit trackUpdated();
+    });
+    connect(c5Action,&QAction::triggered,this,[=](){
+        setFrequency(523);
+       emit trackUpdated();
+    });
+
+    menu.addMenu(&noteMenu);
     menu.addAction("Copy");
     menu.addAction("Paste");
     menu.addAction("Delete");
