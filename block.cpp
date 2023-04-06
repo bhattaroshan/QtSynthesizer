@@ -4,8 +4,10 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 
-Block::Block(int x,int y,QGraphicsItem *parent)
-    :QGraphicsRectItem(parent){
+Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
+    :QGraphicsRectItem(parent),
+     m_frequency(frequency)
+{
 
     setFlags(ItemIsMovable);
 
@@ -180,6 +182,7 @@ void Block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
+    menu.addAction("Note");
     menu.addAction("Copy");
     menu.addAction("Paste");
     menu.addAction("Delete");

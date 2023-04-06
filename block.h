@@ -8,7 +8,7 @@ class Block:public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    Block(int x,int y,QGraphicsItem *parent=nullptr);
+    Block(int x,int y,int frequency=220,QGraphicsItem *parent=nullptr);
     void getAllBlocksInfo(QList<QRectF> blockRect);
     int getFrequency();
     QColor getColor();

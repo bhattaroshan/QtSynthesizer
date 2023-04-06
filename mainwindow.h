@@ -8,11 +8,17 @@
 #include <QSpacerItem>
 #include <QVBoxLayout>
 #include <signaldialog.h>
+
+#include <QAudio>
+#include <QAudioSink>
+#include <QBuffer>
+
 #include "block.h"
 #include "signalvector.h"
 #include "graph.h"
 #include "customgraphicsscene.h"
 #include "customgraphicsview.h"
+
 
 
 class MainWindow : public QMainWindow
@@ -31,6 +37,7 @@ protected:
 public slots:
     QPair<qreal,qreal> resizeSlot();
     void onAddTrackClicked();
+    void addTrack(int frequency);
     void onCancelClicked();
     void onTrackDoubleClicked(int frequency,QColor color);
     void onTrackSingleClicked();
@@ -60,5 +67,8 @@ private:
 
     QSpinBox *m_transformXSpin = nullptr;
     QSpinBox *m_timeSpin = nullptr;
+
+    QAudioSink *m_audio = nullptr;
+    QBuffer *m_buffer = nullptr;
 };
 #endif // MAINWINDOW_H

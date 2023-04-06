@@ -28,7 +28,31 @@ MainWindow::MainWindow(QWidget *parent)
     connect(btn1,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
     QPushButton *btn2 = new QPushButton(">");
     btn2->setFixedSize(30,40);
-    connect(btn2,&QPushButton::clicked,this,&MainWindow::onCancelClicked);
+
+    connect(btn2,&QPushButton::clicked,this,[=](){
+        QAudioFormat format;
+        format.setChannelCount(1);
+        format.setSampleRate(44100);
+        format.setSampleFormat(QAudioFormat::Float);
+        if(m_audio!=nullptr) delete m_audio;
+        m_audio = new QAudioSink(format);
+
+        if(m_buffer!=nullptr) delete m_buffer;
+        m_buffer = new QBuffer();
+
+        QVector<float> soundData;
+        QVector<QPointF> signalData = signal->getSignal();
+
+        for(int i=0;i<signalData.size();++i){
+            soundData.append(signalData[i].y());
+        }
+
+        m_buffer->setData(reinterpret_cast<const char*>(soundData.constData()),soundData.size()*sizeof(float));
+        m_buffer->open(QIODevice::ReadOnly);
+        m_audio->start(m_buffer);
+
+    });
+
     QPushButton *btn3 = new QPushButton("Test");
     buttonsLayout->addWidget(btn1);
     buttonsLayout->addWidget(btn2);
@@ -54,6 +78,11 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::onAddTrackClicked(){
+    addTrack(220);
+}
+
+void MainWindow::addTrack(int frequency)
+{
     QList<Block*> allTracks = getAllTracks();
     //get minimum y, get minimum farthest
     qreal minY = -1;
@@ -71,11 +100,11 @@ void MainWindow::onAddTrackClicked(){
 
     int blockX=0,blockY=20;
     if(minY>0 and maxFarthest>0){
-        blockX = maxFarthest-1;
+        blockX = maxFarthest;
         blockY = minY;
     }
 
-    Block *b = new Block(blockX,blockY);
+    Block *b = new Block(blockX,blockY,frequency);
     m_blocks.append(b); //keep track of all the tracks for future use
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
@@ -324,7 +353,6 @@ QPair<qreal,qreal> MainWindow::resizeSlot(){
     }
 
     if(m_timeSpin){
-        qDebug()<<"I keep coming here";
         m_timeSpin->setValue(m_lastClickedTrack->boundingRect().width()*10);
     }
 
