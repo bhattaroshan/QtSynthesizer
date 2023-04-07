@@ -1,15 +1,17 @@
 #include "block.h"
+#include "QtWidgets/qstyleoption.h"
 #include <QPen>
 #include <QtGui>
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
+#include <QStyle>
 
 Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
     :QGraphicsRectItem(parent),
      m_frequency(frequency)
 {
 
-    setFlags(ItemIsMovable);
+    setFlags(ItemIsMovable | ItemIsSelectable);
 
     m_brushColor = QColor(QRandomGenerator::global()->bounded(256),
                                         QRandomGenerator::global()->bounded(256),
@@ -183,6 +185,7 @@ void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
     QMenu noteMenu("Note");
+    noteMenu.setMinimumWidth(100);
     QAction *c4Action = noteMenu.addAction("C4");
     QAction *d4Action = noteMenu.addAction("D4");
     QAction *e4Action = noteMenu.addAction("E4");
@@ -233,6 +236,21 @@ void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     menu.exec(event->screenPos());
 }
 
+void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    qDebug()<<option->state;
+    painter->setBrush(m_brushColor);
+    if(option->state & QStyle::State_Selected){
+        QColor t = QColor(128,128,128);
+        painter->setBrush(t);
+        painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
+    }else{
+        painter->setPen(Qt::NoPen);
+    }
+    painter->drawRect(this->rect());
+}
+
+
 void Block::setFrequency(int frequency)
 {
     m_frequency = frequency;
@@ -245,15 +263,4 @@ void Block::setColor(QColor color)
 {
     m_brushColor = color;
     setBrush(QBrush(m_brushColor));
-}
-
-void Block::setOutline(bool flag)
-{
-    if(flag){
-        setRect(0,1,m_width-2,m_height-1);
-        setPen(QPen(QColor(255,255,255),2));
-    }else{
-        setRect(0,0,m_width,m_height);
-        setPen(Qt::NoPen);
-    }
 }

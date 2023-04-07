@@ -21,6 +21,8 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+    void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
     QList<QGraphicsRectItem*> getAllTracks(QRectF rect);
 
     QColor m_brushColor;
@@ -38,7 +40,6 @@ protected:
 public slots:
     void setFrequency(int);
     void setColor(QColor);
-    void setOutline(bool flag);
 
 signals:
     void onItemDrag(Block *item);

@@ -21,6 +21,19 @@ MainWindow::MainWindow(QWidget *parent)
     scene->setSceneRect(0,0,this->width(),this->height());
 
     connect(graphicsView,&CustomGraphicsView::onMousePress,this,&MainWindow::onGraphicsViewMousePressed);
+    connect(scene,&CustomGraphicsScene::selectionChanged,this,[=](){
+        qDebug()<<"selection activated";
+        QList<QGraphicsItem*> selectedItems = scene->selectedItems();
+        qDebug()<<"total items = "<<selectedItems.size();
+        QVector<Block*> blocks;
+        for(auto item:selectedItems){
+            Block *b = dynamic_cast<Block*>(item);
+            if(b){
+                blocks.append(b);
+            }
+        }
+        qDebug()<<"rect items = "<<blocks.size();
+    });
 
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
@@ -55,9 +68,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     QPushButton *btn3 = new QPushButton("Test");
     buttonsLayout->addWidget(btn1);
+    buttonsLayout->addSpacing(100);
     buttonsLayout->addWidget(btn2);
     buttonsLayout->addWidget(btn3);
-
 
     m_graph = new Graph(signal->getSignal());
 
@@ -140,7 +153,7 @@ void MainWindow::onTrackSingleClicked()
     for(auto track:tracks){
         if(track==currentTrack){
             track->setZValue(1);
-            track->setOutline(true);
+            //track->setOutline(true);
 
             int frequency = track->getFrequency();
             int time = track->boundingRect().width()*10;
@@ -279,7 +292,7 @@ void MainWindow::onTrackSingleClicked()
 
         }else{
             track->setZValue(0);
-            track->setOutline(false);
+            //track->setOutline(false);
         }
     }
 
@@ -287,10 +300,6 @@ void MainWindow::onTrackSingleClicked()
 
 void MainWindow::onGraphicsViewMousePressed()
 {
-    QList<Block*> tracks = getAllTracks();
-    for(auto track:tracks){
-        track->setOutline(false);
-    }
     m_dockWidget->setWidget(nullptr);
     //disable all other settings and enable general settings
 }
