@@ -12,6 +12,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    //resize(300,200);
     signal = new SignalVector();
 
     scene = new CustomGraphicsScene();
@@ -21,19 +22,20 @@ MainWindow::MainWindow(QWidget *parent)
     scene->setSceneRect(0,0,this->width(),this->height());
 
     connect(graphicsView,&CustomGraphicsView::onMousePress,this,&MainWindow::onGraphicsViewMousePressed);
-    connect(scene,&CustomGraphicsScene::selectionChanged,this,[=](){
-        qDebug()<<"selection activated";
-        QList<QGraphicsItem*> selectedItems = scene->selectedItems();
-        qDebug()<<"total items = "<<selectedItems.size();
-        QVector<Block*> blocks;
-        for(auto item:selectedItems){
-            Block *b = dynamic_cast<Block*>(item);
-            if(b){
-                blocks.append(b);
-            }
-        }
-        qDebug()<<"rect items = "<<blocks.size();
-    });
+    connect(scene,&CustomGraphicsScene::selectionChanged,this,&MainWindow::onTrackSelected);
+//    connect(scene,&CustomGraphicsScene::selectionChanged,this,[=](){
+//        qDebug()<<"selection activated";
+//        QList<QGraphicsItem*> selectedItems = scene->selectedItems();
+//        qDebug()<<"total items = "<<selectedItems.size();
+//        QVector<Block*> blocks;
+//        for(auto item:selectedItems){
+//            Block *b = dynamic_cast<Block*>(item);
+//            if(b){
+//                blocks.append(b);
+//            }
+//        }
+//        qDebug()<<"rect items = "<<blocks.size();
+//    });
 
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
@@ -88,6 +90,20 @@ MainWindow::MainWindow(QWidget *parent)
     window = new QWidget();
     window->setLayout(mainLayout);
     setCentralWidget(window);
+}
+
+void MainWindow::onTrackSelected(){
+    QList<QGraphicsItem*> selectedItems = scene->selectedItems();
+
+    for(auto item:selectedItems){
+        Block *block = dynamic_cast<Block*>(item);
+        if(block){
+            m_selectedTracks.append(block);
+        }
+    }
+
+
+    //blocks list contains all the selected tracks, movement can be triggered from mousemove event
 }
 
 void MainWindow::onAddTrackClicked(){
@@ -292,7 +308,6 @@ void MainWindow::onTrackSingleClicked()
 
         }else{
             track->setZValue(0);
-            //track->setOutline(false);
         }
     }
 

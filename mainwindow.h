@@ -45,6 +45,7 @@ public slots:
     void updateGraph();
     QList<Block*> getAllTracks();
     void onGraphicsViewMousePressed();
+    void onTrackSelected();
 
 private:
     CustomGraphicsScene *scene;
@@ -70,5 +71,7 @@ private:
 
     QAudioSink *m_audio = nullptr;
     QBuffer *m_buffer = nullptr;
+
+    QList<Block*> m_selectedTracks;
 };
 #endif // MAINWINDOW_H

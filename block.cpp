@@ -65,7 +65,7 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         if(m_dragEnabled){
             handleDraggable(event->pos().x());
         }else{
-            int mouseY = event->pos().y();
+/*            int mouseY = event->pos().y();
             int mouseX = event->pos().x();
             int y = this->y();
             int x = this->x()+event->pos().x()-m_lastMouseClickPos.x();
@@ -118,8 +118,8 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             }else{
                 x = 0;
             }
-        }
-            setPos(x,y);
+        }*/
+        //    setPos(x,y);
         }
     }
 
@@ -238,7 +238,7 @@ void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    qDebug()<<option->state;
+    //qDebug()<<option->state;
     painter->setBrush(m_brushColor);
     if(option->state & QStyle::State_Selected){
         QColor t = QColor(128,128,128);
