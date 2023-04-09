@@ -1,5 +1,5 @@
 #include "customgraphicsview.h"
-#include "block.h"
+#include <QMessageBox>
 
 
 CustomGraphicsView::CustomGraphicsView(QWidget *parent)
@@ -13,9 +13,25 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
     emit onMousePress();
 
     if(event->button()==Qt::LeftButton) {
-        m_leftMousePressed = true;
-        m_lastMousePos = event->pos();
+        m_lastMouseMovePos = event->pos();
         m_lastMousePressPos = event->pos();
+
+        QGraphicsItem *clickedItem = scene()->itemAt(event->pos(),QTransform());
+        Block *block = dynamic_cast<Block*>(clickedItem);
+        if(block){
+            m_lastPressedBlock = block;
+            qreal x = block->pos().x();
+            qreal width = block->boundingRect().width();
+
+            if(x+width-event->pos().x()<=5){
+                m_trackMoveMode = TRACK_SCALE_MODE;
+            }else{
+                m_trackMoveMode = TRACK_MOVE_MODE;
+            }
+        }else{
+            m_trackMoveMode = TRACK_IDLE_MODE;
+        }
+
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -24,57 +40,72 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
 void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton){
-        m_leftMousePressed = false;
-        m_draggingZone = false;
-        m_allowMovement = false;
-
+        m_trackMoveMode = TRACK_IDLE_MODE;
     }
     QGraphicsView::mouseReleaseEvent(event);
 }
 
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
-    QList<QGraphicsItem*> selectedItems = scene()->selectedItems();
-    QGraphicsItem *it = scene()->mouseGrabberItem();
-    Block *mouseGrabbedItem = dynamic_cast<Block*>(it);
 
-    if(mouseGrabbedItem and m_leftMousePressed) {
-        QPointF trackEndPos = mouseGrabbedItem->pos()+
-                              QPointF(mouseGrabbedItem->boundingRect().width(),mouseGrabbedItem->boundingRect().height());
-
-        if(trackEndPos.x()-event->pos().x()>5 or m_allowMovement){
-            m_allowMovement = true;
-            for(auto item:selectedItems){
-               Block *block = dynamic_cast<Block*>(item);
-               if(block){
-                   block->setPos(block->pos()+event->pos()-m_lastMousePos);
-               }
+    if(m_trackMoveMode == TRACK_MOVE_MODE){
+        QList<Block*> blocks = getSelectedBlocks();
+        for(auto block:blocks){
+            int height = block->boundingRect().height();
+            int clickY = m_lastMousePressPos.y();
+            int y = block->y();
+            int dist = event->pos().y()-clickY;
+            if(qAbs(dist)>=20){
+                m_lastMousePressPos = event->pos();
+                y += (dist<0)?-20:20;
             }
 
-        }else{ //dragging enabled
+
+            QPointF itemLocation = QPointF(block->x()+event->pos().x()-m_lastMouseMovePos.x(),y);
+            block->setPos(itemLocation);
+        }
+    }else if(m_trackMoveMode == TRACK_SCALE_MODE){
+        Block* sBlock = m_lastPressedBlock; //only grab one selected block even if multiple tracks are selected
+        sBlock->setRect(0,0,sBlock->boundingRect().width()+event->pos().x()-m_lastMouseMovePos.x(),sBlock->boundingRect().height());
+    }
+
+    m_lastMouseMovePos = event->pos();
+
+    return QGraphicsView::mouseMoveEvent(event);
+}
+
+void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
+{
+
+   if(event->key() == Qt::Key_Backspace){
+       QList<Block*> blocks = getSelectedBlocks();
+       if(blocks.size()<=0) return; //do nothing if non of the items are selected
+       QString msg = QString::number(blocks.size())+ " item";
+       if(blocks.size()>1){
+           msg +="s";
+       }
+
+       QMessageBox::StandardButton ret = QMessageBox::warning(nullptr,"Delete",QString("Are you sure you want to delete %1").arg(msg),QMessageBox::Yes|QMessageBox::No);
+       if(ret == QMessageBox::No) return; //deleting item not confirmed
+
+       for(auto block:blocks){
+           scene()->removeItem(block);
+       }
+   }
+
+   return QGraphicsView::keyPressEvent(event);
+}
+
+QList<Block *> CustomGraphicsView::getSelectedBlocks()
+{
+    QList<QGraphicsItem *> items = scene()->selectedItems();
+    QList<Block*> blocks;
+
+    for(auto item:items){
+        Block* block = dynamic_cast<Block*>(item);
+        if(block){
+            blocks.append(block);
         }
     }
-
-//    if(mouseGrabbedItem and m_leftMousePressed){
-//        QPointF trackEndPos = mouseGrabbedItem->pos()+
-//                              QPointF(mouseGrabbedItem->boundingRect().width(),mouseGrabbedItem->boundingRect().height());
-
-//        if(trackEndPos.x()-event->pos().x()<=5){
-//            qDebug()<<"clicked for resize";
-//        }else{
-//            for(auto item:selectedItems){
-//                Block *block = dynamic_cast<Block*>(item);
-//                if(block){
-//                    block->setPos(block->pos()+event->pos()-m_lastMousePos);
-//                }
-//            }
-//        }
-//    }
-
-
-    if(m_leftMousePressed){
-        m_lastMousePos = event->pos();
-    }
-
-    QGraphicsView::mouseMoveEvent(event);
+    return blocks;
 }

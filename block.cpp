@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include <QStyle>
+#include <QApplication>
 
 Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
     :QGraphicsRectItem(parent),
@@ -22,14 +23,14 @@ Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
     setRect(0,0,m_width,m_height);
     setPos(x,y);
 
-    m_frequencyText = new QGraphicsTextItem(QString::number(m_frequency),this);
-    m_frequencyText->setDefaultTextColor(QColor(255,255,255));
-    m_frequencyText->setTextInteractionFlags(Qt::NoTextInteraction);
-    m_frequencyText->setFlag(QGraphicsItem::ItemIsSelectable,false);
-    m_frequencyText->setFlag(QGraphicsItem::ItemIsFocusable,false);
+    //m_frequencyText = new QGraphicsTextItem(QString::number(m_frequency),this);
+    //m_frequencyText->setDefaultTextColor(QColor(255,255,255));
+    //m_frequencyText->setTextInteractionFlags(Qt::NoTextInteraction);
+    //m_frequencyText->setFlag(QGraphicsItem::ItemIsSelectable,false);
+    //m_frequencyText->setFlag(QGraphicsItem::ItemIsFocusable,false);
 
-    QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
-    m_frequencyText->setPos(textPos);
+    //QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
+    //m_frequencyText->setPos(textPos);
 
     //setPos(QRandomGenerator::global()->bounded(400),QRandomGenerator::global()->bounded(400));
     setAcceptHoverEvents(true);
@@ -53,8 +54,8 @@ QColor Block::getColor()
 void Block::handleDraggable(qreal x){
     m_width = x;
     setRect(0,0,m_width,m_height); //intersection not checked while scaling the track
-    QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
-    m_frequencyText->setPos(textPos);
+    //QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
+    //m_frequencyText->setPos(textPos);
 }
 
 void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -63,7 +64,7 @@ void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
          emit onItemDrag(this);
 
         if(m_dragEnabled){
-            handleDraggable(event->pos().x());
+            //handleDraggable(event->pos().x());
         }else{
 /*            int mouseY = event->pos().y();
             int mouseX = event->pos().x();
@@ -248,15 +249,22 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->setPen(Qt::NoPen);
     }
     painter->drawRect(this->rect());
+
+    //QFont font = QApplication::font();
+    //QFontMetrics metrics(font);
+    //int width = metrics.horizontalAdvance("220");
+    //int height = metrics.height();
+    //QPointF center = QPointF(this->rect().center().x()/2-width/2,this->rect().center().y()/2-height/2);
+    //painter->drawText(QPointF(0,0),"220");
 }
 
 
 void Block::setFrequency(int frequency)
 {
     m_frequency = frequency;
-    m_frequencyText->setPlainText(QString::number(m_frequency));
-    QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
-    m_frequencyText->setPos(textPos);
+    //m_frequencyText->setPlainText(QString::number(m_frequency));
+    //QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
+    //m_frequencyText->setPos(textPos);
 }
 
 void Block::setColor(QColor color)

@@ -3,6 +3,11 @@
 
 #include<QtGui>
 #include<QGraphicsView>
+#include "block.h"
+
+#define TRACK_IDLE_MODE  0
+#define TRACK_MOVE_MODE  1
+#define TRACK_SCALE_MODE 2
 
 class CustomGraphicsView:public QGraphicsView
 {
@@ -13,12 +18,14 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
-    QPointF m_lastMousePos;
+    QList<Block *> getSelectedBlocks();
+
+    QPointF m_lastMouseMovePos;
     QPointF m_lastMousePressPos;
-    bool m_leftMousePressed = false;
-    bool m_draggingZone = false;
-    bool m_allowMovement = false;
+    int m_trackMoveMode = 0;
+    Block *m_lastPressedBlock = nullptr;
 
 signals:
     void onMousePress();
