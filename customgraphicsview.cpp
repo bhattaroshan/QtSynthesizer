@@ -16,7 +16,7 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
         m_lastMouseMovePos = mapToScene(event->pos());
         m_lastMousePressPos = mapToScene(event->pos());
 
-        QGraphicsItem *clickedItem = scene()->itemAt(m_lastMousePressPos,QTransform());
+        QGraphicsItem *clickedItem = this->itemAt(event->pos());
         Block *block = dynamic_cast<Block*>(clickedItem);
         if(block){
             m_lastPressedBlock = block;
@@ -53,14 +53,35 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
         QList<Block*> blocks = getSelectedBlocks();
         int distance = currentMousePosition.y()-m_lastMousePressPos.y();
         for(auto block:blocks){
-            int x = block->pos().x()+currentMousePosition.x()-m_lastMouseMovePos.x();
+            int x = block->pos().x();
+            //x += currentMousePosition.x()-m_lastMouseMovePos.x();
             int y = block->pos().y();
+            int height = block->boundingRect().height();
 
-            if(qAbs(distance)>=20){
+            //QList<QGraphicsItem*> collidingItems = block->collidingItems();
+            QRectF rectTopMask = QRectF(block->x(),block->y()-1,block->boundingRect().width(),1);
+
+            QList<QGraphicsItem*> collidingItems = scene()->items(rectTopMask);
+            QList<Block*> collidingBlocks;
+            for(auto cItem:collidingItems){
+                Block *cBlock = dynamic_cast<Block*>(cItem);
+                if(cBlock){
+                    collidingBlocks.append(cBlock);
+                }
+            }
+
+            qDebug()<<collidingBlocks.size();
+
+            if(collidingBlocks.size()==0){ //there are colliding blocks here
+                x += currentMousePosition.x()-m_lastMouseMovePos.x();
+            }
+
+
+            if(qAbs(distance)>=height and collidingBlocks.size()==0){ //stepped y movement
                 if(currentMousePosition.y()>m_lastMouseMovePos.y()){
-                    y+=20;
+                    y+=height;
                 }else{
-                    y -= 20;
+                    y -= height;
                 }
                 m_lastMousePressPos = mapToScene(event->pos());
             }
