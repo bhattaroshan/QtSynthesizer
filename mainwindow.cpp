@@ -342,7 +342,7 @@ void MainWindow::updateGraph(){
         signal->addSignalToContainer(sig,index);
     }
     signal->normalizeSignal();
-    m_graph->update(signal->getSignal());
+    //m_graph->update(signal->getSignal());
 }
 
 void MainWindow::setTrackProperties(int currentFrequency, int lastFrequency, QColor color)

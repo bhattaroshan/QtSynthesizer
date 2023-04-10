@@ -13,17 +13,17 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
     emit onMousePress();
 
     if(event->button()==Qt::LeftButton) {
-        m_lastMouseMovePos = event->pos();
-        m_lastMousePressPos = event->pos();
+        m_lastMouseMovePos = mapToScene(event->pos());
+        m_lastMousePressPos = mapToScene(event->pos());
 
-        QGraphicsItem *clickedItem = scene()->itemAt(mapToScene(event->pos()),QTransform());
+        QGraphicsItem *clickedItem = scene()->itemAt(m_lastMousePressPos,QTransform());
         Block *block = dynamic_cast<Block*>(clickedItem);
         if(block){
             m_lastPressedBlock = block;
             qreal x = block->pos().x();
             qreal width = block->boundingRect().width();
 
-            if(x+width-event->pos().x()<=5){
+            if(x+width-m_lastMousePressPos.x()<=5){
                 m_trackMoveMode = TRACK_SCALE_MODE;
             }else{
                 m_trackMoveMode = TRACK_MOVE_MODE;
@@ -47,37 +47,30 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
+    QPointF currentMousePosition = mapToScene(event->pos());
+
     if(m_trackMoveMode == TRACK_MOVE_MODE){
-        qDebug()<<"may be I'm not triggered";
         QList<Block*> blocks = getSelectedBlocks();
+        int distance = currentMousePosition.y()-m_lastMousePressPos.y();
         for(auto block:blocks){
-            int height = block->boundingRect().height();
-            int clickY = m_lastMousePressPos.y();
-            int y = block->y();
-            int dist = event->pos().y()-clickY;
-            if(qAbs(dist)>=20){
-                //m_lastMousePressPos = event->pos();
-                y += (dist<0)?-20:20;
+            int x = block->pos().x()+currentMousePosition.x()-m_lastMouseMovePos.x();
+            int y = block->pos().y();
+
+            if(qAbs(distance)>=20){
+                if(currentMousePosition.y()>m_lastMouseMovePos.y()){
+                    y+=20;
+                }else{
+                    y -= 20;
+                }
+                m_lastMousePressPos = mapToScene(event->pos());
             }
-
-            QPointF itemLocation = block->pos()+QPointF(event->pos()-m_lastMouseMovePos);//QPointF(block->x()+event->pos().x()-m_lastMouseMovePos.x(),y);
-            qreal deltaY = event->pos().y()-m_lastMousePressPos.y();
-
-            //qDebug()<<m_lastMousePressPos<<"-------"<<event->pos();
-            qreal diff = qAbs(m_lastMousePressPos.y()-event->pos().y());
-            int unit = diff/20;
-            //qDebug()<<"unit = "<<unit*20;
-            int actual = itemLocation.y()+unit*20;
-            qDebug()<<actual;
-            itemLocation.setY(itemLocation.y()+unit*20);
-            block->setPos(itemLocation);
+            block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
-        Block* sBlock = m_lastPressedBlock; //only grab one selected block even if multiple tracks are selected
-        sBlock->setRect(0,0,sBlock->boundingRect().width()+event->pos().x()-m_lastMouseMovePos.x(),sBlock->boundingRect().height());
+        m_lastPressedBlock->setRect(0,0,m_lastPressedBlock->boundingRect().width()+currentMousePosition.x()-m_lastMouseMovePos.x(),m_lastPressedBlock->boundingRect().height());
     }
 
-    m_lastMouseMovePos = event->pos();
+    m_lastMouseMovePos = mapToScene(event->pos());
 
     return QGraphicsView::mouseMoveEvent(event);
 }
