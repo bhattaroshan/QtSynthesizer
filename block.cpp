@@ -12,7 +12,7 @@ Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
      m_frequency(frequency)
 {
 
-    setFlags(ItemIsMovable | ItemIsSelectable);
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
 
     m_brushColor = QColor(QRandomGenerator::global()->bounded(256),
                                         QRandomGenerator::global()->bounded(256),
@@ -23,16 +23,6 @@ Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
     setRect(0,0,m_width,m_height);
     setPos(x,y);
 
-    //m_frequencyText = new QGraphicsTextItem(QString::number(m_frequency),this);
-    //m_frequencyText->setDefaultTextColor(QColor(255,255,255));
-    //m_frequencyText->setTextInteractionFlags(Qt::NoTextInteraction);
-    //m_frequencyText->setFlag(QGraphicsItem::ItemIsSelectable,false);
-    //m_frequencyText->setFlag(QGraphicsItem::ItemIsFocusable,false);
-
-    //QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
-    //m_frequencyText->setPos(textPos);
-
-    //setPos(QRandomGenerator::global()->bounded(400),QRandomGenerator::global()->bounded(400));
     setAcceptHoverEvents(true);
 }
 
@@ -51,93 +41,12 @@ QColor Block::getColor()
     return m_brushColor;
 }
 
-void Block::handleDraggable(qreal x){
-    m_width = x;
-    setRect(0,0,m_width,m_height); //intersection not checked while scaling the track
-    //QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
-    //m_frequencyText->setPos(textPos);
-}
-
 void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->buttons() & Qt::LeftButton){
          emit onItemDrag(this);
+     }
 
-        if(m_dragEnabled){
-            //handleDraggable(event->pos().x());
-        }else{
-/*            int mouseY = event->pos().y();
-            int mouseX = event->pos().x();
-            int y = this->y();
-            int x = this->x()+event->pos().x()-m_lastMouseClickPos.x();
-            QRectF rect = sceneBoundingRect()	;
-
-            if(mouseY-m_lastMouseClickPos.y()> m_height){
-                rect.setTop(rect.y()+m_height);
-                rect.setBottom(rect.bottom()+m_height);
-                rect.setRect(rect.right(),rect.top(),1,m_height);
-                QList<QGraphicsRectItem*> intersectingRectItems = getAllTracks(rect);
-
-                if(intersectingRectItems.length()<1){
-                    y+=m_height;
-                }
-            }
-            else if(m_lastMouseClickPos.y()-mouseY>m_height){
-                rect.setTop(rect.y()-m_height);
-                rect.setBottom(rect.bottom()-m_height);
-                rect.setRect(rect.right(),rect.top(),1,m_height);
-                QList<QGraphicsRectItem*> intersectingRectItems = getAllTracks(rect);
-
-                if(intersectingRectItems.length()<1 and y>=m_height*2){
-                    y-=m_height;
-                }
-        }
-
-
-        rect = sceneBoundingRect();
-        if(mouseX>m_lastMouseClickPos.x()){ //dragging item to the right
-            rect.setRect(rect.right(),rect.top(),1,20);
-            QList<QGraphicsRectItem*> intersectingRectItems = getAllTracks(rect);
-
-            if(intersectingRectItems.length()>=1){
-                //considering there can only one intersecting item
-                QRectF iRect = intersectingRectItems[0]->sceneBoundingRect();
-                x = iRect.left()-this->rect().width();
-            }
-
-        }else{ //dragging item to the left
-            if(rect.left()-1>0){
-                rect.setRect(rect.left()-1,rect.top(),1,20);
-                QList<QGraphicsRectItem*> intersectingRectItems = getAllTracks(rect);
-
-                if(intersectingRectItems.length()>=1){
-                //considering there can only one intersecting item
-                    QRectF iRect = intersectingRectItems[0]->sceneBoundingRect();
-                    x = iRect.left()+iRect.width();
-                }
-
-            }else{
-                x = 0;
-            }
-        }*/
-        //    setPos(x,y);
-        }
-    }
-
-}
-
-QList<QGraphicsRectItem*> Block::getAllTracks(QRectF rect)
-{
-    QList<QGraphicsItem*> intersectingItems = scene()->items(rect,Qt::IntersectsItemBoundingRect);
-    QList<QGraphicsRectItem*> intersectingRectItems;
-
-    for(auto graphicsItem:intersectingItems){
-        QGraphicsRectItem *rectItem = dynamic_cast<QGraphicsRectItem*>(graphicsItem);
-        if(rectItem){
-            intersectingRectItems.append(rectItem);
-        }
-    }
-    return intersectingRectItems;
 }
 
 void Block::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
@@ -168,7 +77,6 @@ void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Block::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
    if(event->button()==Qt::LeftButton){
-       m_dragEnabled = false;
        emit trackUpdated();
    }
    QGraphicsItem::mouseReleaseEvent(event);
@@ -239,7 +147,6 @@ void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    //qDebug()<<option->state;
     painter->setBrush(m_brushColor);
     if(option->state & QStyle::State_Selected){
         QColor t = QColor(128,128,128);
@@ -250,21 +157,20 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     }
     painter->drawRect(this->rect());
 
-    //QFont font = QApplication::font();
-    //QFontMetrics metrics(font);
-    //int width = metrics.horizontalAdvance("220");
-    //int height = metrics.height();
-    //QPointF center = QPointF(this->rect().center().x()/2-width/2,this->rect().center().y()/2-height/2);
-    //painter->drawText(QPointF(0,0),"220");
+    QFont font = QApplication::font();
+    QFontMetrics metrics(font);
+    int width = metrics.horizontalAdvance(QString::number(m_frequency));
+    int height = metrics.height();
+    painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
+    painter->drawText(QPointF(this->rect().width()/2-width/2,this->rect().height()-height/4),QString::number(m_frequency));
+
 }
 
 
 void Block::setFrequency(int frequency)
 {
     m_frequency = frequency;
-    //m_frequencyText->setPlainText(QString::number(m_frequency));
-    //QPointF textPos = this->boundingRect().center() - m_frequencyText->boundingRect().center();
-    //m_frequencyText->setPos(textPos);
+    update();
 }
 
 void Block::setColor(QColor color)

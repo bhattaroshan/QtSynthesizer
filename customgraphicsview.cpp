@@ -102,7 +102,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                         x += currentMousePosition.x()-m_lastMouseMovePos.x();
                     }else{ //collision detected, reposition the block in case it has gone too far!!!
                         Block *collidedBlock = collides[0]; //assuming it can only collide with one block at at time in one direction
-                        //x = collidedBlock->x()+collidedBlock->sceneBoundingRect().width();
+                        x = collidedBlock->x()+collidedBlock->sceneBoundingRect().width();
                     }
                     qDebug()<<"dragging to the left";
                 }else if(delta.x()>0){ //dragging to the right
@@ -115,7 +115,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                         qDebug()<<"I did have a collision here";
                         Block *collidedBlock = collides[0]; //assuming it can only collide with one block at at time in one direction
                         qDebug()<<(QGraphicsItem*)(collidedBlock);
-                        //x = collidedBlock->x()-block->sceneBoundingRect().width();
+                        x = collidedBlock->x()-block->sceneBoundingRect().width();
                     }
                     qDebug()<<"dragging to the right";
                 }

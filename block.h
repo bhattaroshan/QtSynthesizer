@@ -12,7 +12,6 @@ public:
     void getAllBlocksInfo(QList<QRectF> blockRect);
     int getFrequency();
     QColor getColor();
-    void handleDraggable(qreal);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
@@ -22,8 +21,6 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
     void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
-    QList<QGraphicsRectItem*> getAllTracks(QRectF rect);
 
     QColor m_brushColor;
 

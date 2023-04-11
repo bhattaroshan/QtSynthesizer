@@ -215,7 +215,7 @@ void MainWindow::onTrackSingleClicked()
             m_timeSpin->setRange(300,100000);
             m_timeSpin->setValue(time);
             auto timeLambda = [=](){
-                track->handleDraggable(m_timeSpin->value()/10);
+                //track->handleDraggable(m_timeSpin->value()/10);
                 updateGraph();
             };
             connect(m_timeSpin,&QSpinBox::valueChanged,this,timeLambda);
