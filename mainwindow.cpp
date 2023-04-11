@@ -93,6 +93,19 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(window);
 }
 
+QColor MainWindow::setBrushFromFrequency(int frequency)
+{
+    if(!m_colorFrequencyMap.contains(frequency)){
+        QRandomGenerator red = QRandomGenerator::securelySeeded();
+        int redInt = red.bounded(50,201);
+        QRandomGenerator green = QRandomGenerator::securelySeeded();
+        int greenInt = green.bounded(50,201);
+        m_colorFrequencyMap[frequency] = QColor(redInt,greenInt,50);
+    }
+
+    return m_colorFrequencyMap[frequency];
+}
+
 void MainWindow::onTrackSelected(){
     QList<QGraphicsItem*> selectedItems = scene->selectedItems();
 
@@ -135,6 +148,7 @@ void MainWindow::addTrack(int frequency)
     }
 
     Block *b = new Block(blockX,blockY,frequency);
+    b->setColor(setBrushFromFrequency(frequency));
     m_blocks.append(b); //keep track of all the tracks for future use
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
@@ -234,6 +248,7 @@ void MainWindow::onTrackSingleClicked()
                 qreal value = frequencySpin->value();
                 if(track->getFrequency()!=value){
                     track->setFrequency(value);
+                    track->setColor(setBrushFromFrequency(value));
                     updateGraph();
                 }
             };

@@ -39,6 +39,7 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton){
         if(m_trackMoveMode != TRACK_IDLE_MODE){
+            setCursor(Qt::ArrowCursor);
             emit viewUpdated(); //only emit if there are any changes
         }
         m_trackMoveMode = TRACK_IDLE_MODE;
@@ -114,7 +115,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                         x += currentMousePosition.x()-m_lastMouseMovePos.x();
                     }else{ //collision detected, reposition the block in case it has gone too far!!!
                         Block *collidedBlock = collides[0]; //assuming it can only collide with one block at at time in one direction
-                        qDebug()<<(QGraphicsItem*)(collidedBlock);
                         x = collidedBlock->x()-block->sceneBoundingRect().width();
                     }
                 }
@@ -129,7 +129,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                         m_lastMousePressPos = QPointF(m_lastMousePressPos.x(),mapToScene(event->pos()).y());
                     }
                 }else if(delta.y()>0){//dragging down
-                    qDebug()<<"distance = "<<distance;
                     QRectF rect = createRectToBottom(block);
                     QList<Block*> collides = getCollidingItems(block,rect);
                     if(qAbs(distance)>=height and !collides.size()){
@@ -143,7 +142,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
-        qDebug()<<"I was called at scale as well";
         m_lastPressedBlock->setRect(0,
                                     0,
                                     m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()-m_lastMouseMovePos.x(),
@@ -172,6 +170,7 @@ void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
        for(auto block:blocks){
            scene()->removeItem(block);
        }
+       emit viewUpdated();
    }
 
    return QGraphicsView::keyPressEvent(event);

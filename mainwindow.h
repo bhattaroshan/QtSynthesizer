@@ -34,6 +34,9 @@ protected:
     QObject *dialogAssociatedToTrack;
     SignalDialog *signalDialog = nullptr;
 
+    QColor setBrushFromFrequency(int frequency);
+    QMap<int,QColor> m_colorFrequencyMap;
+
 public slots:
     QPair<qreal,qreal> resizeSlot();
     void onAddTrackClicked();

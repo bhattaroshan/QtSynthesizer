@@ -12,17 +12,13 @@ Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
      m_frequency(frequency)
 {
 
-    setFlags(ItemIsSelectable | ItemIsFocusable);
+    setFlags(ItemIsSelectable);
 
-    m_brushColor = QColor(QRandomGenerator::global()->bounded(256),
-                                        QRandomGenerator::global()->bounded(256),
-                                        QRandomGenerator::global()->bounded(256));
 
     setPen(Qt::NoPen);
     setBrush(m_brushColor);
     setRect(0,0,m_width,m_height);
     setPos(x,y);
-
     setAcceptHoverEvents(true);
 }
 
@@ -118,11 +114,11 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 {
     painter->setBrush(m_brushColor);
     if(option->state & QStyle::State_Selected){
-        QColor t = QColor(128,128,128);
+        QColor t = QColor(0,100,150);
         painter->setBrush(t);
-        painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
+        painter->setPen(QPen(QColor(128,128,128),1,Qt::SolidLine));
     }else{
-        painter->setPen(Qt::NoPen);
+        painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
     }
     painter->drawRect(this->rect());
 
@@ -135,7 +131,6 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
 }
 
-
 void Block::setFrequency(int frequency)
 {
     m_frequency = frequency;
@@ -145,5 +140,5 @@ void Block::setFrequency(int frequency)
 void Block::setColor(QColor color)
 {
     m_brushColor = color;
-    setBrush(QBrush(m_brushColor));
+    update();
 }

@@ -19,6 +19,8 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
     void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
+    void setBrushFromFrequency(int frequency);
+
     QColor m_brushColor;
 
     bool m_dragEnabled = false;
@@ -30,6 +32,7 @@ protected:
     int m_height = 20;
     int m_width = 50;
     QGraphicsTextItem *m_frequencyText;
+
 
 public slots:
     void setFrequency(int);
