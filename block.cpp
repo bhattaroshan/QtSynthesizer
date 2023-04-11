@@ -12,7 +12,7 @@ Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
      m_frequency(frequency)
 {
 
-    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+    setFlags(ItemIsSelectable | ItemIsFocusable);
 
     m_brushColor = QColor(QRandomGenerator::global()->bounded(256),
                                         QRandomGenerator::global()->bounded(256),
@@ -41,12 +41,10 @@ QColor Block::getColor()
     return m_brushColor;
 }
 
-void Block::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(event->buttons() & Qt::LeftButton){
-         emit onItemDrag(this);
-     }
-
+    emit onItemSingleClick();
+    QGraphicsRectItem::mousePressEvent(event);
 }
 
 void Block::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
@@ -60,35 +58,6 @@ void Block::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsItem::hoverMoveEvent(event);
 }
 
-void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button()==Qt::LeftButton){
-        emit onItemSingleClick();
-        int ax = this->rect().width()+this->rect().x();
-        if(qAbs(event->pos().x()-ax)<=5) {
-            m_dragEnabled = true;
-        }else{
-            m_lastMouseClickPos = event->pos();
-        }
-    }
-    QGraphicsItem::mousePressEvent(event);
-}
-
-void Block::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-   if(event->button()==Qt::LeftButton){
-       emit trackUpdated();
-   }
-   QGraphicsItem::mouseReleaseEvent(event);
-}
-
-void Block::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button()==Qt::LeftButton){
-        emit onItemDoubleClicked(m_frequency,m_brushColor);
-    }
-    QGraphicsRectItem::mouseDoubleClickEvent(event);
-}
 
 void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {

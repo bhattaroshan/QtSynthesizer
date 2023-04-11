@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new CustomGraphicsScene();
 
     graphicsView = new CustomGraphicsView();
+    connect(graphicsView,&CustomGraphicsView::viewUpdated,this,&MainWindow::updateGraph);
     graphicsView->setScene(scene);
     scene->setSceneRect(0,0,this->width(),this->height());
 
@@ -138,7 +139,6 @@ void MainWindow::addTrack(int frequency)
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
     connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
-    connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
     connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
     updateGraph();
 
@@ -342,7 +342,7 @@ void MainWindow::updateGraph(){
         signal->addSignalToContainer(sig,index);
     }
     signal->normalizeSignal();
-    //m_graph->update(signal->getSignal());
+    m_graph->update(signal->getSignal());
 }
 
 void MainWindow::setTrackProperties(int currentFrequency, int lastFrequency, QColor color)

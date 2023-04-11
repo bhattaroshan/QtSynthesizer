@@ -36,6 +36,7 @@ protected:
 
 signals:
     void onMousePress();
+    void viewUpdated();
 };
 
 #endif // CUSTOMGRAPHICSVIEW_H

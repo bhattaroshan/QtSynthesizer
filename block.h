@@ -14,11 +14,8 @@ public:
     QColor getColor();
 
 protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
     void paint(QPainter *painter,const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 

@@ -10,8 +10,6 @@ CustomGraphicsView::CustomGraphicsView(QWidget *parent)
 
 void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    emit onMousePress();
-
     if(event->button()==Qt::LeftButton) {
         m_lastMouseMovePos = mapToScene(event->pos());
         m_lastMousePressPos = mapToScene(event->pos());
@@ -40,6 +38,9 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
 void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton){
+        if(m_trackMoveMode != TRACK_IDLE_MODE){
+            emit viewUpdated(); //only emit if there are any changes
+        }
         m_trackMoveMode = TRACK_IDLE_MODE;
     }
     QGraphicsView::mouseReleaseEvent(event);
@@ -100,11 +101,11 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
                     if(!collides.size()){ //no collision detected
                         x += currentMousePosition.x()-m_lastMouseMovePos.x();
+                        x = qMax(0,x);
                     }else{ //collision detected, reposition the block in case it has gone too far!!!
                         Block *collidedBlock = collides[0]; //assuming it can only collide with one block at at time in one direction
                         x = collidedBlock->x()+collidedBlock->sceneBoundingRect().width();
                     }
-                    qDebug()<<"dragging to the left";
                 }else if(delta.x()>0){ //dragging to the right
                     QRectF rect = createRectToRight(block);
                     QList<Block*> collides = getCollidingItems(block,rect);
@@ -112,12 +113,10 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     if(!collides.size()){ //no collision detected
                         x += currentMousePosition.x()-m_lastMouseMovePos.x();
                     }else{ //collision detected, reposition the block in case it has gone too far!!!
-                        qDebug()<<"I did have a collision here";
                         Block *collidedBlock = collides[0]; //assuming it can only collide with one block at at time in one direction
                         qDebug()<<(QGraphicsItem*)(collidedBlock);
                         x = collidedBlock->x()-block->sceneBoundingRect().width();
                     }
-                    qDebug()<<"dragging to the right";
                 }
 
             }else{
@@ -126,15 +125,14 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     QList<Block*> collides = getCollidingItems(block,rect);
                     if(qAbs(distance)>=height and !collides.size()){
                         y -= 20;
+                        y = qMax(0,y);
                         m_lastMousePressPos = QPointF(m_lastMousePressPos.x(),mapToScene(event->pos()).y());
                     }
-                    qDebug()<<"dragging top";
                 }else if(delta.y()>0){//dragging down
                     qDebug()<<"distance = "<<distance;
                     QRectF rect = createRectToBottom(block);
                     QList<Block*> collides = getCollidingItems(block,rect);
                     if(qAbs(distance)>=height and !collides.size()){
-                        qDebug()<<"dragging bottom";
                        y += 20;
                         m_lastMousePressPos = QPointF(m_lastMousePressPos.x(),mapToScene(event->pos()).y());
                     }
@@ -145,7 +143,11 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
-        m_lastPressedBlock->setRect(0,0,m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()-m_lastMouseMovePos.x(),m_lastPressedBlock->sceneBoundingRect().height());
+        qDebug()<<"I was called at scale as well";
+        m_lastPressedBlock->setRect(0,
+                                    0,
+                                    m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()-m_lastMouseMovePos.x(),
+                                    m_lastPressedBlock->sceneBoundingRect().height());
     }
 
     m_lastMouseMovePos = mapToScene(event->pos());
