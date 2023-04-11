@@ -14,6 +14,13 @@ class CustomGraphicsView:public QGraphicsView
     Q_OBJECT
 public:
     CustomGraphicsView(QWidget *parent=nullptr);
+private:
+    QRectF createRectToRight(Block *block, int width=1);
+    QRectF createRectToLeft(Block *block, int width=1);
+    QRectF createRectToTop(Block *block, int width=1);
+    QRectF createRectToBottom(Block *block, int width=1);
+    QList<Block*> getCollidingItems(Block *block, QRectF rect);
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
