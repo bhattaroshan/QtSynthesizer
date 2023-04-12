@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     //resize(300,200);
-    signal = new SignalVector();
+    signal = new SignalProcess();
 
     scene = new CustomGraphicsScene();
 
@@ -356,6 +356,7 @@ void MainWindow::updateGraph(){
         if(index<0) index=0;
         signal->addSignalToContainer(sig,index);
     }
+    signal->addADSREnvelope(10,10,40);
     signal->normalizeSignal();
     m_graph->update(signal->getSignal());
 }

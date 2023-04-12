@@ -14,7 +14,7 @@
 #include <QBuffer>
 
 #include "block.h"
-#include "signalvector.h"
+#include "signalprocess.h"
 #include "graph.h"
 #include "customgraphicsscene.h"
 #include "customgraphicsview.h"
@@ -65,7 +65,7 @@ private:
     Block *m_lastClickedTrack = nullptr;
     QVector<QRectF> m_graphBar;
     QRectF m_barRect;
-    SignalVector *signal;
+    SignalProcess *signal;
     Graph *m_graph;
 
 

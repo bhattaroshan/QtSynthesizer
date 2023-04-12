@@ -14,7 +14,6 @@ Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
 
     setFlags(ItemIsSelectable);
 
-
     setPen(Qt::NoPen);
     setBrush(m_brushColor);
     setRect(0,0,m_width,m_height);

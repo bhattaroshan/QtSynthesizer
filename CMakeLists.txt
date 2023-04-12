@@ -20,11 +20,9 @@ set(PROJECT_SOURCES
     block.h block.cpp
     graph.h graph.cpp
     signaldialog.h signaldialog.cpp
-    signalvector.h signalvector.cpp
+    signalprocess.h signalprocess.cpp
     customgraphicsscene.h customgraphicsscene.cpp
     customgraphicsview.h customgraphicsview.cpp
-    signalproperties.h signalproperties.cpp
-    signalprocess.h signalprocess.cpp
     assets/assets.qrc
 )
 
