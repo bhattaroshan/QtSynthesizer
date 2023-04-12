@@ -56,7 +56,7 @@ void SignalVector::normalizeSignal()
     qreal scaleFactor = 1.0/qMax(qAbs(maxSignalValue),qAbs(minSignalValue));
 
     for(int i=0;i<m_signal.size();++i){
-        m_signal[i].setY(m_signal[i].y()*scaleFactor);
+        m_signal[i] = QPointF(m_signal[i].x(),m_signal[i].y()*scaleFactor);
     }
 }
 
