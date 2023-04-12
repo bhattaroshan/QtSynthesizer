@@ -6,13 +6,13 @@ SignalProcess::SignalProcess()
 
 }
 
-QVector<QPointF> SignalProcess::generateSinWave(int frequency,int milliseconds){
+QVector<QPointF> SignalProcess::generateSinWave(qreal frequency,qreal amplitude, qreal milliseconds){
     qreal step = 1.0/m_sampleRate;
     QVector<QPointF> res;
     int offLimit = (44100.0*milliseconds)/1000.0;
 
     for(int x=0;x<offLimit;++x){
-        qreal y = sin(2*M_PI*x*step*frequency);
+        qreal y = amplitude * qSin(2*M_PI*x*step*frequency);
         res.push_back(QPointF(x,y));
     }
     return res;
@@ -36,15 +36,15 @@ void SignalProcess::addSignalToContainer(QVector<QPointF> &signal, int start)
 
 }
 
-void SignalProcess::addADSREnvelope(qreal attackPercent, qreal decayPercent, qreal releasePercent)
+void SignalProcess::addADSREnvelope(QVector<QPointF> &signal, qreal attackPercent, qreal decayPercent, qreal releasePercent)
 {
     if(attackPercent>100) attackPercent = 100;
     if(decayPercent>100) decayPercent = 100;
     if(releasePercent>100) releasePercent = 100;
 
-    qreal attackLength = int((attackPercent*m_signal.size())/100);
+    qreal attackLength = int((attackPercent*signal.size())/100);
     qreal decayLength = int((attackLength*decayPercent)/100);
-    qreal releaseLength = int((releasePercent*m_signal.size())/100);
+    qreal releaseLength = int((releasePercent*signal.size())/100);
 
     qreal attackSlope = 1.0/attackLength;
     qreal decaySlope = attackSlope; //assume decaySlope same as attackSlope
@@ -54,23 +54,23 @@ void SignalProcess::addADSREnvelope(qreal attackPercent, qreal decayPercent, qre
     int i;
 
     for(i=start;i<attackLength;++i){
-        m_signal[i] = QPointF(m_signal[i].x(),m_signal[i].y()*attackSlope*(i-start));
+        signal[i] = QPointF(signal[i].x(),signal[i].y()*attackSlope*(i-start));
     }
 
     start = attackLength;
     for(i=start;i<attackLength+decayLength;++i) {
-        m_signal[i] = QPointF(m_signal[i].x(),m_signal[i].y()*decaySlope*(attackLength-(i-start)));
+        signal[i] = QPointF(signal[i].x(),signal[i].y()*decaySlope*(attackLength-(i-start)));
     }
 
     qreal constantDecay = decaySlope*(attackLength-(i-start));
     start = attackLength+decayLength;
-    for(i=start;i<m_signal.size();++i){
-        m_signal[i] = QPointF(m_signal[i].x(),m_signal[i].y()*constantDecay);
+    for(i=start;i<signal.size();++i){
+        signal[i] = QPointF(signal[i].x(),signal[i].y()*constantDecay);
     }
 
-    start = m_signal.size()-releaseLength;
-    for(i=start;i<m_signal.size();++i){
-        m_signal[i] = QPointF(m_signal[i].x(),m_signal[i].y()*releaseSlope*(releaseLength-(i-start)));
+    start = signal.size()-releaseLength;
+    for(i=start;i<signal.size();++i){
+        signal[i] = QPointF(signal[i].x(),signal[i].y()*releaseSlope*(releaseLength-(i-start)));
     }
 }
 

@@ -10,9 +10,9 @@ class SignalProcess
 {
 public:
     SignalProcess();
-    QVector<QPointF> generateSinWave(int frequency,int milliseconds);
+    QVector<QPointF> generateSinWave(qreal frequency,qreal amplitude,qreal milliseconds);
     void addSignalToContainer(QVector<QPointF> &signal, int start);
-    void addADSREnvelope(qreal attackPercent, qreal decayPercent, qreal releasePercent);
+    void addADSREnvelope(QVector<QPointF> &signal, qreal attackPercent, qreal decayPercent, qreal releasePercent);
     void normalizeSignal();
     int getIndexFromTime(int milliseconds);
     QVector<QPointF> scaleSignalDown(int distance);

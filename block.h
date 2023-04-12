@@ -11,6 +11,8 @@ public:
     Block(int x,int y,int frequency=220,QGraphicsItem *parent=nullptr);
     void getAllBlocksInfo(QList<QRectF> blockRect);
     int getFrequency();
+    qreal getAmplitude(){return m_amplitude;};
+    void setAmplitude(qreal amplitude){m_amplitude=amplitude;};
     QColor getColor();
 
 protected:
@@ -29,6 +31,7 @@ protected:
     QPointF m_lastMouseClickPos = QPointF(0,0);
 
     int m_frequency = 220;
+    qreal m_amplitude = 1.0;
     int m_height = 20;
     int m_width = 50;
     QGraphicsTextItem *m_frequencyText;

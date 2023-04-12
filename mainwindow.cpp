@@ -8,6 +8,7 @@
 #include <QtCharts/QLineSeries>
 #include "graph.h"
 #include <QGraphicsLineItem>
+#include <QDoubleSpinBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -244,6 +245,7 @@ void MainWindow::onTrackSingleClicked()
             frequencySpin->setRange(1,20000);
             frequencySpin->setValue(frequency);
 
+
             auto frequencyLambda = [=](){
                 qreal value = frequencySpin->value();
                 if(track->getFrequency()!=value){
@@ -258,6 +260,28 @@ void MainWindow::onTrackSingleClicked()
 
             frequencyLayout->addWidget(frequencyLabel);
             frequencyLayout->addWidget(frequencySpin);
+
+            QHBoxLayout *amplitudeLayout = new QHBoxLayout();
+            QLabel *amplitudeLabel = new QLabel("Amplitude");
+            QDoubleSpinBox *amplitudeSpin = new QDoubleSpinBox();
+            amplitudeSpin->setRange(0,1);
+            amplitudeSpin->setSingleStep(0.1);
+            amplitudeSpin->setValue(track->getAmplitude());
+
+            amplitudeLayout->addWidget(amplitudeLabel);
+            amplitudeLayout->addWidget(amplitudeSpin);
+
+            auto amplitudeLambda = [=](){
+                qreal value = amplitudeSpin->value();
+                if(track->getAmplitude()!=value){
+                    track->setAmplitude(value);
+                    //track->setColor(setBrushFromFrequency(value));
+                    qDebug()<<"I triggered amplitude";
+                    updateGraph();
+                }
+            };
+            //connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::editingFinished),this,amplitudeLambda);
+            connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::valueChanged),this,amplitudeLambda);
 
             QHBoxLayout *phaseLayout = new QHBoxLayout();
             QLabel *phaseLabel = new QLabel("Phase");
@@ -312,6 +336,7 @@ void MainWindow::onTrackSingleClicked()
             mainLayout->addLayout(transformLayout);
             mainLayout->addLayout(timeLayout);
             mainLayout->addLayout(frequencyLayout);
+            mainLayout->addLayout(amplitudeLayout);
             mainLayout->addLayout(phaseLayout);
             mainLayout->addLayout(colorLayout);
             mainLayout->addLayout(deleteLayout);
@@ -351,12 +376,14 @@ void MainWindow::updateGraph(){
     signal->clear();
     for(auto b:getAllTracks()){
         int trackWidth = b->boundingRect().width();
-        auto sig = signal->generateSinWave(b->getFrequency(),trackWidth*10);
+        qreal amplitude = b->getAmplitude();
+        qDebug()<<"my amplitude = "<<amplitude;
+        auto sig = signal->generateSinWave(b->getFrequency(),amplitude,trackWidth*10);
         int index = signal->getIndexFromTime(b->x()*10);
         if(index<0) index=0;
+        signal->addADSREnvelope(sig,10,10,40);
         signal->addSignalToContainer(sig,index);
     }
-    signal->addADSREnvelope(10,10,40);
     signal->normalizeSignal();
     m_graph->update(signal->getSignal());
 }
