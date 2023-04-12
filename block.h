@@ -13,6 +13,9 @@ public:
     int getFrequency();
     qreal getAmplitude(){return m_amplitude;};
     void setAmplitude(qreal amplitude){m_amplitude=amplitude;};
+
+    qreal getHarmonics(){return m_harmonics;}
+    void setHarmonics(qreal harmonics){ m_harmonics = harmonics;}
     QColor getColor();
 
 protected:
@@ -24,6 +27,7 @@ protected:
     void setBrushFromFrequency(int frequency);
 
     QColor m_brushColor;
+    qreal m_harmonics = 0;
 
     bool m_dragEnabled = false;
 

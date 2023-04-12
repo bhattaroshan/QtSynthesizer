@@ -6,15 +6,28 @@ SignalProcess::SignalProcess()
 
 }
 
-QVector<QPointF> SignalProcess::generateSinWave(qreal frequency,qreal amplitude, qreal milliseconds){
-    qreal step = 1.0/m_sampleRate;
-    QVector<QPointF> res;
-    int offLimit = (44100.0*milliseconds)/1000.0;
 
-    for(int x=0;x<offLimit;++x){
-        qreal y = amplitude * qSin(2*M_PI*x*step*frequency);
-        res.push_back(QPointF(x,y));
+
+QVector<QPointF> SignalProcess::generateSinWave(SignalProperties sp){
+
+    qreal samples = sp.samples;
+    qreal frequency = sp.frequency;
+    qreal amplitude = sp.amplitude;
+    qreal harmonics = sp.harmonics;
+    qreal phase = sp.phase;
+
+    qreal step = 1.0/m_sampleRate;
+    QVector<QPointF> res(samples,QPointF(0.0,0.0));
+
+    for(int h=0;h<=sp.harmonics;++h){
+        for(int x=0;x<samples;++x){
+            qreal realHarmonics = h+1;
+            qreal realAmp = amplitude*qreal(1.0/realHarmonics);
+            qreal y = realAmp * qSin(2.0*M_PI*x*step*realHarmonics*frequency+phase);
+            res[x] = QPointF(x,res[x].y()+y);
+        }
     }
+
     return res;
 }
 
@@ -35,6 +48,7 @@ void SignalProcess::addSignalToContainer(QVector<QPointF> &signal, int start)
     }
 
 }
+
 
 void SignalProcess::addADSREnvelope(QVector<QPointF> &signal, qreal attackPercent, qreal decayPercent, qreal releasePercent)
 {

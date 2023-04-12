@@ -155,6 +155,7 @@ void MainWindow::addTrack(int frequency)
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
     connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
     connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
+    connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
     updateGraph();
 
 }
@@ -273,13 +274,15 @@ void MainWindow::onTrackSingleClicked()
 
             auto amplitudeLambda = [=](){
                 qreal value = amplitudeSpin->value();
-                if(track->getAmplitude()!=value){
+
+                if(value && track->getAmplitude()!=value){
                     track->setAmplitude(value);
                     //track->setColor(setBrushFromFrequency(value));
                     qDebug()<<"I triggered amplitude";
                     updateGraph();
                 }
             };
+
             //connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::editingFinished),this,amplitudeLambda);
             connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::valueChanged),this,amplitudeLambda);
 
@@ -290,6 +293,25 @@ void MainWindow::onTrackSingleClicked()
             phaseDial->setNotchTarget(0);
             phaseLayout->addWidget(phaseLabel);
             phaseLayout->addWidget(phaseDial);
+
+            QHBoxLayout *harmonicsLayout = new QHBoxLayout();
+            QLabel *harmonicsLabel = new QLabel("Harmonics");
+            QSpinBox *harmonicsSpin = new QSpinBox();
+            harmonicsSpin->setRange(0,20);
+            harmonicsSpin->setValue(track->getHarmonics());
+
+
+            auto harmonicsLambda = [=](){
+                qreal value = harmonicsSpin->value();
+                    track->setHarmonics(value);
+                    updateGraph();
+            };
+
+            connect(harmonicsSpin,&QSpinBox::editingFinished,this,harmonicsLambda);
+            connect(harmonicsSpin,&QSpinBox::valueChanged,this,harmonicsLambda);
+
+            harmonicsLayout->addWidget(harmonicsLabel);
+            harmonicsLayout->addWidget(harmonicsSpin);
 
             QHBoxLayout *colorLayout = new QHBoxLayout();
             QLabel *colorLabel = new QLabel("Track Color");
@@ -317,6 +339,8 @@ void MainWindow::onTrackSingleClicked()
             colorLayout->addWidget(colorLabel);
             colorLayout->addWidget(colorBtn);
 
+
+
             QHBoxLayout *deleteLayout = new QHBoxLayout();
             QPushButton *deleteBtn = new QPushButton("Delete Track");
             connect(deleteBtn,&QPushButton::clicked,this,[=](){
@@ -338,6 +362,7 @@ void MainWindow::onTrackSingleClicked()
             mainLayout->addLayout(frequencyLayout);
             mainLayout->addLayout(amplitudeLayout);
             mainLayout->addLayout(phaseLayout);
+            mainLayout->addLayout(harmonicsLayout);
             mainLayout->addLayout(colorLayout);
             mainLayout->addLayout(deleteLayout);
             mainLayout->addSpacerItem(spacer);
@@ -373,16 +398,20 @@ QList<Block*> MainWindow::getAllTracks(){
 
 
 void MainWindow::updateGraph(){
+
     signal->clear();
     for(auto b:getAllTracks()){
         int trackWidth = b->boundingRect().width();
         qreal amplitude = b->getAmplitude();
-        qDebug()<<"my amplitude = "<<amplitude;
-        auto sig = signal->generateSinWave(b->getFrequency(),amplitude,trackWidth*10);
-        int index = signal->getIndexFromTime(b->x()*10);
-        if(index<0) index=0;
-        signal->addADSREnvelope(sig,10,10,40);
-        signal->addSignalToContainer(sig,index);
+        SignalProperties sp;
+        sp.frequency = b->getFrequency();
+        sp.amplitude = b->getAmplitude();
+        sp.phase = 0;
+        sp.samples = trackWidth*441;
+        sp.harmonics = b->getHarmonics();
+        auto sig = signal->generateSinWave(sp);
+        signal->addADSREnvelope(sig,10,10,10);
+        signal->addSignalToContainer(sig,b->x()*441);
     }
     signal->normalizeSignal();
     m_graph->update(signal->getSignal());
