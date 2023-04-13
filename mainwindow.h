@@ -50,6 +50,17 @@ public slots:
     void onGraphicsViewMousePressed();
     void onTrackSelected();
 
+    //audio functions
+    void playSignal();
+
+    //dock functions
+    void createDockView();
+
+    //menu functions
+    void loadMenuBar();
+    void onMenuAction_Save();
+    void onMenuAction_Open();
+
 private:
     CustomGraphicsScene *scene;
     CustomGraphicsView *graphicsView;

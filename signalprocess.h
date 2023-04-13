@@ -5,17 +5,8 @@
 #include<QPair>
 #include <QtGui>
 #include <QPointF>
+#include "signalproperties.h"
 
-struct SignalProperties{
-    qreal frequency = 220.0;
-    qreal amplitude = 1.0;
-    qreal phase = 0.0;
-    qreal harmonics = 0;
-    qreal samples = 44100;
-    qreal attackPercent = 10;
-    qreal decayPercent = 20;
-    qreal releasePercent = 20;
-};
 
 class SignalProcess
 {
@@ -29,7 +20,6 @@ public:
     QVector<QPointF> scaleSignalDown(int distance);
     void clear();
     QVector<QPointF> getSignal();
-
 
 private:
     int m_sampleRate = 44100;

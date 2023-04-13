@@ -3,6 +3,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsSceneHoverEvent>
 #include <QMenu>
+#include "signalproperties.h"
 
 class Block:public QObject, public QGraphicsRectItem
 {
@@ -10,13 +11,20 @@ class Block:public QObject, public QGraphicsRectItem
 public:
     Block(int x,int y,int frequency=220,QGraphicsItem *parent=nullptr);
     void getAllBlocksInfo(QList<QRectF> blockRect);
-    int getFrequency();
-    qreal getAmplitude(){return m_amplitude;};
-    void setAmplitude(qreal amplitude){m_amplitude=amplitude;};
 
-    qreal getHarmonics(){return m_harmonics;}
-    void setHarmonics(qreal harmonics){ m_harmonics = harmonics;}
-    QColor getColor();
+
+    SignalProperties getBlockProperties(){return m_sp;};
+    void setBlockProperties(SignalProperties sp){m_sp=sp;};
+
+    int getFrequency(){return m_sp.frequency;};
+    QColor getColor(){return m_sp.color;};
+    qreal getHarmonics(){return m_sp.harmonics;}
+    qreal getAmplitude(){return m_sp.amplitude;};
+
+    void setFrequency(int frequency){m_sp.frequency=frequency;};
+    void setColor(QColor color){m_sp.color=color;};
+    void setHarmonics(qreal harmonics){ m_sp.harmonics = harmonics;}
+    void setAmplitude(qreal amplitude){ m_sp.amplitude = amplitude;};
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -26,24 +34,14 @@ protected:
 
     void setBrushFromFrequency(int frequency);
 
-    QColor m_brushColor;
-    qreal m_harmonics = 0;
+    SignalProperties m_sp;
 
     bool m_dragEnabled = false;
 
-    QList<QRectF> m_rectangle;
+    //QList<QRectF> m_rectangle;
     QPointF m_lastMouseClickPos = QPointF(0,0);
 
-    int m_frequency = 220;
-    qreal m_amplitude = 1.0;
-    int m_height = 20;
-    int m_width = 50;
-    QGraphicsTextItem *m_frequencyText;
-
-
 public slots:
-    void setFrequency(int);
-    void setColor(QColor);
 
 signals:
     void onItemDrag(Block *item);

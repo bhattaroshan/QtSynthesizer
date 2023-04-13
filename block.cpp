@@ -8,32 +8,26 @@
 #include <QApplication>
 
 Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
-    :QGraphicsRectItem(parent),
-     m_frequency(frequency)
+    :QGraphicsRectItem(parent)
 {
+    m_sp.frequency = frequency;
+    m_sp.x = x;
+    m_sp.y = y;
+    m_sp.harmonics = 0;
+    m_sp.attackPercent = 0;
+    m_sp.decayPercent = 0;
+    m_sp.releasePercent = 0;
+    m_sp.phase = 0;
+    m_sp.samples = 44100;
+    m_sp.amplitude = 1.0;
 
     setFlags(ItemIsSelectable);
 
     setPen(Qt::NoPen);
-    setBrush(m_brushColor);
-    setRect(0,0,m_width,m_height);
+    setBrush(m_sp.color);
+    setRect(0,0,100,20);
     setPos(x,y);
     setAcceptHoverEvents(true);
-}
-
-void Block::getAllBlocksInfo(QList<QRectF> blockRect)
-{
-    m_rectangle = blockRect;
-}
-
-int Block::getFrequency()
-{
-    return m_frequency;
-}
-
-QColor Block::getColor()
-{
-    return m_brushColor;
 }
 
 void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -111,7 +105,7 @@ void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->setBrush(m_brushColor);
+    painter->setBrush(m_sp.color);
     if(option->state & QStyle::State_Selected){
         QColor t = QColor(0,100,150);
         painter->setBrush(t);
@@ -123,21 +117,9 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     QFont font = QApplication::font();
     QFontMetrics metrics(font);
-    int width = metrics.horizontalAdvance(QString::number(m_frequency));
+    int width = metrics.horizontalAdvance(QString::number(m_sp.frequency));
     int height = metrics.height();
     painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
-    painter->drawText(QPointF(this->rect().width()/2-width/2,this->rect().height()-height/4),QString::number(m_frequency));
+    painter->drawText(QPointF(this->rect().width()/2-width/2,this->rect().height()-height/4),QString::number(m_sp.frequency));
 
-}
-
-void Block::setFrequency(int frequency)
-{
-    m_frequency = frequency;
-    update();
-}
-
-void Block::setColor(QColor color)
-{
-    m_brushColor = color;
-    update();
 }
