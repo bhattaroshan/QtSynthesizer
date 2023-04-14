@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
     scene->setSceneRect(0,0,this->width(),this->height());
 
     connect(graphicsView,&CustomGraphicsView::onMousePress,this,&MainWindow::onGraphicsViewMousePressed);
-    connect(scene,&CustomGraphicsScene::selectionChanged,this,&MainWindow::onTrackSelected);
 
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
@@ -101,19 +100,6 @@ QColor MainWindow::setBrushFromFrequency(int frequency)
     return m_colorFrequencyMap[frequency];
 }
 
-void MainWindow::onTrackSelected(){
-    QList<QGraphicsItem*> selectedItems = scene->selectedItems();
-
-    for(auto item:selectedItems){
-        Block *block = dynamic_cast<Block*>(item);
-        if(block){
-            m_selectedTracks.append(block);
-        }
-    }
-
-
-    //blocks list contains all the selected tracks, movement can be triggered from mousemove event
-}
 
 void MainWindow::loadMenuBar()
 {
@@ -134,7 +120,6 @@ void MainWindow::loadMenuBar()
     fileMenu->addAction(saveAsAction);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
-
 
     connect(openAction,&QAction::triggered,this,&MainWindow::onMenuAction_Open);
     connect(saveAction,&QAction::triggered,this,&MainWindow::onMenuAction_Save);
@@ -223,10 +208,8 @@ void MainWindow::addTrack(int frequency)
 
     Block *b = new Block(blockX,blockY,frequency);
     b->setColor(setBrushFromFrequency(frequency));
-    m_blocks.append(b); //keep track of all the tracks for future use
     scene->addItem(b);
     connect(b,&Block::onItemDrag,this,&MainWindow::resizeSlot);
-    connect(b,&Block::onItemDoubleClicked,this,&MainWindow::onTrackDoubleClicked);
     connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
     connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
     updateGraph();
@@ -234,19 +217,6 @@ void MainWindow::addTrack(int frequency)
 }
 
 void MainWindow::onCancelClicked(){
-}
-
-void MainWindow::onTrackDoubleClicked(int frequency,QColor color)
-{
-    dialogAssociatedToTrack = sender();
-    if(signalDialog!=nullptr){
-        delete signalDialog;
-    }
-
-    signalDialog = new SignalDialog(frequency,color);
-    signalDialog->show();
-
-    connect(signalDialog,&SignalDialog::updateDialogProperties,this,&MainWindow::setTrackProperties);
 }
 
 void MainWindow::onTrackSingleClicked()
@@ -258,7 +228,6 @@ void MainWindow::onTrackSingleClicked()
     for(auto track:tracks){
         if(track==currentTrack){
             track->setZValue(1);
-            //track->setOutline(true);
 
             int frequency = track->getFrequency();
             int time = track->boundingRect().width()*10;
@@ -270,10 +239,7 @@ void MainWindow::onTrackSingleClicked()
             QHBoxLayout *typeLayout = new QHBoxLayout();
             QLabel *typeLabel = new QLabel("Type");
             QComboBox *typeCombo = new QComboBox();
-            typeCombo->addItem("Sin Wave");
-            typeCombo->addItem("Triangluar Wave");
-            typeCombo->addItem("RAW Audio");
-            typeCombo->addItem("WAV Audio");
+            typeCombo->addItems({"Sin Wave","Triangular Wave","RAW Audio"});
             typeLayout->addWidget(typeLabel);
             typeLayout->addWidget(typeCombo);
 
@@ -304,7 +270,6 @@ void MainWindow::onTrackSingleClicked()
             m_timeSpin->setRange(300,100000);
             m_timeSpin->setValue(time);
             auto timeLambda = [=](){
-                //track->handleDraggable(m_timeSpin->value()/10);
                 updateGraph();
             };
             connect(m_timeSpin,&QSpinBox::valueChanged,this,timeLambda);
@@ -350,13 +315,10 @@ void MainWindow::onTrackSingleClicked()
 
                 if(value && track->getAmplitude()!=value){
                     track->setAmplitude(value);
-                    //track->setColor(setBrushFromFrequency(value));
-                    qDebug()<<"I triggered amplitude";
                     updateGraph();
                 }
             };
 
-            //connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::editingFinished),this,amplitudeLambda);
             connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::valueChanged),this,amplitudeLambda);
 
             QHBoxLayout *phaseLayout = new QHBoxLayout();
@@ -411,8 +373,6 @@ void MainWindow::onTrackSingleClicked()
 
             colorLayout->addWidget(colorLabel);
             colorLayout->addWidget(colorBtn);
-
-
 
             QHBoxLayout *deleteLayout = new QHBoxLayout();
             QPushButton *deleteBtn = new QPushButton("Delete Track");
@@ -489,18 +449,6 @@ void MainWindow::updateGraph(){
     signal->normalizeSignal();
     m_graph->update(signal->getSignal());
 }
-
-void MainWindow::setTrackProperties(int currentFrequency, int lastFrequency, QColor color)
-{
-    Block *activeTrack = dynamic_cast<Block*>(dialogAssociatedToTrack);
-
-    activeTrack->setFrequency(currentFrequency);
-    activeTrack->setColor(color);
-    if(currentFrequency!=lastFrequency){
-        updateGraph();
-    }
-}
-
 
 MainWindow::~MainWindow()
 {

@@ -19,7 +19,6 @@ set(PROJECT_SOURCES
     mainwindow.h mainwindow.cpp
     block.h block.cpp
     graph.h graph.cpp
-    signaldialog.h signaldialog.cpp
     signalprocess.h signalprocess.cpp
     customgraphicsscene.h customgraphicsscene.cpp
     customgraphicsview.h customgraphicsview.cpp

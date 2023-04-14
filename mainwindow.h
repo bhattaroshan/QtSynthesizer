@@ -32,7 +32,6 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     QObject *dialogAssociatedToTrack;
-    SignalDialog *signalDialog = nullptr;
 
     QColor setBrushFromFrequency(int frequency);
     QMap<int,QColor> m_colorFrequencyMap;
@@ -42,13 +41,10 @@ public slots:
     void onAddTrackClicked();
     void addTrack(int frequency);
     void onCancelClicked();
-    void onTrackDoubleClicked(int frequency,QColor color);
     void onTrackSingleClicked();
-    void setTrackProperties(int,int,QColor);
     void updateGraph();
     QList<Block*> getAllTracks();
     void onGraphicsViewMousePressed();
-    void onTrackSelected();
 
     //audio functions
     void playSignal();
@@ -72,7 +68,6 @@ private:
 
     QDockWidget *m_dockWidget;
 
-    QVector<Block*> m_blocks;
     Block *m_lastClickedTrack = nullptr;
     QVector<QRectF> m_graphBar;
     QRectF m_barRect;
