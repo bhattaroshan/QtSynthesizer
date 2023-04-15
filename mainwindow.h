@@ -7,6 +7,10 @@
 #include <QObject>
 #include <QSpacerItem>
 #include <QVBoxLayout>
+#include <QComboBox>
+#include <QDial>
+#include <QMessageBox>
+#include <QDockWidget>
 #include <signaldialog.h>
 
 #include <QAudio>
@@ -57,7 +61,15 @@ public slots:
     void onMenuAction_Save();
     void onMenuAction_Open();
 
+    //ui functions
+    void createTrackWidget();
+    void createGeneralWidget();
+    QPushButton *createIconButton(QString icon);
+
 private:
+    QVBoxLayout *m_trackMainLayout = nullptr;
+    QVBoxLayout *m_generalMainLayout = nullptr;
+
     CustomGraphicsScene *scene;
     CustomGraphicsView *graphicsView;
     //QGraphicsScene *scene;

@@ -83,15 +83,31 @@ QList<Block*> CustomGraphicsView::getCollidingItems(Block *block, QRectF rect){
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF currentMousePosition = mapToScene(event->pos());
+    QList<Block*> blocks = getSelectedBlocks();
+
+    if(m_trackMoveMode != TRACK_IDLE_MODE){ //resizing tracks
+
+        qreal maxWidth = this->parentWidget()->width();
+        qreal maxHeight = this->parentWidget()->height();
+
+        for(auto block:blocks){
+            if(block->x()+block->boundingRect().width()>maxWidth){
+                maxWidth = block->x()+block->boundingRect().width();
+            }
+            if(block->y()+block->boundingRect().height()>maxHeight){
+                maxHeight = block->y()+block->boundingRect().height();
+            }
+        }
+
+        this->setSceneRect(0,0,maxWidth+100,maxHeight+50);
+    }
 
     if(m_trackMoveMode == TRACK_MOVE_MODE){
-        QList<Block*> blocks = getSelectedBlocks();
         int distance = currentMousePosition.y()-m_lastMousePressPos.y();
         QPointF delta = currentMousePosition-m_lastMouseMovePos;
 
         for(auto block:blocks){
             int x = block->pos().x();
-            //x += currentMousePosition.x()-m_lastMouseMovePos.x();
             int y = block->pos().y();
             int height = block->sceneBoundingRect().height();
 
@@ -140,6 +156,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
 
             block->setPos(x,y);
+
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
         m_lastPressedBlock->setRect(0,
@@ -174,6 +191,12 @@ void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
    }
 
    return QGraphicsView::keyPressEvent(event);
+}
+
+void CustomGraphicsView::resizeEvent(QResizeEvent *event)
+{
+    this->scene()->setSceneRect(0,0,this->width(),this->height());
+    QGraphicsView::resizeEvent(event);
 }
 
 QList<Block *> CustomGraphicsView::getSelectedBlocks()
