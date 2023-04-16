@@ -85,26 +85,25 @@ QList<Block*> CustomGraphicsView::getCollidingItems(Block *block, QRectF rect){
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF currentMousePosition = mapToScene(event->pos());
-    QList<Block*> blocks = getSelectedBlocks();
 
     if(m_trackMoveMode != TRACK_IDLE_MODE){ //resizing tracks
-
-        qreal maxWidth = this->parentWidget()->width();
-        qreal maxHeight = this->parentWidget()->height();
-
+        QList<Block*> blocks = getAllBlocks();
+        qreal width = this->width();
+        qreal height = this->height();
         for(auto block:blocks){
-            if(block->x()+block->boundingRect().width()>maxWidth){
-                maxWidth = block->x()+block->boundingRect().width();
+            if(block->sceneBoundingRect().right()>width){
+                width = block->sceneBoundingRect().right();
             }
-            if(block->y()+block->boundingRect().height()>maxHeight){
-                maxHeight = block->y()+block->boundingRect().height();
+            if(block->sceneBoundingRect().bottom()>height){
+                height =  block->sceneBoundingRect().bottom();
             }
         }
 
-        this->setSceneRect(0,0,maxWidth+100,maxHeight+50);
+        this->setSceneRect(0,0,width+100,height+50);
     }
 
     if(m_trackMoveMode == TRACK_MOVE_MODE){
+        QList<Block*> blocks = getSelectedBlocks();
         int distance = currentMousePosition.y()-m_lastMousePressPos.y();
         QPointF delta = currentMousePosition-m_lastMouseMovePos;
 
@@ -204,6 +203,19 @@ void CustomGraphicsView::resizeEvent(QResizeEvent *event)
 QList<Block *> CustomGraphicsView::getSelectedBlocks()
 {
     QList<QGraphicsItem *> items = scene()->selectedItems();
+    QList<Block*> blocks;
+
+    for(auto item:items){
+        Block* block = dynamic_cast<Block*>(item);
+        if(block){
+            blocks.append(block);
+        }
+    }
+    return blocks;
+}
+
+QList<Block *> CustomGraphicsView::getAllBlocks(){
+    QList<QGraphicsItem *> items = scene()->items();
     QList<Block*> blocks;
 
     for(auto item:items){

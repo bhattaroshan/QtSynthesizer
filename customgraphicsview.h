@@ -34,6 +34,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
     QList<Block *> getSelectedBlocks();
+    QList<Block *> getAllBlocks();
 
     QPointF m_lastMouseMovePos;
     QPointF m_lastMousePressPos;

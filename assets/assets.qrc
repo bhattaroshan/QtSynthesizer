@@ -2,5 +2,7 @@
     <qresource prefix="/icons">
         <file>color-picker.png</file>
         <file>play.png</file>
+        <file>eye-invisible.png</file>
+        <file>eye-visible.png</file>
     </qresource>
 </RCC>
