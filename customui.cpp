@@ -22,6 +22,7 @@ QPushButton* MainWindow::createIconButton(QString icon){
 }
 
 void MainWindow::createTrackWidget(){
+
     Block* currentTrack = dynamic_cast<Block*>(sender());
     m_lastClickedTrack = currentTrack;
 
@@ -35,7 +36,6 @@ void MainWindow::createTrackWidget(){
             QColor color = sp.color;
 
             //add dockWidget settings for track
-            if(m_trackMainLayout != nullptr) delete m_trackMainLayout;
             m_trackMainLayout = new QVBoxLayout();
 
             QHBoxLayout *typeLayout = new QHBoxLayout();
@@ -178,36 +178,19 @@ void MainWindow::createTrackWidget(){
 
             QSpacerItem *spacer = new QSpacerItem(0,200,QSizePolicy::Minimum,QSizePolicy::Expanding);
 
-            mainLayout->addLayout(typeLayout);
-            mainLayout->addLayout(transformLayout);
-            mainLayout->addLayout(timeLayout);
-            mainLayout->addLayout(frequencyLayout);
-            mainLayout->addLayout(amplitudeLayout);
-            mainLayout->addLayout(phaseLayout);
-            mainLayout->addLayout(harmonicsLayout);
-            mainLayout->addLayout(colorLayout);
-            mainLayout->addLayout(deleteLayout);
-
-            QPushButton *btn = new QPushButton("Again");
-            mainLayout->addWidget(btn);
-            bool visible = true;
-            connect(btn,&QPushButton::clicked,this,[=]() mutable{
-                QWidget *w = typeLayout->parentWidget();
-                qDebug()<<"I am = "<<visible;
-                visible = !visible;
-                w->setVisible(visible);
-            });
-            mainLayout->addSpacerItem(spacer);
-
-            QHBoxLayout *playLayout = new QHBoxLayout();
-            QPushButton *playButton = createIconButton(":/icons/play.png");
-            playLayout->addWidget(playButton);
-            mainLayout->addLayout(playLayout);
-
-            connect(playButton,&QPushButton::clicked,this,&MainWindow::playSignal);
+            m_trackMainLayout->addLayout(typeLayout);
+            m_trackMainLayout->addLayout(transformLayout);
+            m_trackMainLayout->addLayout(timeLayout);
+            m_trackMainLayout->addLayout(frequencyLayout);
+            m_trackMainLayout->addLayout(amplitudeLayout);
+            m_trackMainLayout->addLayout(phaseLayout);
+            m_trackMainLayout->addLayout(harmonicsLayout);
+            m_trackMainLayout->addLayout(colorLayout);
+            m_trackMainLayout->addLayout(deleteLayout);
+            m_trackMainLayout->addSpacerItem(spacer);
 
             QWidget *widget = new QWidget();
-            widget->setLayout(mainLayout);
+            widget->setLayout(m_trackMainLayout);
             m_dockWidget->setWidget(widget);
 
         }else{
@@ -218,5 +201,14 @@ void MainWindow::createTrackWidget(){
 }
 
 void MainWindow::createGeneralWidget(){
+
     m_generalMainLayout = new QVBoxLayout();
+    QPushButton *addTrackButton = new QPushButton("Add Track");
+    connect(addTrackButton,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
+    m_generalMainLayout->addWidget(addTrackButton);
+
+
+    QWidget *widget = new QWidget();
+    widget->setLayout(m_generalMainLayout);
+    m_dockWidget->setWidget(widget);
 }

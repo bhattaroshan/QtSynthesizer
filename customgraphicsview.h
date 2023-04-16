@@ -14,6 +14,11 @@ class CustomGraphicsView:public QGraphicsView
     Q_OBJECT
 public:
     CustomGraphicsView(QWidget *parent=nullptr);
+
+signals:
+    void trackClicked();
+    void offTrackClicked();
+
 private:
     QRectF createRectToRight(Block *block, int width=1);
     QRectF createRectToLeft(Block *block, int width=1);

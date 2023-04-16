@@ -44,11 +44,9 @@ public slots:
     QPair<qreal,qreal> resizeSlot();
     void onAddTrackClicked();
     void addTrack(int frequency);
-    void onCancelClicked();
     void onTrackSingleClicked();
     void updateGraph();
     QList<Block*> getAllTracks();
-    void onGraphicsViewMousePressed();
 
     //audio functions
     void playSignal();

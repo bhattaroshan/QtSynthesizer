@@ -16,7 +16,8 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
 
         QGraphicsItem *clickedItem = this->itemAt(event->pos());
         Block *block = dynamic_cast<Block*>(clickedItem);
-        if(block){
+        if(block){ //block is clicked
+            emit trackClicked();
             m_lastPressedBlock = block;
             qreal x = block->pos().x();
             qreal width = block->boundingRect().width();
@@ -27,6 +28,7 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
                 m_trackMoveMode = TRACK_MOVE_MODE;
             }
         }else{
+            emit offTrackClicked();
             m_trackMoveMode = TRACK_IDLE_MODE;
         }
 

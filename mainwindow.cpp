@@ -20,26 +20,21 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new CustomGraphicsScene();
 
     graphicsView = new CustomGraphicsView();
+    connect(graphicsView,&CustomGraphicsView::trackClicked,this,&MainWindow::createTrackWidget);
+    connect(graphicsView,&CustomGraphicsView::offTrackClicked,this,&MainWindow::createGeneralWidget);
     connect(graphicsView,&CustomGraphicsView::viewUpdated,this,&MainWindow::updateGraph);
+
+
     graphicsView->setScene(scene);
     scene->setSceneRect(0,0,this->width(),this->height());
 
-    connect(graphicsView,&CustomGraphicsView::onMousePress,this,&MainWindow::onGraphicsViewMousePressed);
-
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
-    QPushButton *btn1 = new QPushButton("Add Track");
-    connect(btn1,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
-    QPushButton *btn2 = new QPushButton(">");
-    btn2->setFixedSize(30,40);
+    QPushButton *btn2 = createIconButton(":/icons/play.png");
+    buttonsLayout->addWidget(btn2);
 
     connect(btn2,&QPushButton::clicked,this,&MainWindow::playSignal);
 
-    QPushButton *btn3 = new QPushButton("Test");
-    buttonsLayout->addWidget(btn1);
-    buttonsLayout->addSpacing(100);
-    buttonsLayout->addWidget(btn2);
-    buttonsLayout->addWidget(btn3);
 
     m_graph = new Graph(signal->getSignal());
 
@@ -53,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     window = new QWidget();
     window->setLayout(mainLayout);
     setCentralWidget(window);
+    createGeneralWidget();
 }
 
 void MainWindow::createDockView(){
@@ -184,6 +180,7 @@ void MainWindow::onAddTrackClicked(){
 void MainWindow::addTrack(int frequency)
 {
     QList<Block*> allTracks = getAllTracks();
+    qDebug()<<allTracks.size();
     //get minimum y, get minimum farthest
     qreal minY = -1;
     qreal maxFarthest = -1;
@@ -213,18 +210,10 @@ void MainWindow::addTrack(int frequency)
 
 }
 
-void MainWindow::onCancelClicked(){
-}
 
 void MainWindow::onTrackSingleClicked()
 {
     createTrackWidget();
-}
-
-void MainWindow::onGraphicsViewMousePressed()
-{
-    m_dockWidget->setWidget(nullptr);
-    //disable all other settings and enable general settings
 }
 
 QList<Block*> MainWindow::getAllTracks(){
@@ -245,13 +234,9 @@ void MainWindow::updateGraph(){
     signal->clear();
     for(auto b:getAllTracks()){
         int trackWidth = b->boundingRect().width();
-        qreal amplitude = b->getAmplitude();
         SignalProperties sp;
-        sp.frequency = b->getFrequency();
-        sp.amplitude = b->getAmplitude();
-        sp.phase = 0;
+        sp = b->getBlockProperties();
         sp.samples = trackWidth*441;
-        sp.harmonics = b->getHarmonics();
         auto sig = signal->generateSinWave(sp);
         signal->addADSREnvelope(sig,10,10,10);
         signal->addSignalToContainer(sig,b->x()*441);
@@ -324,4 +309,5 @@ QPair<qreal,qreal> MainWindow::resizeSlot(){
 //    }
 
 //    return {w+100,h+50};
+    return {0,0};
 }
