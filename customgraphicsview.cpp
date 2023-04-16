@@ -6,6 +6,7 @@ CustomGraphicsView::CustomGraphicsView(QWidget *parent)
     :QGraphicsView(parent)
 {
     setDragMode(QGraphicsView::RubberBandDrag);
+
 }
 
 void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
@@ -119,7 +120,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
                     if(!collides.size()){ //no collision detected
                         x += currentMousePosition.x()-m_lastMouseMovePos.x();
-                        x = qMax(0,x);
+                        x = qMax(30,x);
                     }else{ //collision detected, reposition the block in case it has gone too far!!!
                         Block *collidedBlock = collides[0]; //assuming it can only collide with one block at at time in one direction
                         x = collidedBlock->x()+collidedBlock->sceneBoundingRect().width();
@@ -141,7 +142,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     QRectF rect = createRectToTop(block);
                     QList<Block*> collides = getCollidingItems(block,rect);
                     if(qAbs(distance)>=height and !collides.size()){
-                        y -= 20;
+                        y -= height;
                         y = qMax(0,y);
                         m_lastMousePressPos = QPointF(m_lastMousePressPos.x(),mapToScene(event->pos()).y());
                     }
@@ -149,7 +150,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     QRectF rect = createRectToBottom(block);
                     QList<Block*> collides = getCollidingItems(block,rect);
                     if(qAbs(distance)>=height and !collides.size()){
-                       y += 20;
+                       y += height;
                         m_lastMousePressPos = QPointF(m_lastMousePressPos.x(),mapToScene(event->pos()).y());
                     }
                 }
@@ -198,6 +199,33 @@ void CustomGraphicsView::resizeEvent(QResizeEvent *event)
 {
     this->scene()->setSceneRect(0,0,this->width(),this->height());
     QGraphicsView::resizeEvent(event);
+}
+
+void CustomGraphicsView::showEvent(QShowEvent *event)
+{
+
+
+    QGraphicsLineItem *line = new QGraphicsLineItem();
+    line->setPen(QColor(128,128,128,30));
+    line->setLine(30,0,30,1000);
+    scene()->addItem(line);
+
+
+    for(int i=0;i<100;i++){
+        GraphicsEye *eye = new GraphicsEye();
+        eye->setPos(0,i*30);
+        eye->setZValue(0);
+        scene()->addItem(eye);
+
+        QGraphicsLineItem *hline1 = new QGraphicsLineItem();
+        hline1->setLine(0,30*i,10000,30*i);
+        hline1->setPen(QColor(128,128,128,30));
+        hline1->setZValue(1);
+        scene()->addItem(hline1);
+    }
+
+
+    QGraphicsView::showEvent(event);
 }
 
 QList<Block *> CustomGraphicsView::getSelectedBlocks()

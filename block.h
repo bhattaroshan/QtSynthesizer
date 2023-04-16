@@ -38,7 +38,6 @@ protected:
 
     bool m_dragEnabled = false;
 
-    //QList<QRectF> m_rectangle;
     QPointF m_lastMouseClickPos = QPointF(0,0);
 
 public slots:

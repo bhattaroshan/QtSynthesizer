@@ -23,6 +23,7 @@ set(PROJECT_SOURCES
     customgraphicsscene.h customgraphicsscene.cpp
     customgraphicsview.h customgraphicsview.cpp
     customui.cpp
+    graphicseye.h graphicseye.cpp
     signalproperties.h
     assets/assets.qrc
 )

@@ -85,7 +85,6 @@ void MainWindow::createTrackWidget(){
             frequencySpin->setRange(1,20000);
             frequencySpin->setValue(frequency);
 
-
             auto frequencyLambda = [=](){
                 qreal value = frequencySpin->value();
                 if(track->getFrequency()!=value){
@@ -204,9 +203,9 @@ void MainWindow::createGeneralWidget(){
 
     m_generalMainLayout = new QVBoxLayout();
     QPushButton *addTrackButton = new QPushButton("Add Track");
+    addTrackButton->setFixedHeight(40);
     connect(addTrackButton,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
     m_generalMainLayout->addWidget(addTrackButton);
-
 
     QWidget *widget = new QWidget();
     widget->setLayout(m_generalMainLayout);

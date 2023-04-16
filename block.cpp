@@ -25,7 +25,7 @@ Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
 
     setPen(Qt::NoPen);
     setBrush(m_sp.color);
-    setRect(0,0,100,20);
+    setRect(0,0,100,30);
     setPos(x,y);
     setAcceptHoverEvents(true);
 }
@@ -120,6 +120,6 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     int width = metrics.horizontalAdvance(QString::number(m_sp.frequency));
     int height = metrics.height();
     painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
-    painter->drawText(QPointF(this->rect().width()/2-width/2,this->rect().height()-height/4),QString::number(m_sp.frequency));
+    painter->drawText(QPointF(this->rect().width()/2-width/2,this->rect().height()-height/2),QString::number(m_sp.frequency));
 
 }

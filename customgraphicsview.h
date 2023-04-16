@@ -4,6 +4,7 @@
 #include<QtGui>
 #include<QGraphicsView>
 #include "block.h"
+#include "graphicseye.h"
 
 #define TRACK_IDLE_MODE  0
 #define TRACK_MOVE_MODE  1
@@ -32,6 +33,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
     QList<Block *> getSelectedBlocks();
     QList<Block *> getAllBlocks();

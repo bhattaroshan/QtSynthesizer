@@ -30,16 +30,22 @@ MainWindow::MainWindow(QWidget *parent)
 
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
-    QPushButton *btn2 = createIconButton(":/icons/play.png");
-    buttonsLayout->addWidget(btn2);
+    QPushButton *playButton = createIconButton(":/icons/play.png");
+    QPushButton *graphVisibleButton = createIconButton(":/icons/eye-visible.png");
+    buttonsLayout->addWidget(playButton);
+    buttonsLayout->addWidget(graphVisibleButton);
 
-    connect(btn2,&QPushButton::clicked,this,&MainWindow::playSignal);
+
+    QHBoxLayout *mainButtonLayout = new QHBoxLayout();
+    mainButtonLayout->addLayout(buttonsLayout);
+
+    connect(playButton,&QPushButton::clicked,this,&MainWindow::playSignal);
 
 
     m_graph = new Graph(signal->getSignal());
 
     mainLayout->addWidget(m_graph);
-    mainLayout->addLayout(buttonsLayout);
+    mainLayout->addLayout(mainButtonLayout);
     mainLayout->addWidget(graphicsView);
 
     createDockView();
@@ -195,7 +201,7 @@ void MainWindow::addTrack(int frequency)
         }
     }
 
-    int blockX=0,blockY=20;
+    int blockX=100,blockY=30;
     if(minY>0 and maxFarthest>0){
         blockX = maxFarthest;
         blockY = minY;
@@ -251,6 +257,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
+    scene->setSceneRect(0,0,this->width(),this->height());
     resizeSlot();
 
     QMainWindow::resizeEvent(event);
