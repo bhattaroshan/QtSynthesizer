@@ -154,6 +154,9 @@ void MainWindow::onMenuAction_Open(){
         qreal y = f.toObject().value("y").toDouble();
         qreal width = f.toObject().value("width").toDouble();
         qreal harmonics = f.toObject().value("harmonics").toDouble();
+        qreal attack = f.toObject().value("attack").toDouble();
+        qreal decay = f.toObject().value("decay").toDouble();
+        qreal release = f.toObject().value("release").toDouble();
 
         SignalProperties sp;
         sp.amplitude = amplitude;
@@ -163,6 +166,10 @@ void MainWindow::onMenuAction_Open(){
         sp.y = y;
         sp.width = width;
         sp.harmonics = harmonics;
+        sp.attack = attack;
+        sp.decay = decay;
+        sp.release = release;
+
 
         Block *b = new Block(sp);
         scene->addItem(b);
@@ -195,6 +202,10 @@ void MainWindow::onMenuAction_Save()
         trackInfo.insert("y",sp.y);
         trackInfo.insert("width",sp.width);
         trackInfo.insert("harmonics",sp.harmonics);
+        trackInfo.insert("attack",sp.attack);
+        trackInfo.insert("decay",sp.decay);
+        trackInfo.insert("release",sp.release);
+
         arrayObject.append(trackInfo);
     }
 
@@ -233,7 +244,7 @@ void MainWindow::addTrack(int frequency)
         }
     }
 
-    int blockX=100,blockY=30;
+    int blockX=30,blockY=30;
     if(minY>0 and maxFarthest>0){
         blockX = maxFarthest;
         blockY = minY;
@@ -243,6 +254,9 @@ void MainWindow::addTrack(int frequency)
     sp.x = blockX;
     sp.y = blockY;
     sp.frequency = frequency;
+    sp.attack = 1;
+    sp.decay = 1;
+    sp.release = 1;
 
     Block *b = new Block(sp);
     b->setColor(setBrushFromFrequency(frequency));
@@ -281,7 +295,7 @@ void MainWindow::updateGraph(){
         sp = b->getBlockProperties();
         sp.width = trackWidth;
         auto sig = signal->generateSinWave(sp);
-        signal->addADSREnvelope(sig,10,10,10);
+        signal->addADSREnvelope(sig,sp.attack,sp.decay,sp.release);
         signal->addSignalToContainer(sig,sp.x*441-30*441);
     }
     signal->normalizeSignal();

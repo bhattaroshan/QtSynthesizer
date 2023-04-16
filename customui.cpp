@@ -68,10 +68,14 @@ void MainWindow::createTrackWidget(){
 
             if(m_timeSpin!=nullptr) delete m_timeSpin;
             m_timeSpin = new QSpinBox();
-            m_timeSpin->setRange(300,100000);
+            m_timeSpin->setRange(10,100000);
             m_timeSpin->setValue(time);
             auto timeLambda = [=](){
-                updateGraph();
+                qreal value = m_timeSpin->value();
+                if(track->sceneBoundingRect().width()*10!=value){
+                    track->setRect(0,0,value/10,track->sceneBoundingRect().height());
+                    updateGraph();
+                }
             };
             connect(m_timeSpin,&QSpinBox::valueChanged,this,timeLambda);
             connect(m_timeSpin,&QSpinBox::editingFinished,this,timeLambda);
@@ -148,6 +152,71 @@ void MainWindow::createTrackWidget(){
             harmonicsLayout->addWidget(harmonicsLabel);
             harmonicsLayout->addWidget(harmonicsSpin);
 
+            QHBoxLayout *attackLayout = new QHBoxLayout();
+            QLabel *attackLabel = new QLabel("Attack");
+            QSpinBox *attackSpin = new QSpinBox();
+            attackSpin->setRange(1,100);
+            attackSpin->setValue(track->getAttack());
+
+
+            auto attackLambda = [=](){
+                qreal value = attackSpin->value();
+                if(value){
+                    track->setAttack(value);
+                    updateGraph();
+                }
+            };
+
+            connect(attackSpin,&QSpinBox::editingFinished,this,attackLambda);
+            connect(attackSpin,&QSpinBox::valueChanged,this,attackLambda);
+
+            attackLayout->addWidget(attackLabel);
+            attackLayout->addWidget(attackSpin);
+
+
+            QHBoxLayout *decayLayout = new QHBoxLayout();
+            QLabel *decayLabel = new QLabel("Decay");
+            QSpinBox *decaySpin = new QSpinBox();
+            decaySpin->setRange(1,100);
+            decaySpin->setValue(track->getDecay());
+
+
+            auto decayLambda = [=](){
+                qreal value = decaySpin->value();
+                if(value){
+                    track->setDecay(value);
+                    updateGraph();
+                }
+            };
+
+            connect(decaySpin,&QSpinBox::editingFinished,this,decayLambda);
+            connect(decaySpin,&QSpinBox::valueChanged,this,decayLambda);
+
+            decayLayout->addWidget(decayLabel);
+            decayLayout->addWidget(decaySpin);
+
+
+            QHBoxLayout *releaseLayout = new QHBoxLayout();
+            QLabel *releaseLabel = new QLabel("Release");
+            QSpinBox *releaseSpin = new QSpinBox();
+            releaseSpin->setRange(1,100);
+            releaseSpin->setValue(track->getRelease());
+
+
+            auto releaseLambda = [=](){
+                qreal value = releaseSpin->value();
+                if(value){
+                    track->setRelease(value);
+                    updateGraph();
+                }
+            };
+
+            connect(releaseSpin,&QSpinBox::editingFinished,this,releaseLambda);
+            connect(releaseSpin,&QSpinBox::valueChanged,this,releaseLambda);
+
+            releaseLayout->addWidget(releaseLabel);
+            releaseLayout->addWidget(releaseSpin);
+
             QHBoxLayout *colorLayout = new QHBoxLayout();
             QLabel *colorLabel = new QLabel("Track Color");
             QPushButton *colorBtn = createIconButton(":/icons/color-picker.png");
@@ -184,6 +253,9 @@ void MainWindow::createTrackWidget(){
             m_trackMainLayout->addLayout(amplitudeLayout);
             m_trackMainLayout->addLayout(phaseLayout);
             m_trackMainLayout->addLayout(harmonicsLayout);
+            m_trackMainLayout->addLayout(attackLayout);
+            m_trackMainLayout->addLayout(decayLayout);
+            m_trackMainLayout->addLayout(releaseLayout);
             m_trackMainLayout->addLayout(colorLayout);
             m_trackMainLayout->addLayout(deleteLayout);
             m_trackMainLayout->addSpacerItem(spacer);

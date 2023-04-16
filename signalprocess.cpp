@@ -52,13 +52,17 @@ void SignalProcess::addSignalToContainer(QVector<QPointF> &signal, int start)
 
 void SignalProcess::addADSREnvelope(QVector<QPointF> &signal, qreal attackPercent, qreal decayPercent, qreal releasePercent)
 {
-    if(attackPercent>100) attackPercent = 100;
-    if(decayPercent>100) decayPercent = 100;
-    if(releasePercent>100) releasePercent = 100;
+    if(attackPercent>=100) attackPercent = 99;
+    if(decayPercent>=100) decayPercent = 99;
+    if(releasePercent>=100) releasePercent = 99;
 
     qreal attackLength = int((attackPercent*signal.size())/100);
     qreal decayLength = int((attackLength*decayPercent)/100);
     qreal releaseLength = int((releasePercent*signal.size())/100);
+
+    if(attackLength<=0) attackLength = 1;
+    if(decayLength<=0) decayLength = 1;
+    if(releaseLength<=0) releaseLength = 1;
 
     qreal attackSlope = 1.0/attackLength;
     qreal decaySlope = attackSlope; //assume decaySlope same as attackSlope

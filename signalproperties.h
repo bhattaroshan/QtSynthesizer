@@ -11,11 +11,14 @@ struct SignalProperties{  	//signal properties with default values
     qreal amplitude 		= 1.0;
     qreal phase 			= 0.0;
     qreal harmonics 		= 0;
-    qreal width 			= 10; //sample determines the width
+    qreal width 			= 100; //sample determines the width
     qreal attackPercent 	= 10;
     qreal decayPercent 		= 20;
     qreal releasePercent	= 10;
     QColor color 			= QColor(200,50,50);
+    qreal attack			= 1;
+    qreal decay				= 1;
+    qreal release			= 1;
 };
 
 #endif

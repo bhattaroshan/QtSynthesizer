@@ -23,14 +23,20 @@ public:
     QColor getColor(){return m_sp.color;}
     qreal getHarmonics(){return m_sp.harmonics;}
     qreal getAmplitude(){return m_sp.amplitude;}
+    qreal getAttack(){return m_sp.attack;}
+    qreal getDecay(){return m_sp.decay;}
+    qreal getRelease(){return m_sp.release;}
 
     void setX(qreal x){m_sp.x = x;}
     void setY(qreal y){m_sp.y = y;}
     void setWidth(qreal width){m_sp.width=width;}
-    void setFrequency(qreal frequency){m_sp.frequency=frequency;};
+    void setFrequency(qreal frequency){m_sp.frequency=frequency;update();}
     void setColor(QColor color){m_sp.color=color;};
     void setHarmonics(qreal harmonics){ m_sp.harmonics = harmonics;}
-    void setAmplitude(qreal amplitude){ m_sp.amplitude = amplitude;};
+    void setAmplitude(qreal amplitude){ m_sp.amplitude = amplitude;}
+    void setAttack(qreal attack){m_sp.attack=attack;}
+    void setDecay(qreal decay){m_sp.decay=decay;}
+    void setRelease(qreal release){m_sp.release=release;}
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
