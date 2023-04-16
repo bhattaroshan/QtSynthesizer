@@ -10,7 +10,7 @@ SignalProcess::SignalProcess()
 
 QVector<QPointF> SignalProcess::generateSinWave(SignalProperties sp){
 
-    qreal samples = sp.samples;
+    qreal samples = sp.width*m_sampleRate/100;
     qreal frequency = sp.frequency;
     qreal amplitude = sp.amplitude;
     qreal harmonics = sp.harmonics;
@@ -19,7 +19,7 @@ QVector<QPointF> SignalProcess::generateSinWave(SignalProperties sp){
     qreal step = 1.0/m_sampleRate;
     QVector<QPointF> res(samples,QPointF(0.0,0.0));
 
-    for(int h=0;h<=sp.harmonics;++h){
+    for(int h=0;h<=harmonics;++h){
         for(int x=0;x<samples;++x){
             qreal realHarmonics = h+1;
             qreal realAmp = amplitude*qreal(1.0/realHarmonics);

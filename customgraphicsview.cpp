@@ -89,8 +89,9 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
     if(m_trackMoveMode != TRACK_IDLE_MODE){ //resizing tracks
         QList<Block*> blocks = getAllBlocks();
-        qreal width = this->width();
-        qreal height = this->height();
+        qreal width = this->parentWidget()->width();
+        qreal height = this->parentWidget()->height();
+        qDebug()<<"width = "<<width<<" and height = "<<height;
         for(auto block:blocks){
             if(block->sceneBoundingRect().right()>width){
                 width = block->sceneBoundingRect().right();
@@ -143,7 +144,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     QList<Block*> collides = getCollidingItems(block,rect);
                     if(qAbs(distance)>=height and !collides.size()){
                         y -= height;
-                        y = qMax(0,y);
+                        y = qMax(30,y);
                         m_lastMousePressPos = QPointF(m_lastMousePressPos.x(),mapToScene(event->pos()).y());
                     }
                 }else if(delta.y()>0){//dragging down
@@ -156,15 +157,20 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                 }
             }
 
-
+            block->setX(x);
+            block->setY(y);
             block->setPos(x,y);
 
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
+        qreal width = m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()
+                      -m_lastMouseMovePos.x();
+
         m_lastPressedBlock->setRect(0,
                                     0,
-                                    m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()-m_lastMouseMovePos.x(),
+                                    width,
                                     m_lastPressedBlock->sceneBoundingRect().height());
+        m_lastPressedBlock->setWidth(width);
     }
 
     m_lastMouseMovePos = mapToScene(event->pos());
@@ -197,7 +203,22 @@ void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
 
 void CustomGraphicsView::resizeEvent(QResizeEvent *event)
 {
-    this->scene()->setSceneRect(0,0,this->width(),this->height());
+    //this->scene()->setSceneRect(0,0,this->width(),this->height());
+    //this->scene()->setSceneRect(0,0,2000,2000);
+    QList<Block*> blocks = getAllBlocks();
+    qreal width = this->parentWidget()->width();
+    qreal height = this->parentWidget()->height();
+    qDebug()<<"width = "<<width<<" and height = "<<height;
+    for(auto block:blocks){
+        if(block->sceneBoundingRect().right()>width){
+            width = block->sceneBoundingRect().right();
+        }
+        if(block->sceneBoundingRect().bottom()>height){
+            height =  block->sceneBoundingRect().bottom();
+        }
+    }
+
+    this->setSceneRect(0,0,width+100,height+50);
     QGraphicsView::resizeEvent(event);
 }
 
@@ -211,7 +232,7 @@ void CustomGraphicsView::showEvent(QShowEvent *event)
     scene()->addItem(line);
 
 
-    for(int i=0;i<100;i++){
+    for(int i=1;i<100;i++){
         GraphicsEye *eye = new GraphicsEye();
         eye->setPos(0,i*30);
         eye->setZValue(0);
@@ -222,6 +243,16 @@ void CustomGraphicsView::showEvent(QShowEvent *event)
         hline1->setPen(QColor(128,128,128,30));
         hline1->setZValue(1);
         scene()->addItem(hline1);
+    }
+
+    for(int i=0;i<1000;++i){
+        QGraphicsLineItem *scale = new QGraphicsLineItem();
+        if(i*5%50==0)
+            scale->setLine(30+i*5,30,30+i*5,10);
+        else
+            scale->setLine(30+i*5,30,30+i*5,20);
+        scale->setPen(QColor(128,128,128,50));
+        scene()->addItem(scale);
     }
 
 

@@ -7,26 +7,17 @@
 #include <QStyle>
 #include <QApplication>
 
-Block::Block(int x,int y,int frequency, QGraphicsItem *parent)
+Block::Block(SignalProperties sp, QGraphicsItem *parent)
     :QGraphicsRectItem(parent)
 {
-    m_sp.frequency = frequency;
-    m_sp.x = x;
-    m_sp.y = y;
-    m_sp.harmonics = 0;
-    m_sp.attackPercent = 0;
-    m_sp.decayPercent = 0;
-    m_sp.releasePercent = 0;
-    m_sp.phase = 0;
-    m_sp.samples = 44100;
-    m_sp.amplitude = 1.0;
+    m_sp = sp;
 
     setFlags(ItemIsSelectable);
 
     setPen(Qt::NoPen);
     setBrush(m_sp.color);
     setRect(0,0,100,30);
-    setPos(x,y);
+    setPos(sp.x,sp.y);
     setAcceptHoverEvents(true);
 }
 

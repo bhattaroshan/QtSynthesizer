@@ -9,6 +9,8 @@ class GraphicsEye:public QObject,public QGraphicsItem
     Q_OBJECT
 public:
     GraphicsEye(QGraphicsItem *parent=nullptr);
+    void setActive(bool state){m_isActive=state;}
+    bool isActive(){return m_isActive;};
 
 signals:
     void clicked();
@@ -22,6 +24,7 @@ protected:
 
     QColor m_greenColor = QColor(0x0d6534);
     QColor m_greyColor = QColor(0x7c7e83);
+    bool m_isActive = true;
 
 };
 

@@ -129,6 +129,13 @@ void MainWindow::loadMenuBar()
 }
 
 void MainWindow::onMenuAction_Open(){
+
+    QList<Block*> tracks = getAllTracks();
+    for(auto track:tracks){
+        scene->removeItem(track);
+    }
+
+
     QFile file("test.json");
     if(!file.open(QIODevice::ReadOnly)){
         qDebug()<<"couldn't load the file";
@@ -137,39 +144,64 @@ void MainWindow::onMenuAction_Open(){
     QByteArray data = file.readAll();
     QJsonDocument doc = QJsonDocument::fromJson(data);
     QJsonObject obj = doc.object();
+    QJsonArray array = obj.value("props").toArray();
 
-    for(auto o:obj){
-        qDebug()<<o;
+    for(auto f:array){
+        qreal amplitude = f.toObject().value("amplitude").toDouble();
+        qreal frequency = f.toObject().value("frequency").toDouble();
+        QColor color = QColor(f.toObject().value("color").toString());
+        qreal x = f.toObject().value("x").toDouble();
+        qreal y = f.toObject().value("y").toDouble();
+        qreal width = f.toObject().value("width").toDouble();
+        qreal harmonics = f.toObject().value("harmonics").toDouble();
+
+        SignalProperties sp;
+        sp.amplitude = amplitude;
+        sp.frequency = frequency;
+        sp.color = color;
+        sp.x = x;
+        sp.y = y;
+        sp.width = width;
+        sp.harmonics = harmonics;
+
+        Block *b = new Block(sp);
+        scene->addItem(b);
+        connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
+        connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
     }
+    updateGraph();
+
 }
 
 void MainWindow::onMenuAction_Save()
 {
     QList<Block*> tracks = getAllTracks();
-
-    QJsonObject jsonObject;
-    QJsonObject detailsObject;
     QJsonArray arrayObject;
 
-    QJsonObject track1;
-    QColor color(128,128,128);
-    track1.insert("x",0);
-    track1.insert("color",color.name());
-    track1.insert("width",500);
+    for(auto track:tracks){
+        SignalProperties sp = track->getBlockProperties();
+        qDebug()<<"amplitude : "<<sp.amplitude;
+        qDebug()<<"frequency : "<<sp.frequency;
+        qDebug()<<"phase : "<<sp.phase;
+        qDebug()<<"color : "<<sp.color;
+        qDebug()<<"x : "<<sp.x;
+        qDebug()<<"width : "<<sp.width;
 
-    QJsonObject track2;
-    QColor color2(255,0,0);
-    track2.insert("x",45);
-    track2.insert("color",color.name());
-    track2.insert("width",1500);
+        QJsonObject trackInfo;
+        trackInfo.insert("amplitude",sp.amplitude);
+        trackInfo.insert("frequency",sp.frequency);
+        trackInfo.insert("color",sp.color.name());
+        trackInfo.insert("x",sp.x);
+        trackInfo.insert("y",sp.y);
+        trackInfo.insert("width",sp.width);
+        trackInfo.insert("harmonics",sp.harmonics);
+        arrayObject.append(trackInfo);
+    }
 
-    arrayObject.append(track1);
-    arrayObject.append(track2);
+    QJsonObject mainObject;
+    mainObject.insert("props",arrayObject);
 
-
-    jsonObject.insert("props",arrayObject);
-
-    QJsonDocument jsonDoc(jsonObject);
+    QJsonDocument jsonDoc(mainObject);
     QFile file("test.json");
     if(!file.open(QIODevice::WriteOnly)){
         qDebug()<<"error writing file";
@@ -207,7 +239,12 @@ void MainWindow::addTrack(int frequency)
         blockY = minY;
     }
 
-    Block *b = new Block(blockX,blockY,frequency);
+    SignalProperties sp;
+    sp.x = blockX;
+    sp.y = blockY;
+    sp.frequency = frequency;
+
+    Block *b = new Block(sp);
     b->setColor(setBrushFromFrequency(frequency));
     scene->addItem(b);
     connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
@@ -242,10 +279,10 @@ void MainWindow::updateGraph(){
         int trackWidth = b->boundingRect().width();
         SignalProperties sp;
         sp = b->getBlockProperties();
-        sp.samples = trackWidth*441;
+        sp.width = trackWidth;
         auto sig = signal->generateSinWave(sp);
         signal->addADSREnvelope(sig,10,10,10);
-        signal->addSignalToContainer(sig,b->x()*441);
+        signal->addSignalToContainer(sig,sp.x*441-30*441);
     }
     signal->normalizeSignal();
     m_graph->update(signal->getSignal());
@@ -257,8 +294,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    scene->setSceneRect(0,0,this->width(),this->height());
-    resizeSlot();
+
+    //scene->setSceneRect(0,0,this->width(),this->height());
 
     QMainWindow::resizeEvent(event);
 }

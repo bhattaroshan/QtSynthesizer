@@ -18,7 +18,14 @@ void GraphicsEye::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setPen(QColor(128,128,128,50));
     //painter->drawRoundedRect(boundingRect(),2,2);
     painter->drawRect(boundingRect());
-    QImage image(":/icons/eye-visible.png");
+    QImage image;
+
+    if(m_isActive){
+       image.load(":/icons/eye-visible.png");
+    }else{
+        image.load(":/icons/eye-invisible.png");
+    }
+
     QImage scaledImage = image.scaled(QSize(18,18),Qt::KeepAspectRatio);
     painter->drawImage(boundingRect().width()/2-scaledImage.width()/2,
                        boundingRect().height()/2-scaledImage.height()/2,
@@ -28,6 +35,8 @@ void GraphicsEye::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 void GraphicsEye::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit clicked();
+    m_isActive = !m_isActive;
+    update();
     QGraphicsItem::mousePressEvent(event);
 }
 
