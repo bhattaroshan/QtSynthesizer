@@ -31,9 +31,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
+    QPushButton *rewindButton = createIconButton(":/icons/rewind-backward.png");
     QPushButton *playButton = createIconButton(":/icons/play.png");
+    QPushButton *forwardButton = createIconButton(":/icons/rewind-forward.png");
     QPushButton *graphVisibleButton = createIconButton(":/icons/eye-visible.png");
+    buttonsLayout->addWidget(rewindButton);
     buttonsLayout->addWidget(playButton);
+    buttonsLayout->addWidget(forwardButton);
     buttonsLayout->addWidget(graphVisibleButton);
 
 
@@ -41,6 +45,9 @@ MainWindow::MainWindow(QWidget *parent)
     mainButtonLayout->addLayout(buttonsLayout);
 
     connect(playButton,&QPushButton::clicked,this,&MainWindow::playSignal);
+    connect(rewindButton,&QPushButton::clicked,this,[=](){
+        graphicsView->getSeekBar()->setPos(25,15);
+    });
 
 
     m_graph = new Graph(signal->getSignal());
@@ -75,6 +82,9 @@ void MainWindow::playSignal(){
     if(m_audio!=nullptr) delete m_audio;
     m_audio = new QAudioSink(format);
 
+    qreal currentSeekPosition = graphicsView->getSeekBar()->x();
+    //qreal startSampleFromSeekPos = (currentSeekPosition-30)*
+
     if(m_buffer!=nullptr) delete m_buffer;
     m_buffer = new QBuffer();
 
@@ -92,7 +102,7 @@ void MainWindow::playSignal(){
     QTimer *timer = new QTimer(this);
     connect(timer,&QTimer::timeout,this,[=](){
         qreal totalTime = signalData.size()/44.1;
-        qreal remBytes = m_audio->processedUSecs()/1000;
+        qreal remBytes = m_audio->elapsedUSecs()/1000;
         qreal realWidth = (signalData.size()/44100.0)*100;
         qreal currentWidth = (remBytes/1000)*100;
         qreal x_pos = 30+currentWidth;

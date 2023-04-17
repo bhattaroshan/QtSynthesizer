@@ -4,5 +4,7 @@
         <file>play.png</file>
         <file>eye-invisible.png</file>
         <file>eye-visible.png</file>
+        <file>rewind-backward.png</file>
+        <file>rewind-forward.png</file>
     </qresource>
 </RCC>

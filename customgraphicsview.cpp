@@ -260,7 +260,7 @@ void CustomGraphicsView::showEvent(QShowEvent *event)
 
     m_seek = new GraphicsSeek();
     m_seek->setZValue(2);
-    m_seek->setPos(50,15);
+    m_seek->setPos(25,15);
     scene()->addItem(m_seek);
 
 
