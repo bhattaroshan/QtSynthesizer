@@ -11,6 +11,7 @@
 #include <QDoubleSpinBox>
 #include <QJsonDocument>
 #include <QFile>
+#include <QAudioBuffer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -87,6 +88,28 @@ void MainWindow::playSignal(){
     m_buffer->setData(reinterpret_cast<const char*>(soundData.constData()),soundData.size()*sizeof(float));
     m_buffer->open(QIODevice::ReadOnly);
     m_audio->start(m_buffer);
+
+    QTimer *timer = new QTimer(this);
+    connect(timer,&QTimer::timeout,this,[=](){
+        qreal totalTime = signalData.size()/44.1;
+        qreal remBytes = m_audio->processedUSecs()/1000;
+        qreal realWidth = (signalData.size()/44100.0)*100;
+        qreal currentWidth = (remBytes/1000)*100;
+        qreal x_pos = 30+currentWidth;
+        graphicsView->getSeekBar()->setPos(x_pos,15);
+        if(m_lastProcessed!=(remBytes*100)/totalTime){
+            m_lastProcessed = (remBytes*100)/totalTime;
+
+            qDebug()<<"i am called";
+            if(m_lastProcessed >= 100){
+                timer->stop();
+                delete timer;
+                qDebug()<<"this should be my last time";
+            }
+        }
+    });
+    timer->start(10);
+
 }
 
 QColor MainWindow::setBrushFromFrequency(int frequency)
@@ -229,7 +252,6 @@ void MainWindow::onAddTrackClicked(){
 void MainWindow::addTrack(int frequency)
 {
     QList<Block*> allTracks = getAllTracks();
-    qDebug()<<allTracks.size();
     //get minimum y, get minimum farthest
     qreal minY = -1;
     qreal maxFarthest = -1;

@@ -24,6 +24,7 @@ set(PROJECT_SOURCES
     customgraphicsview.h customgraphicsview.cpp
     customui.cpp
     graphicseye.h graphicseye.cpp
+    graphicsseek.h graphicsseek.cpp
     signalproperties.h
     assets/assets.qrc
 )

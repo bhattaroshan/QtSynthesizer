@@ -92,5 +92,7 @@ private:
     QBuffer *m_buffer = nullptr;
 
     QList<Block*> m_selectedTracks;
+
+    qreal m_lastProcessed = 0;
 };
 #endif // MAINWINDOW_H

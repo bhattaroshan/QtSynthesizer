@@ -5,6 +5,7 @@
 #include<QGraphicsView>
 #include "block.h"
 #include "graphicseye.h"
+#include "graphicsseek.h"
 
 #define TRACK_IDLE_MODE  0
 #define TRACK_MOVE_MODE  1
@@ -15,6 +16,7 @@ class CustomGraphicsView:public QGraphicsView
     Q_OBJECT
 public:
     CustomGraphicsView(QWidget *parent=nullptr);
+    GraphicsSeek *getSeekBar(){return m_seek;}
 
 signals:
     void trackClicked();
@@ -42,6 +44,7 @@ protected:
     QPointF m_lastMousePressPos;
     int m_trackMoveMode = 0;
     Block *m_lastPressedBlock = nullptr;
+    GraphicsSeek *m_seek = nullptr;
 
 signals:
     void onMousePress();

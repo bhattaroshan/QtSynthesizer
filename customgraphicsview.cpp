@@ -29,7 +29,12 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
                 m_trackMoveMode = TRACK_MOVE_MODE;
             }
         }else{
-            emit offTrackClicked();
+            //either seekbar or offtrackclicked
+            if(m_lastMousePressPos.y()<=30){
+                m_seek->setPos(m_lastMousePressPos.x(),15);
+            }else{ //offtrack clicked
+                emit offTrackClicked();
+            }
             m_trackMoveMode = TRACK_IDLE_MODE;
         }
 
@@ -91,7 +96,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
         QList<Block*> blocks = getAllBlocks();
         qreal width = this->parentWidget()->width();
         qreal height = this->parentWidget()->height();
-        qDebug()<<"width = "<<width<<" and height = "<<height;
         for(auto block:blocks){
             if(block->sceneBoundingRect().right()>width){
                 width = block->sceneBoundingRect().right();
@@ -208,7 +212,6 @@ void CustomGraphicsView::resizeEvent(QResizeEvent *event)
     QList<Block*> blocks = getAllBlocks();
     qreal width = this->parentWidget()->width();
     qreal height = this->parentWidget()->height();
-    qDebug()<<"width = "<<width<<" and height = "<<height;
     for(auto block:blocks){
         if(block->sceneBoundingRect().right()>width){
             width = block->sceneBoundingRect().right();
@@ -254,6 +257,11 @@ void CustomGraphicsView::showEvent(QShowEvent *event)
         scale->setPen(QColor(128,128,128,50));
         scene()->addItem(scale);
     }
+
+    m_seek = new GraphicsSeek();
+    m_seek->setZValue(2);
+    m_seek->setPos(50,15);
+    scene()->addItem(m_seek);
 
 
     QGraphicsView::showEvent(event);
