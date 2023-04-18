@@ -251,6 +251,7 @@ bool CustomGraphicsView::eventFilter(QObject *watched, QEvent *event)
                     sp.x += m_seek->x()-m_seekBarStartPos;
                     emit addTrack(sp);
                 }
+                emit viewUpdated();
             }
         }
     }

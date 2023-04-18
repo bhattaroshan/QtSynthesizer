@@ -291,6 +291,7 @@ void MainWindow::onAddTrackClicked(){
 
 
     addTrack(sp);
+    updateGraph();
 }
 
 void MainWindow::addTrack(SignalProperties sp)
@@ -301,7 +302,6 @@ void MainWindow::addTrack(SignalProperties sp)
     scene->addItem(b);
     connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
     connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
-    updateGraph();
 
 }
 
