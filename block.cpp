@@ -21,6 +21,11 @@ Block::Block(SignalProperties sp, QGraphicsItem *parent)
     setAcceptHoverEvents(true);
 }
 
+SignalProperties Block::getBlockProperties(){
+    m_sp.width = this->sceneBoundingRect().width();
+    return m_sp;
+}
+
 void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit onItemSingleClick();

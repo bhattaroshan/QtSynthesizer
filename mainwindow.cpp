@@ -352,6 +352,14 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     QMainWindow::resizeEvent(event);
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key()==Qt::Key_Space){
+        playSignal();
+    }
+    QMainWindow::keyPressEvent(event);
+}
+
 QPair<qreal,qreal> MainWindow::resizeSlot(){
 //    qreal w = this->width();
 //    qreal h = this->height();

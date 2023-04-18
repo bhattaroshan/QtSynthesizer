@@ -13,7 +13,7 @@ public:
     void getAllBlocksInfo(QList<QRectF> blockRect);
 
 
-    SignalProperties getBlockProperties(){return m_sp;};
+    SignalProperties getBlockProperties();;
     void setBlockProperties(SignalProperties sp){m_sp=sp;};
 
     qreal getX(){return m_sp.x;}
