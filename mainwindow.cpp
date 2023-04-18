@@ -105,7 +105,7 @@ void MainWindow::playSignal(){
         qreal remBytes = m_audio->elapsedUSecs()/1000;
         qreal realWidth = (signalData.size()/44100.0)*100;
         qreal currentWidth = (remBytes/1000)*100;
-        qreal x_pos = 30+currentWidth;
+        qreal x_pos = 30+currentWidth-5;
         graphicsView->getSeekBar()->setPos(x_pos,15);
         if(m_lastProcessed!=(remBytes*100)/totalTime){
             m_lastProcessed = (remBytes*100)/totalTime;

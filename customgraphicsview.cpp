@@ -6,7 +6,6 @@ CustomGraphicsView::CustomGraphicsView(QWidget *parent)
     :QGraphicsView(parent)
 {
     setDragMode(QGraphicsView::RubberBandDrag);
-
 }
 
 void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
@@ -31,8 +30,10 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
         }else{
             //either seekbar or offtrackclicked
             if(m_lastMousePressPos.y()<=30){
+                setDragMode(QGraphicsView::NoDrag);
                 m_seek->setPos(m_lastMousePressPos.x(),15);
             }else{ //offtrack clicked
+                setDragMode(QGraphicsView::RubberBandDrag);
                 emit offTrackClicked();
             }
             m_trackMoveMode = TRACK_IDLE_MODE;
@@ -91,6 +92,7 @@ QList<Block*> CustomGraphicsView::getCollidingItems(Block *block, QRectF rect){
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF currentMousePosition = mapToScene(event->pos());
+
 
     if(m_trackMoveMode != TRACK_IDLE_MODE){ //resizing tracks
         QList<Block*> blocks = getAllBlocks();

@@ -105,6 +105,12 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
     }
     painter->drawRect(this->rect());
+    QPolygon polygon;
+    qreal x = rect().width()-2;
+    qreal y = rect().height()-2;
+    painter->setBrush(QColor(200,200,200));
+    polygon<<QPoint(x,y)<<QPoint(x,y-6)<<QPoint(x-6,y)<<QPoint(x,y);
+    painter->drawPolygon(polygon);
 
     QFont font = QApplication::font();
     QFontMetrics metrics(font);
