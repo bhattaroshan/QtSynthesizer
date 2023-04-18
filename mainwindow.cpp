@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(graphicsView,&CustomGraphicsView::trackClicked,this,&MainWindow::createTrackWidget);
     connect(graphicsView,&CustomGraphicsView::offTrackClicked,this,&MainWindow::createGeneralWidget);
     connect(graphicsView,&CustomGraphicsView::viewUpdated,this,&MainWindow::updateGraph);
+    connect(graphicsView,&CustomGraphicsView::addTrack,this,&MainWindow::addTrack);
 
 
     graphicsView->setScene(scene);
@@ -32,11 +33,11 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
     QPushButton *rewindButton = createIconButton(":/icons/rewind-backward.png");
-    QPushButton *playButton = createIconButton(":/icons/play.png");
+    m_playButton = createIconButton(":/icons/play.png");
     QPushButton *forwardButton = createIconButton(":/icons/rewind-forward.png");
     QPushButton *graphVisibleButton = createIconButton(":/icons/eye-visible.png");
     buttonsLayout->addWidget(rewindButton);
-    buttonsLayout->addWidget(playButton);
+    buttonsLayout->addWidget(m_playButton);
     buttonsLayout->addWidget(forwardButton);
     buttonsLayout->addWidget(graphVisibleButton);
 
@@ -44,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     QHBoxLayout *mainButtonLayout = new QHBoxLayout();
     mainButtonLayout->addLayout(buttonsLayout);
 
-    connect(playButton,&QPushButton::clicked,this,&MainWindow::playSignal);
+    connect(m_playButton,&QPushButton::clicked,this,&MainWindow::playSignal);
     connect(rewindButton,&QPushButton::clicked,this,[=](){
         graphicsView->getSeekBar()->setPos(25,15);
     });
@@ -98,9 +99,10 @@ void MainWindow::playSignal(){
     m_buffer->setData(reinterpret_cast<const char*>(soundData.constData()),soundData.size()*sizeof(float));
     m_buffer->open(QIODevice::ReadOnly);
     m_audio->start(m_buffer);
-
-    QTimer *timer = new QTimer(this);
-    connect(timer,&QTimer::timeout,this,[=](){
+    if(signalData.size()){
+         m_playButton->setIcon(QIcon(":/icons/pause.png"));
+        QTimer *timer = new QTimer(this);
+        connect(timer,&QTimer::timeout,this,[=](){
         qreal totalTime = signalData.size()/44.1;
         qreal remBytes = m_audio->elapsedUSecs()/1000;
         qreal realWidth = (signalData.size()/44100.0)*100;
@@ -110,16 +112,15 @@ void MainWindow::playSignal(){
         if(m_lastProcessed!=(remBytes*100)/totalTime){
             m_lastProcessed = (remBytes*100)/totalTime;
 
-            qDebug()<<"i am called";
             if(m_lastProcessed >= 100){
+                m_playButton->setIcon(QIcon(":/icons/play.png"));
                 timer->stop();
                 delete timer;
-                qDebug()<<"this should be my last time";
             }
         }
-    });
-    timer->start(10);
-
+        });
+        timer->start(10);
+    }
 }
 
 QColor MainWindow::setBrushFromFrequency(int frequency)
@@ -256,11 +257,8 @@ void MainWindow::onMenuAction_Save()
 }
 
 void MainWindow::onAddTrackClicked(){
-    addTrack(220);
-}
+    SignalProperties sp;
 
-void MainWindow::addTrack(int frequency)
-{
     QList<Block*> allTracks = getAllTracks();
     //get minimum y, get minimum farthest
     qreal minY = -1;
@@ -276,22 +274,30 @@ void MainWindow::addTrack(int frequency)
         }
     }
 
-    int blockX=30,blockY=30;
+    int blockX=30,blockY=m_timelineHeight;
     if(minY>0 and maxFarthest>0){
         blockX = maxFarthest;
         blockY = minY;
     }
 
-    SignalProperties sp;
+
     sp.x = blockX;
     sp.y = blockY;
-    sp.frequency = frequency;
+    sp.frequency = 220;
     sp.attack = 1;
     sp.decay = 1;
     sp.release = 1;
 
+
+
+    addTrack(sp);
+}
+
+void MainWindow::addTrack(SignalProperties sp)
+{
+
     Block *b = new Block(sp);
-    b->setColor(setBrushFromFrequency(frequency));
+    b->setColor(setBrushFromFrequency(sp.frequency));
     scene->addItem(b);
     connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
     connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);

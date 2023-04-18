@@ -3,6 +3,8 @@
 
 #include<QtGui>
 #include<QGraphicsView>
+#include<QApplication>
+#include <QMimeData>
 #include "block.h"
 #include "graphicseye.h"
 #include "graphicsseek.h"
@@ -17,6 +19,7 @@ class CustomGraphicsView:public QGraphicsView
 public:
     CustomGraphicsView(QWidget *parent=nullptr);
     GraphicsSeek *getSeekBar(){return m_seek;}
+    qreal getSeekBarCenterPos();
 
 signals:
     void trackClicked();
@@ -34,6 +37,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+    bool eventFilter(QObject *watched,QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void showEvent(QShowEvent *event) override;
 
@@ -46,9 +50,16 @@ protected:
     Block *m_lastPressedBlock = nullptr;
     GraphicsSeek *m_seek = nullptr;
 
+    qreal m_timelineHeight = 30;
+    qreal m_seekBarHeight = 15;
+    qreal m_seekBarStartPos = 25;
+
+    bool m_isLeftButtonClicked = false;
+
 signals:
     void onMousePress();
     void viewUpdated();
+    void addTrack(SignalProperties);
 };
 
 #endif // CUSTOMGRAPHICSVIEW_H

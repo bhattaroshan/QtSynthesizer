@@ -43,7 +43,7 @@ protected:
 public slots:
     QPair<qreal,qreal> resizeSlot();
     void onAddTrackClicked();
-    void addTrack(int frequency);
+    void addTrack(SignalProperties sp);
     void onTrackSingleClicked();
     void updateGraph();
     QList<Block*> getAllTracks();
@@ -94,5 +94,9 @@ private:
     QList<Block*> m_selectedTracks;
 
     qreal m_lastProcessed = 0;
+
+    QPushButton *m_playButton = nullptr;
+    qreal m_playingStatus = 0; //zero means stopped, 1 means playing
+    qreal m_timelineHeight = 30;
 };
 #endif // MAINWINDOW_H

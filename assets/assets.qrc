@@ -6,5 +6,6 @@
         <file>eye-visible.png</file>
         <file>rewind-backward.png</file>
         <file>rewind-forward.png</file>
+        <file>pause.png</file>
     </qresource>
 </RCC>
