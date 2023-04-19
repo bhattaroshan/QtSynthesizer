@@ -41,7 +41,6 @@ MainWindow::MainWindow(QWidget *parent)
     buttonsLayout->addWidget(forwardButton);
     buttonsLayout->addWidget(graphVisibleButton);
 
-
     QHBoxLayout *mainButtonLayout = new QHBoxLayout();
     mainButtonLayout->addLayout(buttonsLayout);
 
@@ -204,11 +203,7 @@ void MainWindow::onMenuAction_Open(){
         sp.decay = decay;
         sp.release = release;
 
-
-        Block *b = new Block(sp);
-        scene->addItem(b);
-        connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
-        connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
+        addTrack(sp);
     }
     updateGraph();
 
@@ -296,13 +291,18 @@ void MainWindow::onAddTrackClicked(){
 
 void MainWindow::addTrack(SignalProperties sp)
 {
+    //optimize here
+    BlockProperties bp;
+    bp.startIndex = sp.x;
+    bp.signal = signal->generateSinWave(sp);
+    m_blocks.append(bp);
 
     Block *b = new Block(sp);
+    b->setSignal(m_blocks.last());
     b->setColor(setBrushFromFrequency(sp.frequency));
     scene->addItem(b);
-    connect(b,&Block::onItemSingleClick,this,&MainWindow::onTrackSingleClicked);
+    connect(b,&Block::clicked,this,&MainWindow::onTrackSingleClicked);
     connect(b,&Block::trackUpdated,this,&MainWindow::updateGraph);
-
 }
 
 
@@ -346,8 +346,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-
-    //scene->setSceneRect(0,0,this->width(),this->height());
 
     QMainWindow::resizeEvent(event);
 }

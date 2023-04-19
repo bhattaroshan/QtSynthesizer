@@ -45,6 +45,7 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     rect.setWidth(mFactor*rect.width());
     chart()->zoomIn(rect);
 
+    setMouseTracking(false);
 }
 
 Graph::~Graph(){

@@ -23,8 +23,6 @@
 #include "customgraphicsscene.h"
 #include "customgraphicsview.h"
 
-
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -99,5 +97,7 @@ private:
     QPushButton *m_playButton = nullptr;
     qreal m_playingStatus = 0; //zero means stopped, 1 means playing
     qreal m_timelineHeight = 30;
+
+    QVector<BlockProperties> m_blocks;
 };
 #endif // MAINWINDOW_H

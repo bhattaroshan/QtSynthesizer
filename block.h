@@ -5,16 +5,23 @@
 #include <QMenu>
 #include "signalproperties.h"
 
+struct BlockProperties{
+    QVector<QPointF> signal;
+    qreal startIndex;
+};
+
 class Block:public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
     Block(SignalProperties sp, QGraphicsItem *parent=nullptr);
+    void updateBlockProperties();
     void getAllBlocksInfo(QList<QRectF> blockRect);
 
 
-    SignalProperties getBlockProperties();;
-    void setBlockProperties(SignalProperties sp){m_sp=sp;};
+    SignalProperties getBlockProperties();
+    void setBlockProperties(SignalProperties sp){m_sp=sp;}
+    void setSignal(BlockProperties &bp){this->bp=&bp;}
 
     qreal getX(){return m_sp.x;}
     qreal getY(){return m_sp.y;}
@@ -52,12 +59,14 @@ protected:
 
     QPointF m_lastMouseClickPos = QPointF(0,0);
 
+    BlockProperties *bp; //just create a reference for faster processing
+
 public slots:
 
 signals:
     void onItemDrag(Block *item);
     void onItemDoubleClicked(int frequency,QColor color);
-    void onItemSingleClick();
+    void clicked();
     void trackUpdated();
 
 };

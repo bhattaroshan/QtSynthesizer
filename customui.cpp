@@ -231,8 +231,41 @@ void MainWindow::createTrackWidget(){
             colorLayout->addWidget(colorLabel);
             colorLayout->addWidget(colorBtn);
 
+            QHBoxLayout *applyLayout = new QHBoxLayout();
+            QPushButton *applyBtn = new QPushButton("Apply Changes");
+            applyBtn->setMinimumHeight(40);
+            applyBtn->setStyleSheet("QPushButton{"
+                                     "border-radius:5px;"
+                                     "border: 1px solid #409b40;"
+                                     "border-color: #40a540;"
+                                     "font-weight:700;"
+                                     "}"
+                                     "QPushButton:hover{"
+                                     "border-color:#57d457;"
+                                     "}"
+                                     "QPushButton:pressed{"
+                                     "border-color:#409b40;"
+                                    "}");
+
+            applyBtn->setCursor(Qt::PointingHandCursor);
+            applyLayout->addWidget(applyBtn);
+
             QHBoxLayout *deleteLayout = new QHBoxLayout();
             QPushButton *deleteBtn = new QPushButton("Delete Track");
+            deleteBtn->setMinimumHeight(40);
+            deleteBtn->setStyleSheet("QPushButton {"
+                                     "border-radius:5px;"
+                                     "border: 1px solid #b37436;"
+                                     "border-color: #ffa64d;"
+                                     "font-weight:700;"
+                                     "}"
+                                     "QPushButton:hover{"
+                                     "border-color:#eda660;"
+                                     "}"
+                                     "QPushButton:pressed{"
+                                     "border-color:#cc8f52;"
+                                     "}");
+            deleteBtn->setCursor(Qt::PointingHandCursor);
             connect(deleteBtn,&QPushButton::clicked,this,[=](){
                 auto response = QMessageBox::warning(this,"Warning!!!","Are you sure you want to delete this track ?",QMessageBox::Ok|QMessageBox::Cancel);
                 if(response == QMessageBox::Ok){
@@ -257,6 +290,7 @@ void MainWindow::createTrackWidget(){
             m_trackMainLayout->addLayout(decayLayout);
             m_trackMainLayout->addLayout(releaseLayout);
             m_trackMainLayout->addLayout(colorLayout);
+            m_trackMainLayout->addLayout(applyLayout);
             m_trackMainLayout->addLayout(deleteLayout);
             m_trackMainLayout->addSpacerItem(spacer);
 

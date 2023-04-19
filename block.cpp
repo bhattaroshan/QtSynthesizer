@@ -28,7 +28,7 @@ SignalProperties Block::getBlockProperties(){
 
 void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit onItemSingleClick();
+    emit clicked();
     QGraphicsRectItem::mousePressEvent(event);
 }
 

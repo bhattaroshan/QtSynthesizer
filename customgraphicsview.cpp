@@ -240,7 +240,6 @@ bool CustomGraphicsView::eventFilter(QObject *watched, QEvent *event)
         }else  if(e->modifiers()==Qt::ControlModifier and e->key()==Qt::Key_V){
             const QMimeData* mimeData = QApplication::clipboard()->mimeData();
             if (mimeData->hasFormat("application/x-qgraphicsitem")) {
-                QPointF pos = this->mapToScene(this->mapFromGlobal(QCursor::pos()));
                 QByteArray encodedData = mimeData->data("application/x-qgraphicsitem");
                 QDataStream stream(&encodedData, QIODevice::ReadOnly);
                 while (!stream.atEnd()) {
