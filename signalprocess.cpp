@@ -15,16 +15,26 @@ QVector<QPointF> SignalProcess::generateSinWave(SignalProperties sp){
     qreal amplitude = sp.amplitude;
     qreal harmonics = sp.harmonics;
     qreal phase = sp.phase;
-
-    qreal step = 1.0/m_sampleRate;
+    qreal currentPhase = 0.0;
+    //qreal inc = (2*M_PI*frequency/m_
+    //qreal step = 1.0/m_sampleRate;
     QVector<QPointF> res(samples,QPointF(0.0,0.0));
 
     for(int h=0;h<=harmonics;++h){
+        qreal realHarmonics = h+1;
+        qreal realAmp = amplitude*qreal(1.0/realHarmonics);
+        qreal currentPhase = 0.0;
+        qreal inc = (qreal)((2*M_PI*((realHarmonics)*frequency))/(1.0*m_sampleRate)+phase);
         for(int x=0;x<samples;++x){
-            qreal realHarmonics = h+1;
-            qreal realAmp = amplitude*qreal(1.0/realHarmonics);
-            qreal y = realAmp * qSin(2.0*M_PI*x*step*realHarmonics*frequency+phase);
+            qreal y = realAmp * qSin(currentPhase);
             res[x] = QPointF(x,res[x].y()+y);
+            currentPhase += inc;
+            if(currentPhase>=2*M_PI){
+                currentPhase -= 2*M_PI;
+            }
+            if(currentPhase<0){
+                currentPhase += 2*M_PI;
+            }
         }
     }
 
