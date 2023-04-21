@@ -20,10 +20,11 @@ public:
     CustomGraphicsView(QWidget *parent=nullptr);
     GraphicsSeek *getSeekBar(){return m_seek;}
     qreal getSeekBarCenterPos();
+    void addItem(Block*);
 
 signals:
-    void trackClicked();
-    void offTrackClicked();
+    void blockClicked();
+    void offBlockClicked();
 
 private:
     QRectF createRectToRight(Block *block, int width=1);
@@ -55,11 +56,15 @@ protected:
     qreal m_seekBarStartPos = 25;
 
     bool m_isLeftButtonClicked = false;
+    bool m_blockUpdateNecessary = false;
+
+    QVector<Block*> m_updateBlockList;
 
 signals:
     void onMousePress();
     void viewUpdated();
     void addTrack(SignalProperties);
+    void blockUpdated(QVector<Block*> blocks);
 };
 
 #endif // CUSTOMGRAPHICSVIEW_H

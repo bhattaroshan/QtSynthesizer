@@ -45,6 +45,7 @@ public slots:
     void addTrack(SignalProperties sp);
     void onTrackSingleClicked();
     void updateGraph();
+    void updateSignal(QVector<Block*> blocks);
     QList<Block*> getAllTracks();
 
     //audio functions
@@ -99,5 +100,8 @@ private:
     qreal m_timelineHeight = 30;
 
     QVector<BlockProperties> m_blocks;
+
+    QVector<QPointF> m_signal;
+
 };
 #endif // MAINWINDOW_H

@@ -6,7 +6,84 @@ SignalProcess::SignalProcess()
 
 }
 
+void SignalProcess::generateSignal(QVector<QPointF> &sig, SignalProperties sp){
+    qreal samples = SAMPLES(sp.time,sp.sampleRate);
+    sig.resize(samples); //confirm that container size is exact the sample size
 
+    for(int harmonics=1;harmonics<=sp.harmonics+1;++harmonics){ //if harmonics is zero, just run this once
+        if(sp.type == SIGNAL_TYPE_SINUSOIDAL){ //perform operation for sinusoidal wave generation
+            generateSinWave(sig, sp);
+        }else if(sp.type == SIGNAL_TYPE_SQUARE){ //perform operation for square wave generation
+            generateSquareWave(sig,sp);
+        }
+    }
+
+}
+
+void SignalProcess::generateSinWave(QVector<QPointF> &sig, SignalProperties sp){
+    qreal samples = SAMPLES(sp.time,sp.sampleRate);
+    qreal inc = (sp.frequency*2*M_PI)/sp.sampleRate;
+    qreal currPhase = sp.phase;
+
+    for(int x=0;x<samples;++x){
+        qreal y = sp.amplitude*qSin(currPhase);
+        currPhase += inc;
+
+        if(currPhase >= 2*M_PI){
+            currPhase -= 2*M_PI;
+        }
+
+        if(currPhase < 0){
+            currPhase += 2*M_PI;
+        }
+
+        sig[x] = QPointF(x,y);
+    }
+}
+
+void SignalProcess::generateSquareWave(QVector<QPointF> &sig, SignalProperties sp)
+{
+    qreal samples = SAMPLES(sp.time,sp.sampleRate);
+    qreal inc = (sp.frequency*2*M_PI)/sp.sampleRate;
+    qreal currPhase = sp.phase;
+
+    for(int x=0;x<samples;++x){
+        qreal y = -0.7; //take signal slightly below highest level
+        if(currPhase<=M_PI){
+           y = 0.7;
+        }
+        currPhase += inc;
+
+        if(currPhase >= 2*M_PI){
+            currPhase -= 2*M_PI;
+        }
+
+        if(currPhase < 0){
+            currPhase += 2*M_PI;
+        }
+
+        sig[x] = QPointF(x,y);
+    }
+}
+
+void SignalProcess::normalizeSignal(QVector<QPointF> &sig)
+{
+    qreal max = 0;
+
+    //get the signal peak
+    for(int i=0;i<sig.size();++i){
+        if(qFabs(sig[i].y())>max) {
+            max = sig[i].y();
+        }
+    }
+
+    max = 1.0/max;
+
+    //normalize with reference to peak
+    for(int i=0;i<sig.size();++i){
+        sig[i] *= max;
+    }
+}
 
 QVector<QPointF> SignalProcess::generateSinWave(SignalProperties sp){
 
@@ -16,8 +93,6 @@ QVector<QPointF> SignalProcess::generateSinWave(SignalProperties sp){
     qreal harmonics = sp.harmonics;
     qreal phase = sp.phase;
     qreal currentPhase = 0.0;
-    //qreal inc = (2*M_PI*frequency/m_
-    //qreal step = 1.0/m_sampleRate;
     QVector<QPointF> res(samples,QPointF(0.0,0.0));
 
     for(int h=0;h<=harmonics;++h){

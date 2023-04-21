@@ -35,7 +35,6 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
 
     m_chart->setMargins(margins);
     setChart(m_chart);
-    this->setMouseTracking(true);
 
     chart()->zoomReset();
 

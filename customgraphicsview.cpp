@@ -15,6 +15,12 @@ qreal CustomGraphicsView::getSeekBarCenterPos()
     return m_seek->x()+5;
 }
 
+void CustomGraphicsView::addItem(Block *block)
+{
+    scene()->addItem(block);
+    emit blockUpdated({block}); //added only one track, but need to pass in vector
+}
+
 QRectF CustomGraphicsView::createRectToRight(Block *block, int width){
     QRectF sceneRect = block->sceneBoundingRect();
     return QRectF(sceneRect.x()+sceneRect.width(),sceneRect.y(),width,sceneRect.height());
@@ -51,6 +57,7 @@ QList<Block*> CustomGraphicsView::getCollidingItems(Block *block, QRectF rect){
 void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton) {
+        m_updateBlockList.clear();
         m_isLeftButtonClicked = true;
         m_lastMouseMovePos = mapToScene(event->pos());
         m_lastMousePressPos = mapToScene(event->pos());
@@ -58,7 +65,7 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
         QGraphicsItem *clickedItem = this->itemAt(event->pos());
         Block *block = dynamic_cast<Block*>(clickedItem);
         if(block){ //block is clicked
-            emit trackClicked();
+            emit blockClicked();
             m_lastPressedBlock = block;
             qreal x = block->pos().x();
             qreal width = block->boundingRect().width();
@@ -77,7 +84,7 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
                 m_seek->setPos(newPos,m_seekBarHeight);
             }else{ //offtrack clicked
                 setDragMode(QGraphicsView::RubberBandDrag);
-                emit offTrackClicked();
+                emit offBlockClicked();
             }
             m_trackMoveMode = TRACK_IDLE_MODE;
         }
@@ -91,9 +98,12 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton){
         m_isLeftButtonClicked = false;
+        if(m_updateBlockList.size()){
+            emit blockUpdated(m_updateBlockList);
+            m_updateBlockList.clear();
+        }
         if(m_trackMoveMode != TRACK_IDLE_MODE){
             setCursor(Qt::ArrowCursor);
-            emit viewUpdated(); //only emit if there are any changes
         }
         m_trackMoveMode = TRACK_IDLE_MODE;
     }
@@ -103,6 +113,7 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF currentMousePosition = mapToScene(event->pos());
+
 
     if(m_isLeftButtonClicked and m_lastMousePressPos.y()<=m_timelineHeight) { //drag the seek according to mouse
         qreal newPos = m_seek->x()+(currentMousePosition.x()-m_lastMouseMovePos.x());
@@ -128,6 +139,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
     if(m_trackMoveMode == TRACK_MOVE_MODE){
         QList<Block*> blocks = getSelectedBlocks();
+        m_updateBlockList = blocks;
         int distance = currentMousePosition.y()-m_lastMousePressPos.y();
         QPointF delta = currentMousePosition-m_lastMouseMovePos;
 
@@ -183,6 +195,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
+        m_updateBlockList={m_lastPressedBlock};
         qreal width = m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()
                       -m_lastMouseMovePos.x();
 

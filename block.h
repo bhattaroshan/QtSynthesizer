@@ -18,6 +18,8 @@ public:
     void updateBlockProperties();
     void getAllBlocksInfo(QList<QRectF> blockRect);
 
+    //function necessary to put it in map
+    bool operator<(const Block &other)const;
 
     SignalProperties getBlockProperties();
     void setBlockProperties(SignalProperties sp){m_sp=sp;}

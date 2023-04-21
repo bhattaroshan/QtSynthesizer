@@ -21,8 +21,15 @@ Block::Block(SignalProperties sp, QGraphicsItem *parent)
     setAcceptHoverEvents(true);
 }
 
+bool Block::operator<(const Block &other) const
+{
+    return this<&other;
+}
+
 SignalProperties Block::getBlockProperties(){
     m_sp.width = this->sceneBoundingRect().width();
+    m_sp.time = this->sceneBoundingRect().width()*10;
+    m_sp.sampleRate = 44100;
     return m_sp;
 }
 
