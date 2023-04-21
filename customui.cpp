@@ -311,7 +311,13 @@ void MainWindow::createGeneralWidget(){
     QPushButton *addTrackButton = new QPushButton("Add Track");
     addTrackButton->setFixedHeight(40);
     connect(addTrackButton,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
+
+    QPushButton *test = new QPushButton("test");
+    connect(test,&QPushButton::clicked,this,&MainWindow::combineSignals);
+
     m_generalMainLayout->addWidget(addTrackButton);
+    m_generalMainLayout->addWidget(test);
+
 
     QWidget *widget = new QWidget();
     widget->setLayout(m_generalMainLayout);

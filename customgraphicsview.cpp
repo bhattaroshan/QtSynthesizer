@@ -18,7 +18,7 @@ qreal CustomGraphicsView::getSeekBarCenterPos()
 void CustomGraphicsView::addItem(Block *block)
 {
     scene()->addItem(block);
-    emit blockUpdated({block}); //added only one track, but need to pass in vector
+    //emit blockUpdated({block}); //added only one track, but need to pass in vector
 }
 
 QRectF CustomGraphicsView::createRectToRight(Block *block, int width){
@@ -216,6 +216,7 @@ void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
 
    if(event->key() == Qt::Key_Backspace){
        QList<Block*> blocks = getSelectedBlocks();
+       emit blockDeleted(blocks);
        if(blocks.size()<=0) return; //do nothing if non of the items are selected
        QString msg = QString::number(blocks.size())+ " item";
        if(blocks.size()>1){
@@ -255,15 +256,16 @@ bool CustomGraphicsView::eventFilter(QObject *watched, QEvent *event)
             if (mimeData->hasFormat("application/x-qgraphicsitem")) {
                 QByteArray encodedData = mimeData->data("application/x-qgraphicsitem");
                 QDataStream stream(&encodedData, QIODevice::ReadOnly);
+                QVector<SignalProperties> spVector;
                 while (!stream.atEnd()) {
                     quintptr itemPtr;
                     stream >> itemPtr;
                     Block* item = reinterpret_cast<Block*>(itemPtr);
                     SignalProperties sp = item->getBlockProperties();
                     sp.x += m_seek->x()-m_seekBarStartPos;
-                    emit addTrack(sp);
+                    spVector.append(sp);
                 }
-                emit viewUpdated();
+                emit addTrack(spVector);
             }
         }
     }
@@ -292,13 +294,10 @@ void CustomGraphicsView::resizeEvent(QResizeEvent *event)
 
 void CustomGraphicsView::showEvent(QShowEvent *event)
 {
-
-
     QGraphicsLineItem *line = new QGraphicsLineItem();
     line->setPen(QColor(128,128,128,30));
     line->setLine(30,0,30,1000);
     scene()->addItem(line);
-
 
     for(int i=1;i<100;i++){
         GraphicsEye *eye = new GraphicsEye();
@@ -327,7 +326,6 @@ void CustomGraphicsView::showEvent(QShowEvent *event)
     m_seek->setZValue(2);
     m_seek->setPos(m_seekBarStartPos,m_seekBarHeight);
     scene()->addItem(m_seek);
-
 
     QGraphicsView::showEvent(event);
 }

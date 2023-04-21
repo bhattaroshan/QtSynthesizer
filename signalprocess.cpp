@@ -68,20 +68,20 @@ void SignalProcess::generateSquareWave(QVector<QPointF> &sig, SignalProperties s
 
 void SignalProcess::normalizeSignal(QVector<QPointF> &sig)
 {
-    qreal max = 0;
+    qreal max = sig[0].y();
 
     //get the signal peak
     for(int i=0;i<sig.size();++i){
-        if(qFabs(sig[i].y())>max) {
-            max = sig[i].y();
-        }
+        max = qMax(qFabs(sig[i].y()),max);
     }
 
+    qDebug()<<"my max = "<<max;
     max = 1.0/max;
+    qDebug()<<"my value = "<<max;
 
     //normalize with reference to peak
     for(int i=0;i<sig.size();++i){
-        sig[i] *= max;
+        sig[i] = QPointF(i,sig[i].y()*max);
     }
 }
 

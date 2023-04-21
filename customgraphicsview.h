@@ -63,8 +63,9 @@ protected:
 signals:
     void onMousePress();
     void viewUpdated();
-    void addTrack(SignalProperties);
+    void addTrack(QVector<SignalProperties>);
     void blockUpdated(QVector<Block*> blocks);
+    void blockDeleted(QVector<Block*> blocks);
 };
 
 #endif // CUSTOMGRAPHICSVIEW_H

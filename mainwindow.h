@@ -42,10 +42,12 @@ protected:
 public slots:
     QPair<qreal,qreal> resizeSlot();
     void onAddTrackClicked();
-    void addTrack(SignalProperties sp);
+    void addTrack(QVector<SignalProperties> sp);
     void onTrackSingleClicked();
     void updateGraph();
     void updateSignal(QVector<Block*> blocks);
+    void deleteSignal(QVector<Block*> blocks);
+    void combineSignals();
     QList<Block*> getAllTracks();
 
     //audio functions
@@ -102,6 +104,8 @@ private:
     QVector<BlockProperties> m_blocks;
 
     QVector<QPointF> m_signal;
+
+    QMap<Block*,QVector<QPointF>> m_blockList;
 
 };
 #endif // MAINWINDOW_H

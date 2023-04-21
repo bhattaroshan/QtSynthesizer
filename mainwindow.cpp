@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(graphicsView,&CustomGraphicsView::blockClicked,this,&MainWindow::createTrackWidget);
     connect(graphicsView,&CustomGraphicsView::offBlockClicked,this,&MainWindow::createGeneralWidget);
     connect(graphicsView,&CustomGraphicsView::blockUpdated,this,&MainWindow::updateSignal);
+    connect(graphicsView,&CustomGraphicsView::blockDeleted,this,&MainWindow::deleteSignal);
     connect(graphicsView,&CustomGraphicsView::addTrack,this,&MainWindow::addTrack);
 
 
@@ -83,7 +84,6 @@ void MainWindow::playSignal(){
     m_audio = new QAudioSink(format);
 
     qreal currentSeekPosition = graphicsView->getSeekBar()->x();
-    //qreal startSampleFromSeekPos = (currentSeekPosition-30)*
 
     if(m_buffer!=nullptr) delete m_buffer;
     m_buffer = new QBuffer();
@@ -203,7 +203,7 @@ void MainWindow::onMenuAction_Open(){
         sp.decay = decay;
         sp.release = release;
 
-        addTrack(sp);
+        addTrack({sp});
     }
 
 }
@@ -284,22 +284,79 @@ void MainWindow::onAddTrackClicked(){
 
 
 
-    addTrack(sp);
+    addTrack({sp});
 }
 
-void MainWindow::addTrack(SignalProperties sp)
-{
-    //optimize here
-    BlockProperties bp;
-    bp.startIndex = sp.x;
-    bp.signal = signal->generateSinWave(sp);
-    m_blocks.append(bp);
+void display(SignalProperties sp){
 
-    Block *b = new Block(sp);
-    b->setSignal(m_blocks.last());
-    b->setColor(setBrushFromFrequency(sp.frequency));
-    graphicsView->addItem(b);
-    connect(b,&Block::clicked,this,&MainWindow::onTrackSingleClicked);
+    /*
+        struct SignalProperties{
+        qreal type				= 0;
+        qreal x 				= 0;
+        qreal y 				= 0;
+        qreal frequency 		= 220.0;
+        qreal amplitude 		= 1.0;
+        qreal phase 			= 0.0;
+        qreal harmonics 		= 0;
+        qreal width 			= 100;
+        qreal time				= 1000;
+        qreal attackPercent 	= 10;
+        qreal decayPercent 		= 20;
+        qreal releasePercent	= 10;
+        QColor color 			= QColor(200,50,50);
+        qreal attack			= 1;
+        qreal decay				= 1;
+        qreal release			= 1;
+        qreal sampleRate		= 44100;
+        };
+    */
+
+    qDebug()<<"-----------------------------------------------";
+    qDebug()<<"type = "<<sp.type;
+    qDebug()<<"x = "<<sp.x;
+    qDebug()<<"y = "<<sp.y;
+    qDebug()<<"frequency = "<<sp.frequency;
+    qDebug()<<"amplitude = "<<sp.amplitude;
+    qDebug()<<"phase = "<<sp.phase;
+    qDebug()<<"harmonics = "<<sp.harmonics;
+    qDebug()<<"withd = "<<sp.width;
+    qDebug()<<"time = "<<sp.time;
+    qDebug()<<"attackPercent = "<<sp.attackPercent;
+    qDebug()<<"decayPercent = "<<sp.decayPercent;
+    qDebug()<<"releasePercent = "<<sp.releasePercent;
+    qDebug()<<"color = "<<sp.color;
+    qDebug()<<"attack = "<<sp.attack;
+    qDebug()<<"decay = "<<sp.decay;
+    qDebug()<<"release = "<<sp.release;
+    qDebug()<<"sampleRate = "<<sp.sampleRate;
+    qDebug()<<"-----------------------------------------------";
+}
+
+void MainWindow::addTrack(QVector<SignalProperties> sp)
+{
+
+    //optimize here
+    QVector<Block*> tempBlock;
+    for(int i=0;i<sp.size();++i){
+        display(sp[i]);
+        Block *block = new Block(sp[i]);
+        QVector<QPointF> sig;
+        SignalProcess::generateSignal(sig,sp[i]);
+        m_blockList[block] = sig;
+        graphicsView->addItem(block);
+        connect(block,&Block::clicked,this,&MainWindow::onTrackSingleClicked);
+        tempBlock.append(block);
+    }
+    updateSignal(tempBlock);
+
+//    //bp.signal = signal->generateSinWave(sp);
+//    m_blocks.append(bp);
+
+//    Block *b = new Block(sp);
+//    b->setSignal(m_blocks.last());
+//    b->setColor(setBrushFromFrequency(sp.frequency));
+//    graphicsView->addItem(b);
+//    connect(b,&Block::clicked,this,&MainWindow::onTrackSingleClicked);
 }
 
 
@@ -323,37 +380,78 @@ QList<Block*> MainWindow::getAllTracks(){
 
 void MainWindow::updateGraph(){
 
-    signal->clear();
+//    signal->clear();
+////    for(auto b:getAllTracks()){
+////        int trackWidth = b->boundingRect().width();
+////        SignalProperties sp;
+////        sp = b->getBlockProperties();
+////        sp.width = trackWidth;
+////        auto sig = signal->generateSinWave(sp);
+////        signal->addADSREnvelope(sig,sp.attack,sp.decay,sp.release);
+////        signal->addSignalToContainer(sig,sp.x*441-30*441);
+////    }
+////    signal->normalizeSignal();
+
+//    QVector<QPointF> sig;
 //    for(auto b:getAllTracks()){
-//        int trackWidth = b->boundingRect().width();
 //        SignalProperties sp;
 //        sp = b->getBlockProperties();
-//        sp.width = trackWidth;
-//        auto sig = signal->generateSinWave(sp);
-//        signal->addADSREnvelope(sig,sp.attack,sp.decay,sp.release);
-//        signal->addSignalToContainer(sig,sp.x*441-30*441);
+//        sp.type = SIGNAL_TYPE_SINUSOIDAL;
+//        qDebug()<<sp.frequency;
+//        qDebug()<<sp.amplitude;
+//        qDebug()<<sp.harmonics;
+
+//        SignalProcess::generateSignal(sig,sp);
 //    }
-//    signal->normalizeSignal();
-
-    QVector<QPointF> sig;
-    for(auto b:getAllTracks()){
-        SignalProperties sp;
-        sp = b->getBlockProperties();
-        sp.type = SIGNAL_TYPE_SINUSOIDAL;
-        qDebug()<<sp.frequency;
-        qDebug()<<sp.amplitude;
-        qDebug()<<sp.harmonics;
-
-        SignalProcess::generateSignal(sig,sp);
-    }
-    m_signal = sig;
-    m_graph->update(m_signal);
+//    m_signal = sig;
+//    m_graph->update(m_signal);
     //m_graph->update(signal->getSignal());
 }
 
 void MainWindow::updateSignal(QVector<Block *> blocks)
 {
-    qDebug()<<"total blocks that needs to update = "<<blocks.size();
+    for(auto block:blocks){
+        QVector<QPointF> sig;
+        SignalProperties sp = block->getBlockProperties();
+        display(sp);
+        SignalProcess::generateSignal(sig,sp);
+        m_blockList[block] = sig;
+    }
+    combineSignals();
+
+}
+
+void MainWindow::deleteSignal(QVector<Block *> blocks)
+{
+    //delete all the blocks listed in the QVector
+    for(auto block:blocks){
+        if(m_blockList.contains(block)){
+            m_blockList.remove(block);
+        }
+    }
+}
+
+void MainWindow::combineSignals()
+{
+    m_signal.clear();
+    for(auto it=m_blockList.begin();it!=m_blockList.end();++it){
+        Block *block = it.key();
+        QVector<QPointF> sig = it.value();
+        qDebug()<<sig.size();
+        int startPos = block->getX();
+        qDebug()<<startPos;
+        int startIndex = ((startPos-30)*44100.0)/100.0f;
+        qDebug()<<"startIndex = "<<startIndex;
+        int signalSize = startIndex+sig.size();
+        if(m_signal.size()<=signalSize){
+            m_signal.resize(signalSize,QPointF(0,0)); //ensure that size is atleast the signal container+start point
+        }
+        for(int i=0;i<sig.size();++i){
+            m_signal[startIndex+i] = QPointF(startIndex+i,m_signal[startIndex+i].y()+sig[i].y());
+        }
+    }
+    //SignalProcess::normalizeSignal(m_signal);
+    m_graph->update(m_signal);
 }
 
 MainWindow::~MainWindow()
