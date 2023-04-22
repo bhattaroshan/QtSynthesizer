@@ -440,11 +440,16 @@ void MainWindow::combineSignals()
         qDebug()<<sig.size();
         int startPos = block->getX();
         qDebug()<<startPos;
-        int startIndex = ((startPos-30)*44100.0)/100.0f;
+        int startIndex = (startPos-30)*441;
         qDebug()<<"startIndex = "<<startIndex;
+        qDebug()<<"width of signal = "<<sig.size()/441.0;
         int signalSize = startIndex+sig.size();
         if(m_signal.size()<=signalSize){
-            m_signal.resize(signalSize,QPointF(0,0)); //ensure that size is atleast the signal container+start point
+            int signalLength = m_signal.size();
+            m_signal.resize(signalSize); //ensure that size is atleast the signal container+start point
+            for(int i=signalLength;i<m_signal.size();++i){
+                m_signal[i] = QPointF(i,0.0);
+            }
         }
         for(int i=0;i<sig.size();++i){
             m_signal[startIndex+i] = QPointF(startIndex+i,m_signal[startIndex+i].y()+sig[i].y());

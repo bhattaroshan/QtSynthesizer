@@ -22,7 +22,7 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     m_series->attachAxis(xAxis);
 
     QValueAxis *yAxis = new QValueAxis;
-    yAxis->setRange(-1,1);
+    yAxis->setRange(-10,10);
     yAxis->setGridLineVisible(false);
     yAxis->setLabelsVisible(false);
     yAxis->setLineVisible(false);
