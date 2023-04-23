@@ -14,12 +14,18 @@ void SignalProcess::generateSignal(QVector<QPointF> &sig, SignalProperties sp){
     qreal samples = SAMPLES(sp.time,sp.sampleRate);
     sig.resize(samples,QPointF(0,0)); //confirm that container size is exact the sample size
     qreal originalFrequency = sp.frequency;
+    qreal originalAmplitude = sp.amplitude;
+    int step = 1;
+    if(sp.type==SIGNAL_TYPE_SQUARE) step = 2;
 
-    for(int harmonics=1;harmonics<=sp.harmonics+1;++harmonics){ //if harmonics is zero, just run this once
-        sp.frequency = originalFrequency*harmonics;
+    for(int harmonics=1;harmonics<=(sp.harmonics+1)*step;harmonics+=step){ //if harmonics is zero, just run this once
         if(sp.type == SIGNAL_TYPE_SINUSOIDAL){ //perform operation for sinusoidal wave generation
+            sp.amplitude = originalAmplitude*(1.0/harmonics);
+            sp.frequency = originalFrequency*harmonics;
             generateSinWave(sig, sp);
         }else if(sp.type == SIGNAL_TYPE_SQUARE){ //perform operation for square wave generation
+            sp.amplitude = originalAmplitude*(1.0/harmonics);
+            sp.frequency = originalFrequency*harmonics;
             generateSquareWave(sig,sp);
         }
     }
@@ -54,10 +60,7 @@ void SignalProcess::generateSquareWave(QVector<QPointF> &sig, SignalProperties s
     qreal currPhase = sp.phase;
 
     for(int x=0;x<samples;++x){
-        qreal y = -0.7; //take signal slightly below highest level
-        if(currPhase<=M_PI){
-           y = 0.7;
-        }
+        qreal y = sp.amplitude*qSin(currPhase); //take signal slightly below highest level
         currPhase += inc;
 
         if(currPhase >= 2*M_PI){
@@ -68,7 +71,7 @@ void SignalProcess::generateSquareWave(QVector<QPointF> &sig, SignalProperties s
             currPhase += 2*M_PI;
         }
 
-        sig[x] = QPointF(x,y);
+        sig[x] = QPointF(x,y+sig[x].y());
     }
 }
 

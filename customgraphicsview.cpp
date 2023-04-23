@@ -216,7 +216,6 @@ void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
 
    if(event->key() == Qt::Key_Backspace){
        QList<Block*> blocks = getSelectedBlocks();
-       emit blockDeleted(blocks);
        if(blocks.size()<=0) return; //do nothing if non of the items are selected
        QString msg = QString::number(blocks.size())+ " item";
        if(blocks.size()>1){
@@ -226,10 +225,10 @@ void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
        QMessageBox::StandardButton ret = QMessageBox::warning(nullptr,"Delete",QString("Are you sure you want to delete %1").arg(msg),QMessageBox::Yes|QMessageBox::No);
        if(ret == QMessageBox::No) return; //deleting item not confirmed
 
+       emit blockDeleted(blocks);
        for(auto block:blocks){
            scene()->removeItem(block);
        }
-       emit viewUpdated();
    }
 
    return QGraphicsView::keyPressEvent(event);

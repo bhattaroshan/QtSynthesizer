@@ -427,29 +427,35 @@ void MainWindow::deleteSignal(QVector<Block *> blocks)
             m_blockList.remove(block);
         }
     }
+
+    combineSignals();
 }
 
 void MainWindow::combineSignals()
 {
     m_signal.clear();
-    for(auto it=m_blockList.begin();it!=m_blockList.end();++it){
-        Block *block = it.key();
-        QVector<QPointF> sig = it.value();
-        int startPos = block->getX();
-        int startIndex = (startPos-30)*441;
-        int signalSize = startIndex+sig.size();
-        if(m_signal.size()<=signalSize){
-            int signalLength = m_signal.size();
-            m_signal.resize(signalSize); //ensure that size is atleast the signal container+start point
-            for(int i=signalLength;i<m_signal.size();++i){
+    if(m_blockList.size()){
+       for(auto it=m_blockList.begin();it!=m_blockList.end();++it){
+            Block *block = it.key();
+            QVector<QPointF> sig = it.value();
+            int startPos = block->getX();
+            int startIndex = (startPos-30)*441;
+            int signalSize = startIndex+sig.size();
+            if(m_signal.size()<=signalSize){
+                int signalLength = m_signal.size();
+                m_signal.resize(signalSize); //ensure that size is atleast the signal container+start point
+                for(int i=signalLength;i<m_signal.size();++i){
                 m_signal[i] = QPointF(i,0.0);
+                }
+            }
+            for(int i=0;i<sig.size();++i){
+                m_signal[startIndex+i] = QPointF(startIndex+i,m_signal[startIndex+i].y()+sig[i].y());
             }
         }
-        for(int i=0;i<sig.size();++i){
-            m_signal[startIndex+i] = QPointF(startIndex+i,m_signal[startIndex+i].y()+sig[i].y());
-        }
+
+        SignalProcess::normalizeSignal(m_signal);
     }
-    SignalProcess::normalizeSignal(m_signal);
+
     m_graph->update(m_signal);
 }
 

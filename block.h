@@ -35,6 +35,7 @@ public:
     qreal getAttack(){return m_sp.attack;}
     qreal getDecay(){return m_sp.decay;}
     qreal getRelease(){return m_sp.release;}
+    qreal getType(){return m_sp.type;}
 
     void setX(qreal x){m_sp.x = x;}
     void setY(qreal y){m_sp.y = y;}
@@ -46,6 +47,7 @@ public:
     void setAttack(qreal attack){m_sp.attack=attack;}
     void setDecay(qreal decay){m_sp.decay=decay;}
     void setRelease(qreal release){m_sp.release=release;}
+    void setType(qreal type){m_sp.type=type;}
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

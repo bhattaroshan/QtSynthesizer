@@ -44,18 +44,13 @@ void MainWindow::createTrackWidget(){
             typeCombo->addItems({"Sin Wave","Square Wave","Triangular Wave","RAW Audio"});
             typeLayout->addWidget(typeLabel);
             typeLayout->addWidget(typeCombo);
+            typeCombo->setCurrentIndex(track->getType());
 
             auto comboBoxLambda = [=](int index){
                 if(index == 0){
-                    for(auto block:graphicsView->getSelectedBlocks()){
-                        SignalProperties sp = block->getBlockProperties();
-                        sp.type = SIGNAL_TYPE_SINUSOIDAL;
-                    }
+                    track->setType(SIGNAL_TYPE_SINUSOIDAL);
                 }else{
-                    for(auto block:graphicsView->getSelectedBlocks()){
-                        SignalProperties sp = block->getBlockProperties();
-                        sp.type = SIGNAL_TYPE_SQUARE;
-                    }
+                    track->setType(SIGNAL_TYPE_SQUARE);
                 }
                 updateSignal(graphicsView->getSelectedBlocks());
             };
