@@ -21,6 +21,8 @@ public:
     GraphicsSeek *getSeekBar(){return m_seek;}
     qreal getSeekBarCenterPos();
     void addItem(Block*);
+    QList<Block *> getSelectedBlocks();
+    QList<Block *> getAllBlocks();
 
 signals:
     void blockClicked();
@@ -33,6 +35,7 @@ private:
     QRectF createRectToBottom(Block *block, int width=1);
     QList<Block*> getCollidingItems(Block *block, QRectF rect);
 
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -42,8 +45,6 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void showEvent(QShowEvent *event) override;
 
-    QList<Block *> getSelectedBlocks();
-    QList<Block *> getAllBlocks();
 
     QPointF m_lastMouseMovePos;
     QPointF m_lastMousePressPos;

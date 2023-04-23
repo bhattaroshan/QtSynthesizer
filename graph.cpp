@@ -22,7 +22,7 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     m_series->attachAxis(xAxis);
 
     QValueAxis *yAxis = new QValueAxis;
-    yAxis->setRange(-10,10);
+    yAxis->setRange(-1,1);
     yAxis->setGridLineVisible(false);
     yAxis->setLabelsVisible(false);
     yAxis->setLineVisible(false);
@@ -44,7 +44,7 @@ Graph::Graph(QVector<QPointF> coordinates, QWidget *parent)
     rect.setWidth(mFactor*rect.width());
     chart()->zoomIn(rect);
 
-    setMouseTracking(false);
+    this->setMouseTracking(false);
 }
 
 Graph::~Graph(){

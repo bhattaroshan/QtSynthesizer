@@ -338,10 +338,9 @@ void MainWindow::addTrack(QVector<SignalProperties> sp)
     //optimize here
     QVector<Block*> tempBlock;
     for(int i=0;i<sp.size();++i){
-        display(sp[i]);
         Block *block = new Block(sp[i]);
         QVector<QPointF> sig;
-        SignalProcess::generateSignal(sig,sp[i]);
+        SignalProcess::generateSignal(sig,sp[i]); //this signal is generated for default values
         m_blockList[block] = sig;
         graphicsView->addItem(block);
         connect(block,&Block::clicked,this,&MainWindow::onTrackSingleClicked);
@@ -413,7 +412,6 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
     for(auto block:blocks){
         QVector<QPointF> sig;
         SignalProperties sp = block->getBlockProperties();
-        display(sp);
         SignalProcess::generateSignal(sig,sp);
         m_blockList[block] = sig;
     }
@@ -437,12 +435,8 @@ void MainWindow::combineSignals()
     for(auto it=m_blockList.begin();it!=m_blockList.end();++it){
         Block *block = it.key();
         QVector<QPointF> sig = it.value();
-        qDebug()<<sig.size();
         int startPos = block->getX();
-        qDebug()<<startPos;
         int startIndex = (startPos-30)*441;
-        qDebug()<<"startIndex = "<<startIndex;
-        qDebug()<<"width of signal = "<<sig.size()/441.0;
         int signalSize = startIndex+sig.size();
         if(m_signal.size()<=signalSize){
             int signalLength = m_signal.size();
@@ -455,7 +449,7 @@ void MainWindow::combineSignals()
             m_signal[startIndex+i] = QPointF(startIndex+i,m_signal[startIndex+i].y()+sig[i].y());
         }
     }
-    //SignalProcess::normalizeSignal(m_signal);
+    SignalProcess::normalizeSignal(m_signal);
     m_graph->update(m_signal);
 }
 

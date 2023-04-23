@@ -41,9 +41,26 @@ void MainWindow::createTrackWidget(){
             QHBoxLayout *typeLayout = new QHBoxLayout();
             QLabel *typeLabel = new QLabel("Type");
             QComboBox *typeCombo = new QComboBox();
-            typeCombo->addItems({"Sin Wave","Triangular Wave","RAW Audio"});
+            typeCombo->addItems({"Sin Wave","Square Wave","Triangular Wave","RAW Audio"});
             typeLayout->addWidget(typeLabel);
             typeLayout->addWidget(typeCombo);
+
+            auto comboBoxLambda = [=](int index){
+                if(index == 0){
+                    for(auto block:graphicsView->getSelectedBlocks()){
+                        SignalProperties sp = block->getBlockProperties();
+                        sp.type = SIGNAL_TYPE_SINUSOIDAL;
+                    }
+                }else{
+                    for(auto block:graphicsView->getSelectedBlocks()){
+                        SignalProperties sp = block->getBlockProperties();
+                        sp.type = SIGNAL_TYPE_SQUARE;
+                    }
+                }
+                updateSignal(graphicsView->getSelectedBlocks());
+            };
+
+            connect(typeCombo,&QComboBox::activated,this,comboBoxLambda);
 
             QHBoxLayout *transformLayout = new QHBoxLayout();
             QLabel *transformXLabel = new QLabel("X");
@@ -55,7 +72,7 @@ void MainWindow::createTrackWidget(){
 
             auto transformXLambda = [=](){
                 track->setPos(m_transformXSpin->value(),track->y());
-                updateGraph();
+                updateSignal(graphicsView->getSelectedBlocks());
             };
             connect(m_transformXSpin,&QSpinBox::valueChanged,this,transformXLambda);
             connect(m_transformXSpin,&QSpinBox::editingFinished,this,transformXLambda);
@@ -74,7 +91,7 @@ void MainWindow::createTrackWidget(){
                 qreal value = m_timeSpin->value();
                 if(track->sceneBoundingRect().width()*10!=value){
                     track->setRect(0,0,value/10,track->sceneBoundingRect().height());
-                    updateGraph();
+                    updateSignal(graphicsView->getSelectedBlocks());
                 }
             };
             connect(m_timeSpin,&QSpinBox::valueChanged,this,timeLambda);
@@ -94,7 +111,7 @@ void MainWindow::createTrackWidget(){
                 if(track->getFrequency()!=value){
                     track->setFrequency(value);
                     track->setColor(setBrushFromFrequency(value));
-                    updateGraph();
+                    updateSignal(graphicsView->getSelectedBlocks());
                 }
             };
 
@@ -119,7 +136,7 @@ void MainWindow::createTrackWidget(){
 
                 if(value && track->getAmplitude()!=value){
                     track->setAmplitude(value);
-                    updateGraph();
+                    updateSignal(graphicsView->getSelectedBlocks());
                 }
             };
 
@@ -143,7 +160,7 @@ void MainWindow::createTrackWidget(){
             auto harmonicsLambda = [=](){
                 qreal value = harmonicsSpin->value();
                     track->setHarmonics(value);
-                    updateGraph();
+                    updateSignal(graphicsView->getSelectedBlocks());
             };
 
             connect(harmonicsSpin,&QSpinBox::editingFinished,this,harmonicsLambda);
@@ -185,7 +202,7 @@ void MainWindow::createTrackWidget(){
                 qreal value = decaySpin->value();
                 if(value){
                     track->setDecay(value);
-                    updateGraph();
+                    updateSignal(graphicsView->getSelectedBlocks());
                 }
             };
 
@@ -207,7 +224,7 @@ void MainWindow::createTrackWidget(){
                 qreal value = releaseSpin->value();
                 if(value){
                     track->setRelease(value);
-                    updateGraph();
+                    updateSignal(graphicsView->getSelectedBlocks());
                 }
             };
 
@@ -270,7 +287,7 @@ void MainWindow::createTrackWidget(){
                 auto response = QMessageBox::warning(this,"Warning!!!","Are you sure you want to delete this track ?",QMessageBox::Ok|QMessageBox::Cancel);
                 if(response == QMessageBox::Ok){
                     scene->removeItem(track);
-                    updateGraph();
+                    updateSignal(graphicsView->getSelectedBlocks());
                     m_dockWidget->setWidget(nullptr);
                 }
             });
