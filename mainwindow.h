@@ -96,15 +96,11 @@ private:
     QList<Block*> m_selectedTracks;
 
     qreal m_lastProcessed = 0;
-
     QPushButton *m_playButton = nullptr;
     qreal m_playingStatus = 0; //zero means stopped, 1 means playing
     qreal m_timelineHeight = 30;
 
-    QVector<BlockProperties> m_blocks;
-
     QVector<QPointF> m_signal;
-
     QMap<Block*,QVector<QPointF>> m_blockList;
 
 };

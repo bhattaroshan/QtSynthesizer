@@ -64,38 +64,34 @@ void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *a4Action = noteMenu.addAction("A4");
     QAction *b4Action = noteMenu.addAction("B4");
     QAction *c5Action = noteMenu.addAction("C5");
+    qreal freq;
 
-    connect(c4Action,&QAction::triggered,this,[=](){
-        setFrequency(261);
-       emit trackUpdated();
+    connect(c4Action,&QAction::triggered,this,[=]()mutable{
+        freq = 261;
+        setFrequency(freq);
     });
-    connect(d4Action,&QAction::triggered,this,[=](){
-        setFrequency(293);
-       emit trackUpdated();
+    connect(d4Action,&QAction::triggered,this,[=]()mutable{
+        freq = 293;
+        setFrequency(freq);
     });
-    connect(e4Action,&QAction::triggered,this,[=](){
-        setFrequency(329);
-       emit trackUpdated();
+    connect(e4Action,&QAction::triggered,this,[=]()mutable{
+        freq = 329;
+        setFrequency(freq);
     });
     connect(f4Action,&QAction::triggered,this,[=](){
         setFrequency(349);
-       emit trackUpdated();
     });
     connect(g4Action,&QAction::triggered,this,[=](){
         setFrequency(392);
-       emit trackUpdated();
     });
     connect(a4Action,&QAction::triggered,this,[=](){
         setFrequency(440);
-       emit trackUpdated();
     });
     connect(b4Action,&QAction::triggered,this,[=](){
         setFrequency(493);
-       emit trackUpdated();
     });
     connect(c5Action,&QAction::triggered,this,[=](){
         setFrequency(523);
-       emit trackUpdated();
     });
 
     menu.addMenu(&noteMenu);

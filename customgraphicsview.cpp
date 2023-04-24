@@ -1,4 +1,5 @@
 #include "customgraphicsview.h"
+#include "graphicseye.h"
 #include <QMessageBox>
 
 

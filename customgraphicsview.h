@@ -6,7 +6,6 @@
 #include<QApplication>
 #include <QMimeData>
 #include "block.h"
-#include "graphicseye.h"
 #include "graphicsseek.h"
 
 #define TRACK_IDLE_MODE  0

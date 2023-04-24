@@ -163,7 +163,7 @@ void MainWindow::loadMenuBar()
 
 void MainWindow::onMenuAction_Open(){
 
-    QList<Block*> tracks = getAllTracks();
+    QList<Block*> tracks = graphicsView->getAllBlocks();
     for(auto track:tracks){
         scene->removeItem(track);
     }
@@ -210,7 +210,7 @@ void MainWindow::onMenuAction_Open(){
 
 void MainWindow::onMenuAction_Save()
 {
-    QList<Block*> tracks = getAllTracks();
+    QList<Block*> tracks = graphicsView->getAllBlocks();
     QJsonArray arrayObject;
 
     for(auto track:tracks){
@@ -253,7 +253,7 @@ void MainWindow::onMenuAction_Save()
 void MainWindow::onAddTrackClicked(){
     SignalProperties sp;
 
-    QList<Block*> allTracks = getAllTracks();
+    QList<Block*> allTracks = graphicsView->getAllBlocks();
     //get minimum y, get minimum farthest
     qreal minY = -1;
     qreal maxFarthest = -1;
