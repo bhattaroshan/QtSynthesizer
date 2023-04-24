@@ -16,6 +16,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+
+    initializeUI(); //create UIs related to transform section
+
     signal = new SignalProcess();
 
     scene = new CustomGraphicsScene();
@@ -67,12 +70,12 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::createDockView(){
-    m_dockWidget = new QDockWidget("Properties");
-    m_dockWidget->setMinimumWidth(250);
-    m_dockWidget->setFeatures(m_dockWidget->features() & ~(QDockWidget::DockWidgetClosable  |
-                                                           QDockWidget::DockWidgetFloatable |
-                                                           QDockWidget::DockWidgetMovable ));
-    addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_dockWidget);
+    //m_dockWidget = new QDockWidget("Properties");
+    //m_dockWidget->setMinimumWidth(250);
+    //m_dockWidget->setFeatures(m_dockWidget->features() & ~(QDockWidget::DockWidgetClosable  |
+    //                                                       QDockWidget::DockWidgetFloatable |
+    //                                                       QDockWidget::DockWidgetMovable ));
+    //addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_dockWidget);
 }
 
 void MainWindow::playSignal(){

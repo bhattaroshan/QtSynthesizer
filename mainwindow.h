@@ -22,6 +22,7 @@
 #include "graph.h"
 #include "customgraphicsscene.h"
 #include "customgraphicsview.h"
+#include "section.h"
 
 class MainWindow : public QMainWindow
 {
@@ -78,8 +79,6 @@ private:
     QWidget *window;
     QVBoxLayout *mainLayout;
 
-    QDockWidget *m_dockWidget;
-
     Block *m_lastClickedTrack = nullptr;
     QVector<QRectF> m_graphBar;
     QRectF m_barRect;
@@ -102,6 +101,52 @@ private:
 
     QVector<QPointF> m_signal;
     QMap<Block*,QVector<QPointF>> m_blockList;
+
+    //DOCK WIDGET
+    QVBoxLayout *m_mainBlockLayout;
+    QDockWidget *m_dockWidget;
+    QWidget *m_mainBlockWidget;
+    QScrollArea *m_dockScrollArea;
+
+    // TRANSFORM ATTRIBUTE
+    QVBoxLayout *m_transformLayout;
+    Section *m_transformSection;
+
+    QHBoxLayout *m_xPositionLayout;
+    QLabel *m_xPositionLabel;
+    QSpinBox *m_xPositionSpinBox;
+
+    QHBoxLayout *m_yPositionLayout;
+    QLabel *m_yPositionLabel;
+    QSpinBox *m_yPositionSpinBox;
+
+    QHBoxLayout *m_lengthLayout;
+    QLabel *m_lengthLabel;
+    QSpinBox *m_lengthSpinBox;
+
+    //SIGNAL ATTRIBUTE
+    QVBoxLayout *m_signalLayout;
+    Section *m_signalSection;
+
+    QHBoxLayout *m_signalTypeLayout;
+    QLabel *m_signalTypeLabel;
+    QComboBox *m_signalTypeComboBox;
+
+    QHBoxLayout *m_frequencyLayout;
+    QLabel *m_frequencyLabel;
+    QSpinBox *m_frequencySpinBox;
+
+
+    QHBoxLayout *m_amplitudeLayout;
+    QLabel *m_amplitudeLabel;
+    QDoubleSpinBox *m_amplitudeDoubleSpinBox;
+
+    QHBoxLayout *m_phaseLayout;
+    QLabel *m_phaseLabel;
+    QSpinBox *m_phaseSpinBox;
+
+    void initializeUI();
+
 
 };
 #endif // MAINWINDOW_H

@@ -2,6 +2,94 @@
 #include "mainwindow.h"
 #include "signalproperties.h"
 
+void MainWindow::initializeUI(){
+
+    m_transformLayout = new QVBoxLayout();
+    m_transformSection = new Section("Transform");
+
+    m_xPositionLayout = new QHBoxLayout();
+    m_xPositionLabel = new QLabel("X");
+    m_xPositionSpinBox = new QSpinBox(); //horizontal movement
+    m_xPositionSpinBox->setRange(0,100000);
+    m_xPositionLayout->addWidget(m_xPositionLabel);
+    m_xPositionLayout->addWidget(m_xPositionSpinBox);
+
+    m_yPositionLayout = new QHBoxLayout();
+    m_yPositionLabel = new QLabel("Y");
+    m_yPositionSpinBox = new QSpinBox(); //layer
+    m_yPositionSpinBox->setRange(0,20);
+    m_yPositionLayout->addWidget(m_yPositionLabel);
+    m_yPositionLayout->addWidget(m_yPositionSpinBox);
+
+    m_lengthLayout = new QHBoxLayout();
+    m_lengthLabel = new QLabel("Length(ms)");
+    m_lengthSpinBox = new QSpinBox();
+    m_lengthLayout->addWidget(m_lengthLabel);
+    m_lengthLayout->addWidget(m_lengthSpinBox);
+
+    m_transformLayout->addLayout(m_xPositionLayout);
+    m_transformLayout->addLayout(m_yPositionLayout);
+    m_transformLayout->addLayout(m_lengthLayout);
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+    m_signalLayout = new QVBoxLayout();
+    m_signalSection = new Section("Signal");
+
+    m_signalTypeLayout = new QHBoxLayout();
+    m_signalTypeLabel = new QLabel("Type");
+    m_signalTypeComboBox = new QComboBox();
+    m_signalTypeComboBox->addItems({"Sin Wave","Square Wave"});
+    m_signalTypeLayout->addWidget(m_signalTypeLabel);
+    m_signalTypeLayout->addWidget(m_signalTypeComboBox);
+
+    m_frequencyLayout = new QHBoxLayout();
+    m_frequencyLabel = new QLabel("Frequency");
+    m_frequencySpinBox = new QSpinBox(); //horizontal movement
+    m_xPositionSpinBox->setRange(1,20000);
+    m_frequencyLayout->addWidget(m_frequencyLabel);
+    m_frequencyLayout->addWidget(m_frequencySpinBox);
+
+    m_amplitudeLayout = new QHBoxLayout();
+    m_amplitudeLabel = new QLabel("Amplitude");
+    m_amplitudeDoubleSpinBox = new QDoubleSpinBox(); //horizontal movement
+    m_amplitudeDoubleSpinBox->setRange(0,1);
+    m_amplitudeDoubleSpinBox->setSingleStep(0.1);
+    m_amplitudeLayout->addWidget(m_amplitudeLabel);
+    m_amplitudeLayout->addWidget(m_amplitudeDoubleSpinBox);
+
+    m_phaseLayout = new QHBoxLayout();
+    m_phaseLabel = new QLabel("Phase");
+    m_phaseSpinBox = new QSpinBox(); //horizontal movement
+    m_phaseSpinBox->setRange(1,20000);
+    m_phaseLayout->addWidget(m_phaseLabel);
+    m_phaseLayout->addWidget(m_phaseSpinBox);
+
+
+    m_signalTypeLabel->setMinimumSize(m_frequencyLabel->sizeHint());
+
+    m_signalLayout->addLayout(m_signalTypeLayout);
+    m_signalLayout->addLayout(m_frequencyLayout);
+    m_signalLayout->addLayout(m_amplitudeLayout);
+    m_signalLayout->addLayout(m_phaseLayout);
+
+
+    m_transformSection->setContentLayout(*m_transformLayout);
+    m_signalSection->setContentLayout(*m_signalLayout);
+
+    //main docking work
+    m_mainBlockLayout = new QVBoxLayout();
+    m_mainBlockLayout->setAlignment(Qt::AlignTop);
+    m_mainBlockLayout->setContentsMargins(0,0,0,0);
+    m_mainBlockLayout->setSpacing(2);
+    m_dockWidget = new QDockWidget();
+    m_mainBlockWidget = new QWidget();
+    m_dockScrollArea = new QScrollArea();
+    m_dockScrollArea->setWidgetResizable(true);
+    m_dockWidget->setMinimumWidth(200);
+    addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_dockWidget);
+}
+
 QPushButton* MainWindow::createIconButton(QString icon){
     QPushButton *colorBtn = new QPushButton();
     colorBtn->setIcon(QIcon(icon));
@@ -30,285 +118,293 @@ void MainWindow::createTrackWidget(){
     for(auto track:tracks){
         if(track==currentTrack){
             track->setZValue(1);
-            SignalProperties sp = track->getBlockProperties();
-            int frequency = sp.frequency;
-            int time = track->boundingRect().width()*10;
-            QColor color = sp.color;
+            m_mainBlockLayout->addWidget(m_transformSection);
+            m_mainBlockLayout->addWidget(m_signalSection);
 
-            //add dockWidget settings for track
-            m_trackMainLayout = new QVBoxLayout();
-
-            QHBoxLayout *typeLayout = new QHBoxLayout();
-            QLabel *typeLabel = new QLabel("Type");
-            QComboBox *typeCombo = new QComboBox();
-            typeCombo->addItems({"Sin Wave","Square Wave","Triangular Wave","RAW Audio"});
-            typeLayout->addWidget(typeLabel);
-            typeLayout->addWidget(typeCombo);
-            typeCombo->setCurrentIndex(track->getType());
-
-            auto comboBoxLambda = [=](int index){
-                if(index == 0){
-                    track->setType(SIGNAL_TYPE_SINUSOIDAL);
-                }else{
-                    track->setType(SIGNAL_TYPE_SQUARE);
-                }
-                updateSignal(graphicsView->getSelectedBlocks());
-            };
-
-            connect(typeCombo,&QComboBox::activated,this,comboBoxLambda);
-
-            QHBoxLayout *transformLayout = new QHBoxLayout();
-            QLabel *transformXLabel = new QLabel("X");
-
-            if(m_transformXSpin!=nullptr) delete m_transformXSpin;
-            m_transformXSpin = new QSpinBox();
-            m_transformXSpin->setRange(0,100000);
-            m_transformXSpin->setValue(track->x());
-
-            auto transformXLambda = [=](){
-                track->setPos(m_transformXSpin->value(),track->y());
-                updateSignal(graphicsView->getSelectedBlocks());
-            };
-            connect(m_transformXSpin,&QSpinBox::valueChanged,this,transformXLambda);
-            connect(m_transformXSpin,&QSpinBox::editingFinished,this,transformXLambda);
-
-            transformLayout->addWidget(transformXLabel);
-            transformLayout->addWidget(m_transformXSpin);
-
-            QHBoxLayout *timeLayout = new QHBoxLayout();
-            QLabel *timeLabel = new QLabel("Time (ms)");
-
-            if(m_timeSpin!=nullptr) delete m_timeSpin;
-            m_timeSpin = new QSpinBox();
-            m_timeSpin->setRange(10,100000);
-            m_timeSpin->setValue(time);
-            auto timeLambda = [=](){
-                qreal value = m_timeSpin->value();
-                if(track->sceneBoundingRect().width()*10!=value){
-                    track->setRect(0,0,value/10,track->sceneBoundingRect().height());
-                    updateSignal(graphicsView->getSelectedBlocks());
-                }
-            };
-            connect(m_timeSpin,&QSpinBox::valueChanged,this,timeLambda);
-            connect(m_timeSpin,&QSpinBox::editingFinished,this,timeLambda);
-
-            timeLayout->addWidget(timeLabel);
-            timeLayout->addWidget(m_timeSpin);
-
-            QHBoxLayout *frequencyLayout = new QHBoxLayout();
-            QLabel *frequencyLabel = new QLabel("Frequency (Hz)");
-            QSpinBox *frequencySpin = new QSpinBox();
-            frequencySpin->setRange(1,20000);
-            frequencySpin->setValue(frequency);
-
-            auto frequencyLambda = [=](){
-                qreal value = frequencySpin->value();
-                if(track->getFrequency()!=value){
-                    track->setFrequency(value);
-                    track->setColor(setBrushFromFrequency(value));
-                    updateSignal(graphicsView->getSelectedBlocks());
-                }
-            };
-
-            connect(frequencySpin,&QSpinBox::editingFinished,this,frequencyLambda);
-            connect(frequencySpin,&QSpinBox::valueChanged,this,frequencyLambda);
-
-            frequencyLayout->addWidget(frequencyLabel);
-            frequencyLayout->addWidget(frequencySpin);
-
-            QHBoxLayout *amplitudeLayout = new QHBoxLayout();
-            QLabel *amplitudeLabel = new QLabel("Amplitude");
-            QDoubleSpinBox *amplitudeSpin = new QDoubleSpinBox();
-            amplitudeSpin->setRange(0,1);
-            amplitudeSpin->setSingleStep(0.1);
-            amplitudeSpin->setValue(track->getAmplitude());
-
-            amplitudeLayout->addWidget(amplitudeLabel);
-            amplitudeLayout->addWidget(amplitudeSpin);
-
-            auto amplitudeLambda = [=](){
-                qreal value = amplitudeSpin->value();
-
-                if(value && track->getAmplitude()!=value){
-                    track->setAmplitude(value);
-                    updateSignal(graphicsView->getSelectedBlocks());
-                }
-            };
-
-            connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::valueChanged),this,amplitudeLambda);
-
-            QHBoxLayout *phaseLayout = new QHBoxLayout();
-            QLabel *phaseLabel = new QLabel("Phase");
-            QDial *phaseDial = new QDial();
-            phaseDial->setFixedSize(42,42);
-            phaseDial->setNotchTarget(0);
-            phaseLayout->addWidget(phaseLabel);
-            phaseLayout->addWidget(phaseDial);
-
-            QHBoxLayout *harmonicsLayout = new QHBoxLayout();
-            QLabel *harmonicsLabel = new QLabel("Harmonics");
-            QSpinBox *harmonicsSpin = new QSpinBox();
-            harmonicsSpin->setRange(0,20);
-            harmonicsSpin->setValue(track->getHarmonics());
+            m_mainBlockWidget->setLayout(m_mainBlockLayout);
+            m_dockScrollArea->setWidget(m_mainBlockWidget);
+            m_dockWidget->setWidget(m_dockScrollArea);
 
 
-            auto harmonicsLambda = [=](){
-                qreal value = harmonicsSpin->value();
-                    track->setHarmonics(value);
-                    updateSignal(graphicsView->getSelectedBlocks());
-            };
+//            SignalProperties sp = track->getBlockProperties();
+//            int frequency = sp.frequency;
+//            int time = track->boundingRect().width()*10;
+//            QColor color = sp.color;
 
-            connect(harmonicsSpin,&QSpinBox::editingFinished,this,harmonicsLambda);
-            connect(harmonicsSpin,&QSpinBox::valueChanged,this,harmonicsLambda);
+//            //add dockWidget settings for track
+//            m_trackMainLayout = new QVBoxLayout();
 
-            harmonicsLayout->addWidget(harmonicsLabel);
-            harmonicsLayout->addWidget(harmonicsSpin);
+//            QHBoxLayout *typeLayout = new QHBoxLayout();
+//            QLabel *typeLabel = new QLabel("Type");
+//            QComboBox *typeCombo = new QComboBox();
+//            typeCombo->addItems({"Sin Wave","Square Wave","Triangular Wave","RAW Audio"});
+//            typeLayout->addWidget(typeLabel);
+//            typeLayout->addWidget(typeCombo);
+//            typeCombo->setCurrentIndex(track->getType());
 
-            QHBoxLayout *attackLayout = new QHBoxLayout();
-            QLabel *attackLabel = new QLabel("Attack");
-            QSpinBox *attackSpin = new QSpinBox();
-            attackSpin->setRange(1,100);
-            attackSpin->setValue(track->getAttack());
+//            auto comboBoxLambda = [=](int index){
+//                if(index == 0){
+//                    track->setType(SIGNAL_TYPE_SINUSOIDAL);
+//                }else{
+//                    track->setType(SIGNAL_TYPE_SQUARE);
+//                }
+//                updateSignal(graphicsView->getSelectedBlocks());
+//            };
 
+//            connect(typeCombo,&QComboBox::activated,this,comboBoxLambda);
 
-            auto attackLambda = [=](){
-                qreal value = attackSpin->value();
-                if(value){
-                    track->setAttack(value);
-                    updateGraph();
-                }
-            };
+//            QHBoxLayout *transformLayout = new QHBoxLayout();
+//            QLabel *transformXLabel = new QLabel("X");
 
-            connect(attackSpin,&QSpinBox::editingFinished,this,attackLambda);
-            connect(attackSpin,&QSpinBox::valueChanged,this,attackLambda);
+//            if(m_transformXSpin!=nullptr) delete m_transformXSpin;
+//            m_transformXSpin = new QSpinBox();
+//            m_transformXSpin->setRange(0,100000);
+//            m_transformXSpin->setValue(track->x());
 
-            attackLayout->addWidget(attackLabel);
-            attackLayout->addWidget(attackSpin);
+//            auto transformXLambda = [=](){
+//                track->setPos(m_transformXSpin->value(),track->y());
+//                updateSignal(graphicsView->getSelectedBlocks());
+//            };
+//            connect(m_transformXSpin,&QSpinBox::valueChanged,this,transformXLambda);
+//            connect(m_transformXSpin,&QSpinBox::editingFinished,this,transformXLambda);
 
+//            transformLayout->addWidget(transformXLabel);
+//            transformLayout->addWidget(m_transformXSpin);
 
-            QHBoxLayout *decayLayout = new QHBoxLayout();
-            QLabel *decayLabel = new QLabel("Decay");
-            QSpinBox *decaySpin = new QSpinBox();
-            decaySpin->setRange(1,100);
-            decaySpin->setValue(track->getDecay());
+//            QHBoxLayout *timeLayout = new QHBoxLayout();
+//            QLabel *timeLabel = new QLabel("Time (ms)");
 
+//            if(m_timeSpin!=nullptr) delete m_timeSpin;
+//            m_timeSpin = new QSpinBox();
+//            m_timeSpin->setRange(10,100000);
+//            m_timeSpin->setValue(time);
+//            auto timeLambda = [=](){
+//                qreal value = m_timeSpin->value();
+//                if(track->sceneBoundingRect().width()*10!=value){
+//                    track->setRect(0,0,value/10,track->sceneBoundingRect().height());
+//                    updateSignal(graphicsView->getSelectedBlocks());
+//                }
+//            };
+//            connect(m_timeSpin,&QSpinBox::valueChanged,this,timeLambda);
+//            connect(m_timeSpin,&QSpinBox::editingFinished,this,timeLambda);
 
-            auto decayLambda = [=](){
-                qreal value = decaySpin->value();
-                if(value){
-                    track->setDecay(value);
-                    updateSignal(graphicsView->getSelectedBlocks());
-                }
-            };
+//            timeLayout->addWidget(timeLabel);
+//            timeLayout->addWidget(m_timeSpin);
 
-            connect(decaySpin,&QSpinBox::editingFinished,this,decayLambda);
-            connect(decaySpin,&QSpinBox::valueChanged,this,decayLambda);
+//            QHBoxLayout *frequencyLayout = new QHBoxLayout();
+//            QLabel *frequencyLabel = new QLabel("Frequency (Hz)");
+//            QSpinBox *frequencySpin = new QSpinBox();
+//            frequencySpin->setRange(1,20000);
+//            frequencySpin->setValue(frequency);
 
-            decayLayout->addWidget(decayLabel);
-            decayLayout->addWidget(decaySpin);
+//            auto frequencyLambda = [=](){
+//                qreal value = frequencySpin->value();
+//                if(track->getFrequency()!=value){
+//                    track->setFrequency(value);
+//                    track->setColor(setBrushFromFrequency(value));
+//                    updateSignal(graphicsView->getSelectedBlocks());
+//                }
+//            };
 
+//            connect(frequencySpin,&QSpinBox::editingFinished,this,frequencyLambda);
+//            connect(frequencySpin,&QSpinBox::valueChanged,this,frequencyLambda);
 
-            QHBoxLayout *releaseLayout = new QHBoxLayout();
-            QLabel *releaseLabel = new QLabel("Release");
-            QSpinBox *releaseSpin = new QSpinBox();
-            releaseSpin->setRange(1,100);
-            releaseSpin->setValue(track->getRelease());
+//            frequencyLayout->addWidget(frequencyLabel);
+//            frequencyLayout->addWidget(frequencySpin);
 
+//            QHBoxLayout *amplitudeLayout = new QHBoxLayout();
+//            QLabel *amplitudeLabel = new QLabel("Amplitude");
+//            QDoubleSpinBox *amplitudeSpin = new QDoubleSpinBox();
+//            amplitudeSpin->setRange(0,1);
+//            amplitudeSpin->setSingleStep(0.1);
+//            amplitudeSpin->setValue(track->getAmplitude());
 
-            auto releaseLambda = [=](){
-                qreal value = releaseSpin->value();
-                if(value){
-                    track->setRelease(value);
-                    updateSignal(graphicsView->getSelectedBlocks());
-                }
-            };
+//            amplitudeLayout->addWidget(amplitudeLabel);
+//            amplitudeLayout->addWidget(amplitudeSpin);
 
-            connect(releaseSpin,&QSpinBox::editingFinished,this,releaseLambda);
-            connect(releaseSpin,&QSpinBox::valueChanged,this,releaseLambda);
+//            auto amplitudeLambda = [=](){
+//                qreal value = amplitudeSpin->value();
 
-            releaseLayout->addWidget(releaseLabel);
-            releaseLayout->addWidget(releaseSpin);
+//                if(value && track->getAmplitude()!=value){
+//                    track->setAmplitude(value);
+//                    updateSignal(graphicsView->getSelectedBlocks());
+//                }
+//            };
 
-            QHBoxLayout *colorLayout = new QHBoxLayout();
-            QLabel *colorLabel = new QLabel("Track Color");
-            QPushButton *colorBtn = createIconButton(":/icons/color-picker.png");
+//            connect(amplitudeSpin,QOverload<double>::of(&QDoubleSpinBox::valueChanged),this,amplitudeLambda);
 
-            connect(colorBtn,&QPushButton::clicked,this,[=](){
-                QColor newColor = QColorDialog::getColor(color);
-                if(newColor.isValid()){
-                    track->setColor(newColor);
-                }
-            });
+//            QHBoxLayout *phaseLayout = new QHBoxLayout();
+//            QLabel *phaseLabel = new QLabel("Phase");
+//            QDial *phaseDial = new QDial();
+//            phaseDial->setFixedSize(42,42);
+//            phaseDial->setNotchTarget(0);
+//            phaseLayout->addWidget(phaseLabel);
+//            phaseLayout->addWidget(phaseDial);
 
-            colorLayout->addWidget(colorLabel);
-            colorLayout->addWidget(colorBtn);
-
-            QHBoxLayout *applyLayout = new QHBoxLayout();
-            QPushButton *applyBtn = new QPushButton("Apply Changes");
-            applyBtn->setMinimumHeight(40);
-            applyBtn->setStyleSheet("QPushButton{"
-                                     "border-radius:5px;"
-                                     "border: 1px solid #409b40;"
-                                     "border-color: #40a540;"
-                                     "font-weight:700;"
-                                     "}"
-                                     "QPushButton:hover{"
-                                     "border-color:#57d457;"
-                                     "}"
-                                     "QPushButton:pressed{"
-                                     "border-color:#409b40;"
-                                    "}");
-
-            applyBtn->setCursor(Qt::PointingHandCursor);
-            applyLayout->addWidget(applyBtn);
-
-            QHBoxLayout *deleteLayout = new QHBoxLayout();
-            QPushButton *deleteBtn = new QPushButton("Delete Track");
-            deleteBtn->setMinimumHeight(40);
-            deleteBtn->setStyleSheet("QPushButton {"
-                                     "border-radius:5px;"
-                                     "border: 1px solid #b37436;"
-                                     "border-color: #ffa64d;"
-                                     "font-weight:700;"
-                                     "}"
-                                     "QPushButton:hover{"
-                                     "border-color:#eda660;"
-                                     "}"
-                                     "QPushButton:pressed{"
-                                     "border-color:#cc8f52;"
-                                     "}");
-            deleteBtn->setCursor(Qt::PointingHandCursor);
-            connect(deleteBtn,&QPushButton::clicked,this,[=](){
-                auto response = QMessageBox::warning(this,"Warning!!!","Are you sure you want to delete this track ?",QMessageBox::Ok|QMessageBox::Cancel);
-                if(response == QMessageBox::Ok){
-                    scene->removeItem(track);
-                    updateSignal(graphicsView->getSelectedBlocks());
-                    m_dockWidget->setWidget(nullptr);
-                }
-            });
-            deleteLayout->addWidget(deleteBtn);
+//            QHBoxLayout *harmonicsLayout = new QHBoxLayout();
+//            QLabel *harmonicsLabel = new QLabel("Harmonics");
+//            QSpinBox *harmonicsSpin = new QSpinBox();
+//            harmonicsSpin->setRange(0,20);
+//            harmonicsSpin->setValue(track->getHarmonics());
 
 
-            QSpacerItem *spacer = new QSpacerItem(0,200,QSizePolicy::Minimum,QSizePolicy::Expanding);
+//            auto harmonicsLambda = [=](){
+//                qreal value = harmonicsSpin->value();
+//                    track->setHarmonics(value);
+//                    updateSignal(graphicsView->getSelectedBlocks());
+//            };
 
-            m_trackMainLayout->addLayout(typeLayout);
-            m_trackMainLayout->addLayout(transformLayout);
-            m_trackMainLayout->addLayout(timeLayout);
-            m_trackMainLayout->addLayout(frequencyLayout);
-            m_trackMainLayout->addLayout(amplitudeLayout);
-            m_trackMainLayout->addLayout(phaseLayout);
-            m_trackMainLayout->addLayout(harmonicsLayout);
-            m_trackMainLayout->addLayout(attackLayout);
-            m_trackMainLayout->addLayout(decayLayout);
-            m_trackMainLayout->addLayout(releaseLayout);
-            m_trackMainLayout->addLayout(colorLayout);
-            m_trackMainLayout->addLayout(applyLayout);
-            m_trackMainLayout->addLayout(deleteLayout);
-            m_trackMainLayout->addSpacerItem(spacer);
+//            connect(harmonicsSpin,&QSpinBox::editingFinished,this,harmonicsLambda);
+//            connect(harmonicsSpin,&QSpinBox::valueChanged,this,harmonicsLambda);
 
-            QWidget *widget = new QWidget();
-            widget->setLayout(m_trackMainLayout);
-            m_dockWidget->setWidget(widget);
+//            harmonicsLayout->addWidget(harmonicsLabel);
+//            harmonicsLayout->addWidget(harmonicsSpin);
+
+//            QHBoxLayout *attackLayout = new QHBoxLayout();
+//            QLabel *attackLabel = new QLabel("Attack");
+//            QSpinBox *attackSpin = new QSpinBox();
+//            attackSpin->setRange(1,100);
+//            attackSpin->setValue(track->getAttack());
+
+
+//            auto attackLambda = [=](){
+//                qreal value = attackSpin->value();
+//                if(value){
+//                    track->setAttack(value);
+//                    updateGraph();
+//                }
+//            };
+
+//            connect(attackSpin,&QSpinBox::editingFinished,this,attackLambda);
+//            connect(attackSpin,&QSpinBox::valueChanged,this,attackLambda);
+
+//            attackLayout->addWidget(attackLabel);
+//            attackLayout->addWidget(attackSpin);
+
+
+//            QHBoxLayout *decayLayout = new QHBoxLayout();
+//            QLabel *decayLabel = new QLabel("Decay");
+//            QSpinBox *decaySpin = new QSpinBox();
+//            decaySpin->setRange(1,100);
+//            decaySpin->setValue(track->getDecay());
+
+
+//            auto decayLambda = [=](){
+//                qreal value = decaySpin->value();
+//                if(value){
+//                    track->setDecay(value);
+//                    updateSignal(graphicsView->getSelectedBlocks());
+//                }
+//            };
+
+//            connect(decaySpin,&QSpinBox::editingFinished,this,decayLambda);
+//            connect(decaySpin,&QSpinBox::valueChanged,this,decayLambda);
+
+//            decayLayout->addWidget(decayLabel);
+//            decayLayout->addWidget(decaySpin);
+
+
+//            QHBoxLayout *releaseLayout = new QHBoxLayout();
+//            QLabel *releaseLabel = new QLabel("Release");
+//            QSpinBox *releaseSpin = new QSpinBox();
+//            releaseSpin->setRange(1,100);
+//            releaseSpin->setValue(track->getRelease());
+
+
+//            auto releaseLambda = [=](){
+//                qreal value = releaseSpin->value();
+//                if(value){
+//                    track->setRelease(value);
+//                    updateSignal(graphicsView->getSelectedBlocks());
+//                }
+//            };
+
+//            connect(releaseSpin,&QSpinBox::editingFinished,this,releaseLambda);
+//            connect(releaseSpin,&QSpinBox::valueChanged,this,releaseLambda);
+
+//            releaseLayout->addWidget(releaseLabel);
+//            releaseLayout->addWidget(releaseSpin);
+
+//            QHBoxLayout *colorLayout = new QHBoxLayout();
+//            QLabel *colorLabel = new QLabel("Track Color");
+//            QPushButton *colorBtn = createIconButton(":/icons/color-picker.png");
+
+//            connect(colorBtn,&QPushButton::clicked,this,[=](){
+//                QColor newColor = QColorDialog::getColor(color);
+//                if(newColor.isValid()){
+//                    track->setColor(newColor);
+//                }
+//            });
+
+//            colorLayout->addWidget(colorLabel);
+//            colorLayout->addWidget(colorBtn);
+
+//            QHBoxLayout *applyLayout = new QHBoxLayout();
+//            QPushButton *applyBtn = new QPushButton("Apply Changes");
+//            applyBtn->setMinimumHeight(40);
+//            applyBtn->setStyleSheet("QPushButton{"
+//                                     "border-radius:5px;"
+//                                     "border: 1px solid #409b40;"
+//                                     "border-color: #40a540;"
+//                                     "font-weight:700;"
+//                                     "}"
+//                                     "QPushButton:hover{"
+//                                     "border-color:#57d457;"
+//                                     "}"
+//                                     "QPushButton:pressed{"
+//                                     "border-color:#409b40;"
+//                                    "}");
+
+//            applyBtn->setCursor(Qt::PointingHandCursor);
+//            applyLayout->addWidget(applyBtn);
+
+//            QHBoxLayout *deleteLayout = new QHBoxLayout();
+//            QPushButton *deleteBtn = new QPushButton("Delete Track");
+//            deleteBtn->setMinimumHeight(40);
+//            deleteBtn->setStyleSheet("QPushButton {"
+//                                     "border-radius:5px;"
+//                                     "border: 1px solid #b37436;"
+//                                     "border-color: #ffa64d;"
+//                                     "font-weight:700;"
+//                                     "}"
+//                                     "QPushButton:hover{"
+//                                     "border-color:#eda660;"
+//                                     "}"
+//                                     "QPushButton:pressed{"
+//                                     "border-color:#cc8f52;"
+//                                     "}");
+//            deleteBtn->setCursor(Qt::PointingHandCursor);
+//            connect(deleteBtn,&QPushButton::clicked,this,[=](){
+//                auto response = QMessageBox::warning(this,"Warning!!!","Are you sure you want to delete this track ?",QMessageBox::Ok|QMessageBox::Cancel);
+//                if(response == QMessageBox::Ok){
+//                    scene->removeItem(track);
+//                    updateSignal(graphicsView->getSelectedBlocks());
+//                    m_dockWidget->setWidget(nullptr);
+//                }
+//            });
+//            deleteLayout->addWidget(deleteBtn);
+
+
+//            QSpacerItem *spacer = new QSpacerItem(0,200,QSizePolicy::Minimum,QSizePolicy::Expanding);
+
+//            m_trackMainLayout->addLayout(typeLayout);
+//            m_trackMainLayout->addLayout(transformLayout);
+//            m_trackMainLayout->addLayout(timeLayout);
+//            m_trackMainLayout->addLayout(frequencyLayout);
+//            m_trackMainLayout->addLayout(amplitudeLayout);
+//            m_trackMainLayout->addLayout(phaseLayout);
+//            m_trackMainLayout->addLayout(harmonicsLayout);
+//            m_trackMainLayout->addLayout(attackLayout);
+//            m_trackMainLayout->addLayout(decayLayout);
+//            m_trackMainLayout->addLayout(releaseLayout);
+//            m_trackMainLayout->addLayout(colorLayout);
+//            m_trackMainLayout->addLayout(applyLayout);
+//            m_trackMainLayout->addLayout(deleteLayout);
+//            m_trackMainLayout->addSpacerItem(spacer);
+
+//            QWidget *widget = new QWidget();
+//            widget->setLayout(m_trackMainLayout);
+//            m_dockWidget->setWidget(widget);
 
         }else{
             track->setZValue(0);

@@ -7,5 +7,7 @@
         <file>rewind-backward.png</file>
         <file>rewind-forward.png</file>
         <file>pause.png</file>
+        <file>down-arrow.png</file>
+        <file>right-arrow.png</file>
     </qresource>
 </RCC>
