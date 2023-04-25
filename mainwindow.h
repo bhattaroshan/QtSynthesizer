@@ -102,11 +102,22 @@ private:
     QVector<QPointF> m_signal;
     QMap<Block*,QVector<QPointF>> m_blockList;
 
-    //DOCK WIDGET
-    QVBoxLayout *m_mainBlockLayout;
-    QDockWidget *m_dockWidget;
-    QWidget *m_mainBlockWidget;
-    QScrollArea *m_dockScrollArea;
+    //PROJECT DOCK WIDGET
+    QVBoxLayout *m_projectLayout;
+    QDockWidget *m_projectDockWidget;
+    QWidget *m_projectWidget;
+    QScrollArea *m_projectScrollArea;
+
+    Section *m_projectSignalSection;
+    QVBoxLayout *m_projectSignalLayout;
+    QPushButton *m_projectSignalBlockButton;
+    QPushButton *m_projectMediaBlockButton;
+
+    //BLOCK ATTRIBUTE DOCK WIDGET
+    QVBoxLayout *m_blockAttributeLayout;
+    QDockWidget *m_blockAttributeDockWidget;
+    QWidget *m_blockAttributeWidget;
+    QScrollArea *m_blockAttributeScrollArea;
 
     // TRANSFORM ATTRIBUTE
     QVBoxLayout *m_transformLayout;

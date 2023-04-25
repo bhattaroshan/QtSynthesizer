@@ -10,7 +10,7 @@ void MainWindow::initializeUI(){
     m_xPositionLayout = new QHBoxLayout();
     m_xPositionLabel = new QLabel("X");
     m_xPositionSpinBox = new QSpinBox(); //horizontal movement
-    m_xPositionSpinBox->setRange(0,100000);
+    m_xPositionSpinBox->setRange(0,20);
     m_xPositionLayout->addWidget(m_xPositionLabel);
     m_xPositionLayout->addWidget(m_xPositionSpinBox);
 
@@ -24,6 +24,7 @@ void MainWindow::initializeUI(){
     m_lengthLayout = new QHBoxLayout();
     m_lengthLabel = new QLabel("Length(ms)");
     m_lengthSpinBox = new QSpinBox();
+    m_lengthSpinBox->setRange(10,1000000);
     m_lengthLayout->addWidget(m_lengthLabel);
     m_lengthLayout->addWidget(m_lengthSpinBox);
 
@@ -61,7 +62,7 @@ void MainWindow::initializeUI(){
     m_phaseLayout = new QHBoxLayout();
     m_phaseLabel = new QLabel("Phase");
     m_phaseSpinBox = new QSpinBox(); //horizontal movement
-    m_phaseSpinBox->setRange(1,20000);
+    m_phaseSpinBox->setRange(0,359);
     m_phaseLayout->addWidget(m_phaseLabel);
     m_phaseLayout->addWidget(m_phaseSpinBox);
 
@@ -77,17 +78,54 @@ void MainWindow::initializeUI(){
     m_transformSection->setContentLayout(*m_transformLayout);
     m_signalSection->setContentLayout(*m_signalLayout);
 
-    //main docking work
-    m_mainBlockLayout = new QVBoxLayout();
-    m_mainBlockLayout->setAlignment(Qt::AlignTop);
-    m_mainBlockLayout->setContentsMargins(0,0,0,0);
-    m_mainBlockLayout->setSpacing(2);
-    m_dockWidget = new QDockWidget();
-    m_mainBlockWidget = new QWidget();
-    m_dockScrollArea = new QScrollArea();
-    m_dockScrollArea->setWidgetResizable(true);
-    m_dockWidget->setMinimumWidth(200);
-    addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_dockWidget);
+    //attribute dock
+    m_blockAttributeLayout = new QVBoxLayout();
+    m_blockAttributeLayout->setAlignment(Qt::AlignTop);
+    m_blockAttributeLayout->setContentsMargins(0,0,0,0);
+    m_blockAttributeLayout->setSpacing(2);
+    m_blockAttributeDockWidget = new QDockWidget("Attributes");
+    m_blockAttributeWidget = new QWidget();
+    m_blockAttributeScrollArea = new QScrollArea();
+    m_blockAttributeScrollArea->setWidgetResizable(true);
+    m_blockAttributeDockWidget->setMinimumWidth(200);
+
+    m_blockAttributeLayout->addWidget(m_transformSection);
+    m_blockAttributeLayout->addWidget(m_signalSection);
+    m_blockAttributeWidget->setLayout(m_blockAttributeLayout);
+    m_blockAttributeScrollArea->setWidget(m_blockAttributeWidget);
+
+    addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea,m_blockAttributeDockWidget);
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+    m_projectSignalSection = new Section("Track");
+    m_projectSignalLayout = new QVBoxLayout();
+    m_projectSignalBlockButton = new QPushButton("Add Signal Block");
+    m_projectMediaBlockButton = new QPushButton("Add Media Block");
+    m_projectSignalLayout->addWidget(m_projectSignalBlockButton);
+    m_projectSignalLayout->addWidget(m_projectMediaBlockButton);
+
+    m_projectSignalSection->setContentLayout(*m_projectSignalLayout);
+
+    //project dock
+    m_projectLayout = new QVBoxLayout();
+    m_projectLayout->setAlignment(Qt::AlignTop);
+    m_projectLayout->setContentsMargins(0,0,0,0);
+    m_projectLayout->setSpacing(2);
+    m_projectLayout->addWidget(m_projectSignalSection);
+
+    m_projectDockWidget = new QDockWidget("Project");
+    m_projectDockWidget->setMinimumWidth(200);
+
+    m_projectWidget = new QWidget();
+    m_projectWidget->setLayout(m_projectLayout);
+
+    m_projectScrollArea = new QScrollArea();
+    m_projectScrollArea->setWidgetResizable(true);
+    m_projectScrollArea->setWidget(m_projectWidget);
+    m_projectDockWidget->setWidget(m_projectScrollArea);
+
+    addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_projectDockWidget);
 }
 
 QPushButton* MainWindow::createIconButton(QString icon){
@@ -118,12 +156,7 @@ void MainWindow::createTrackWidget(){
     for(auto track:tracks){
         if(track==currentTrack){
             track->setZValue(1);
-            m_mainBlockLayout->addWidget(m_transformSection);
-            m_mainBlockLayout->addWidget(m_signalSection);
-
-            m_mainBlockWidget->setLayout(m_mainBlockLayout);
-            m_dockScrollArea->setWidget(m_mainBlockWidget);
-            m_dockWidget->setWidget(m_dockScrollArea);
+            m_blockAttributeDockWidget->setWidget(m_blockAttributeScrollArea);
 
 
 //            SignalProperties sp = track->getBlockProperties();
@@ -420,14 +453,10 @@ void MainWindow::createGeneralWidget(){
     addTrackButton->setFixedHeight(40);
     connect(addTrackButton,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
 
-    QPushButton *test = new QPushButton("test");
-    connect(test,&QPushButton::clicked,this,&MainWindow::combineSignals);
-
     m_generalMainLayout->addWidget(addTrackButton);
-    m_generalMainLayout->addWidget(test);
-
 
     QWidget *widget = new QWidget();
     widget->setLayout(m_generalMainLayout);
-    m_dockWidget->setWidget(widget);
+    m_blockAttributeDockWidget->setWidget(widget);
+    //m_blockAttributeDockWidget->setWidget(nullptr);
 }
