@@ -60,7 +60,6 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addLayout(mainButtonLayout);
     mainLayout->addWidget(graphicsView);
 
-    createDockView();
     loadMenuBar();
 
     window = new QWidget();
@@ -73,15 +72,6 @@ void MainWindow::clicked_projectSignalBlockButton(){
     onAddTrackClicked();
 }
 
-void MainWindow::createDockView(){
-    //m_dockWidget = new QDockWidget("Properties");
-    //m_dockWidget->setMinimumWidth(250);
-    //m_dockWidget->setFeatures(m_dockWidget->features() & ~(QDockWidget::DockWidgetClosable  |
-    //                                                       QDockWidget::DockWidgetFloatable |
-    //                                                       QDockWidget::DockWidgetMovable ));
-    //addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_dockWidget);
-}
-
 void MainWindow::playSignal(){
     QAudioFormat format;
     format.setChannelCount(1);
@@ -90,7 +80,7 @@ void MainWindow::playSignal(){
     if(m_audio!=nullptr) delete m_audio;
     m_audio = new QAudioSink(format);
 
-    qreal currentSeekPosition = graphicsView->getSeekBar()->x();
+    //qreal currentSeekPosition = graphicsView->getSeekBar()->x();
 
     if(m_buffer!=nullptr) delete m_buffer;
     m_buffer = new QBuffer();
@@ -128,20 +118,6 @@ void MainWindow::playSignal(){
         timer->start(10);
     }
 }
-
-QColor MainWindow::setBrushFromFrequency(int frequency)
-{
-    if(!m_colorFrequencyMap.contains(frequency)){
-        QRandomGenerator red = QRandomGenerator::securelySeeded();
-        int redInt = red.bounded(50,201);
-        QRandomGenerator green = QRandomGenerator::securelySeeded();
-        int greenInt = green.bounded(50,201);
-        m_colorFrequencyMap[frequency] = QColor(redInt,greenInt,50);
-    }
-
-    return m_colorFrequencyMap[frequency];
-}
-
 
 void MainWindow::loadMenuBar()
 {
@@ -185,6 +161,7 @@ void MainWindow::onMenuAction_Open(){
     QJsonDocument doc = QJsonDocument::fromJson(data);
     QJsonObject obj = doc.object();
     QJsonArray array = obj.value("props").toArray();
+    QVector<SignalProperties> spList;
 
     for(auto f:array){
         qreal amplitude = f.toObject().value("amplitude").toDouble();
@@ -210,8 +187,9 @@ void MainWindow::onMenuAction_Open(){
         sp.decay = decay;
         sp.release = release;
 
-        addTrack({sp});
+        spList.append(sp);
     }
+    addTrack(spList);
 
 }
 
@@ -346,6 +324,7 @@ void MainWindow::addTrack(QVector<SignalProperties> sp)
     QVector<Block*> tempBlock;
     for(int i=0;i<sp.size();++i){
         Block *block = new Block(sp[i]);
+        display(sp[i]);
         QVector<QPointF> sig;
         SignalProcess::generateSignal(sig,sp[i]); //this signal is generated for default values
         m_blockList[block] = sig;
@@ -369,49 +348,6 @@ void MainWindow::addTrack(QVector<SignalProperties> sp)
 void MainWindow::onTrackSingleClicked()
 {
     createTrackWidget();
-}
-
-QList<Block*> MainWindow::getAllTracks(){
-    QList<QGraphicsItem*> items = scene->items();
-    QList<Block*> blocks;
-    for(auto item:items){
-        QGraphicsRectItem *rectItem = dynamic_cast<QGraphicsRectItem*>(item);
-        if(rectItem){
-            blocks.append(dynamic_cast<Block*>(rectItem));
-        }
-    }
-    return blocks;
-}
-
-
-void MainWindow::updateGraph(){
-
-//    signal->clear();
-////    for(auto b:getAllTracks()){
-////        int trackWidth = b->boundingRect().width();
-////        SignalProperties sp;
-////        sp = b->getBlockProperties();
-////        sp.width = trackWidth;
-////        auto sig = signal->generateSinWave(sp);
-////        signal->addADSREnvelope(sig,sp.attack,sp.decay,sp.release);
-////        signal->addSignalToContainer(sig,sp.x*441-30*441);
-////    }
-////    signal->normalizeSignal();
-
-//    QVector<QPointF> sig;
-//    for(auto b:getAllTracks()){
-//        SignalProperties sp;
-//        sp = b->getBlockProperties();
-//        sp.type = SIGNAL_TYPE_SINUSOIDAL;
-//        qDebug()<<sp.frequency;
-//        qDebug()<<sp.amplitude;
-//        qDebug()<<sp.harmonics;
-
-//        SignalProcess::generateSignal(sig,sp);
-//    }
-//    m_signal = sig;
-//    m_graph->update(m_signal);
-    //m_graph->update(signal->getSignal());
 }
 
 void MainWindow::updateSignal(QVector<Block *> blocks)
@@ -482,60 +418,4 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         playSignal();
     }
     QMainWindow::keyPressEvent(event);
-}
-
-QPair<qreal,qreal> MainWindow::resizeSlot(){
-//    qreal w = this->width();
-//    qreal h = this->height();
-
-//    if(m_transformXSpin) {
-//        m_transformXSpin->setValue(m_lastClickedTrack->x());
-//    }
-
-//    if(m_timeSpin){
-//        m_timeSpin->setValue(m_lastClickedTrack->boundingRect().width()*10);
-//    }
-
-//    QList<QGraphicsItem*> items = scene->items();
-//    for(auto item:items){
-//        qreal new_width = item->x()+item->boundingRect().width();
-//        qreal new_height = item->y()+item->boundingRect().height();
-//        if(new_width>w) {
-//            w=new_width;
-//        }
-//        if(new_height>h){
-//            h = new_height;
-//        }
-//    }
-
-//    int new_width = w+100;
-//    int new_height = h+50;
-//    scene->setSceneRect(0,0,new_width,new_height);
-
-//    int barCount =	(new_width/50)-1;
-//    int graphBarLength = m_graphBar.size();
-
-//    if(barCount>graphBarLength){  //new line plotting is needed here
-//        for(int i=50+(graphBarLength*50);i<new_width;i+=50){
-//            QRectF points = QRectF(i,20,i,new_height);
-//            m_graphBar.append(points);
-//            QGraphicsLineItem *line = new QGraphicsLineItem(points.x(),points.y(),points.width(),points.height());
-//            line->setZValue(-100);
-//            line->setPen(QPen(QColor(128,128,128,20)));
-//            scene->addItem(line);
-//        }
-
-//        //Need to fix this later on
-//        QRectF barRect = QRectF(0,20,1000,20);
-//        if(barRect!=m_barRect){
-//            m_barRect = barRect;
-//            QGraphicsLineItem *bar = new QGraphicsLineItem(0,20,new_width,20);
-//            bar->setPen(QPen(QColor(128,128,128,20)));
-//            bar->setZValue(-100);
-//            scene->addItem(bar);
-//        }
-//    }
-
-//    return {w+100,h+50};
-    return {0,0};
 }

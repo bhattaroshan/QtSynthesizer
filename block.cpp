@@ -27,9 +27,9 @@ bool Block::operator<(const Block &other) const
 }
 
 SignalProperties Block::getBlockProperties(){
-    m_sp.width = this->sceneBoundingRect().width();
-    m_sp.time = this->sceneBoundingRect().width()*10;
-    m_sp.sampleRate = 44100;
+    //m_sp.width = this->sceneBoundingRect().width();
+    //m_sp.time = this->sceneBoundingRect().width()*10;
+    //m_sp.sampleRate = 44100;
     return m_sp;
 }
 

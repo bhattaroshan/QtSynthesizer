@@ -21,16 +21,16 @@ void MainWindow::initializeUI(){
     m_yPositionLayout->addWidget(m_yPositionLabel);
     m_yPositionLayout->addWidget(m_yPositionSpinBox);
 
-    m_lengthLayout = new QHBoxLayout();
-    m_lengthLabel = new QLabel("Length(ms)");
-    m_lengthSpinBox = new QSpinBox();
-    m_lengthSpinBox->setRange(10,1000000);
-    m_lengthLayout->addWidget(m_lengthLabel);
-    m_lengthLayout->addWidget(m_lengthSpinBox);
+    m_timeLayout = new QHBoxLayout();
+    m_timeLabel = new QLabel("Time (ms)");
+    m_timeSpinBox = new QSpinBox();
+    m_timeSpinBox->setRange(10,1000000);
+    m_timeLayout->addWidget(m_timeLabel);
+    m_timeLayout->addWidget(m_timeSpinBox);
 
     m_transformLayout->addLayout(m_xPositionLayout);
     m_transformLayout->addLayout(m_yPositionLayout);
-    m_transformLayout->addLayout(m_lengthLayout);
+    m_transformLayout->addLayout(m_timeLayout);
 
     /////////////////////////////////////////////////////////////////////////////////
 
@@ -155,10 +155,18 @@ void MainWindow::createTrackWidget(){
     Block* currentTrack = dynamic_cast<Block*>(sender());
     m_lastClickedTrack = currentTrack;
 
-    QList<Block*> tracks = getAllTracks();
+    QList<Block*> tracks = graphicsView->getAllBlocks();
     for(auto track:tracks){
         if(track==currentTrack){
             track->setZValue(1);
+            SignalProperties sp = track->getBlockProperties();
+            m_xPositionSpinBox->setValue(sp.x);
+            m_yPositionSpinBox->setValue(sp.y);
+            m_timeSpinBox->setValue(sp.time);
+            m_signalTypeComboBox->setCurrentIndex(sp.type);
+            m_frequencySpinBox->setValue(sp.frequency);
+            m_amplitudeDoubleSpinBox->setValue(sp.amplitude);
+            m_phaseSpinBox->setValue(sp.phase);
             m_blockAttributeDockWidget->setWidget(m_blockAttributeScrollArea);
 
 

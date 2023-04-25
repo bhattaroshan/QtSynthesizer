@@ -35,27 +35,18 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-    QObject *dialogAssociatedToTrack;
-
-    QColor setBrushFromFrequency(int frequency);
-    QMap<int,QColor> m_colorFrequencyMap;
 
 public slots:
-    QPair<qreal,qreal> resizeSlot();
     void onAddTrackClicked();
     void addTrack(QVector<SignalProperties> sp);
     void onTrackSingleClicked();
-    void updateGraph();
     void updateSignal(QVector<Block*> blocks);
     void deleteSignal(QVector<Block*> blocks);
     void combineSignals();
-    QList<Block*> getAllTracks();
 
     //audio functions
     void playSignal();
 
-    //dock functions
-    void createDockView();
 
     //menu functions
     void loadMenuBar();
@@ -134,9 +125,9 @@ private:
     QLabel *m_yPositionLabel;
     QSpinBox *m_yPositionSpinBox;
 
-    QHBoxLayout *m_lengthLayout;
-    QLabel *m_lengthLabel;
-    QSpinBox *m_lengthSpinBox;
+    QHBoxLayout *m_timeLayout;
+    QLabel *m_timeLabel;
+    QSpinBox *m_timeSpinBox;
 
     //SIGNAL ATTRIBUTE
     QVBoxLayout *m_signalLayout;
