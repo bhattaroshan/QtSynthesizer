@@ -69,6 +69,10 @@ MainWindow::MainWindow(QWidget *parent)
     createGeneralWidget();
 }
 
+void MainWindow::clicked_projectSignalBlockButton(){
+    onAddTrackClicked();
+}
+
 void MainWindow::createDockView(){
     //m_dockWidget = new QDockWidget("Properties");
     //m_dockWidget->setMinimumWidth(250);

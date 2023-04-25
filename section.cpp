@@ -4,8 +4,10 @@
 
 #include "section.h"
 
-Section::Section(QString title,QWidget *parent)
+Section::Section(QString title,bool expanded,QWidget *parent)
         : QWidget(parent) {
+
+    m_expanded = expanded;
     toggleButton = new QToolButton(this);
     //headerLine = new QFrame(this);
     toggleAnimation = new QParallelAnimationGroup(this);
@@ -35,7 +37,7 @@ Section::Section(QString title,QWidget *parent)
     toggleButton->setIconSize(QSize(12,12));
     toggleButton->setText(" "+title);
     toggleButton->setCheckable(true);
-    toggleButton->setChecked(false);
+    toggleButton->setChecked(expanded);
     toggleButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     contentArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -85,6 +87,9 @@ void Section::setContentLayout(QLayout &contentLayout) {
     contentAnimation->setDuration(animationDuration);
     contentAnimation->setStartValue(0);
     contentAnimation->setEndValue(contentHeight);
+    if(m_expanded){
+        toggle(true);
+    }
 }
 
 // --------------------------------------------------------------------------------

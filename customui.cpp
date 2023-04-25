@@ -5,7 +5,7 @@
 void MainWindow::initializeUI(){
 
     m_transformLayout = new QVBoxLayout();
-    m_transformSection = new Section("Transform");
+    m_transformSection = new Section("Transform",true);
 
     m_xPositionLayout = new QHBoxLayout();
     m_xPositionLabel = new QLabel("X");
@@ -35,7 +35,7 @@ void MainWindow::initializeUI(){
     /////////////////////////////////////////////////////////////////////////////////
 
     m_signalLayout = new QVBoxLayout();
-    m_signalSection = new Section("Signal");
+    m_signalSection = new Section("Signal",true);
 
     m_signalTypeLayout = new QHBoxLayout();
     m_signalTypeLabel = new QLabel("Type");
@@ -47,7 +47,7 @@ void MainWindow::initializeUI(){
     m_frequencyLayout = new QHBoxLayout();
     m_frequencyLabel = new QLabel("Frequency");
     m_frequencySpinBox = new QSpinBox(); //horizontal movement
-    m_xPositionSpinBox->setRange(1,20000);
+    m_frequencySpinBox->setRange(1,20000);
     m_frequencyLayout->addWidget(m_frequencyLabel);
     m_frequencyLayout->addWidget(m_frequencySpinBox);
 
@@ -98,12 +98,15 @@ void MainWindow::initializeUI(){
 
     /////////////////////////////////////////////////////////////////////////////////
 
-    m_projectSignalSection = new Section("Track");
+    m_projectSignalSection = new Section("Track",true);
     m_projectSignalLayout = new QVBoxLayout();
     m_projectSignalBlockButton = new QPushButton("Add Signal Block");
     m_projectMediaBlockButton = new QPushButton("Add Media Block");
     m_projectSignalLayout->addWidget(m_projectSignalBlockButton);
     m_projectSignalLayout->addWidget(m_projectMediaBlockButton);
+
+    connect(m_projectSignalBlockButton,&QPushButton::clicked,
+            this,&MainWindow::clicked_projectSignalBlockButton);
 
     m_projectSignalSection->setContentLayout(*m_projectSignalLayout);
 
@@ -448,15 +451,15 @@ void MainWindow::createTrackWidget(){
 
 void MainWindow::createGeneralWidget(){
 
-    m_generalMainLayout = new QVBoxLayout();
-    QPushButton *addTrackButton = new QPushButton("Add Track");
-    addTrackButton->setFixedHeight(40);
-    connect(addTrackButton,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
+//    m_generalMainLayout = new QVBoxLayout();
+//    QPushButton *addTrackButton = new QPushButton("Add Track");
+//    addTrackButton->setFixedHeight(40);
+//    connect(addTrackButton,&QPushButton::clicked,this,&MainWindow::onAddTrackClicked);
 
-    m_generalMainLayout->addWidget(addTrackButton);
+//    m_generalMainLayout->addWidget(addTrackButton);
 
-    QWidget *widget = new QWidget();
-    widget->setLayout(m_generalMainLayout);
-    m_blockAttributeDockWidget->setWidget(widget);
+//    QWidget *widget = new QWidget();
+//    widget->setLayout(m_generalMainLayout);
+    m_blockAttributeDockWidget->setWidget(nullptr);
     //m_blockAttributeDockWidget->setWidget(nullptr);
 }

@@ -67,6 +67,9 @@ public slots:
     void createGeneralWidget();
     QPushButton *createIconButton(QString icon);
 
+
+    //new slots
+    void clicked_projectSignalBlockButton();
 private:
     QVBoxLayout *m_trackMainLayout = nullptr;
     QVBoxLayout *m_generalMainLayout = nullptr;

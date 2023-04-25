@@ -39,13 +39,13 @@ private:
     QParallelAnimationGroup* toggleAnimation;
     QScrollArea* contentArea;
     int animationDuration = 100;
+    bool m_expanded = false;
 
 public slots:
     void toggle(bool collapsed);
 
 public:
-    explicit Section(QString title="",QWidget* parent = 0);
-
+    explicit Section(QString title="",bool expanded=false,QWidget* parent = 0);
     void setContentLayout(QLayout & contentLayout);
     QString name() const;
     QString includeFile() const;
