@@ -46,10 +46,14 @@ void MainWindow::initializeUI(){
 
     m_frequencyLayout = new QHBoxLayout();
     m_frequencyLabel = new QLabel("Frequency");
-    m_frequencySpinBox = new QSpinBox(); //horizontal movement
-    m_frequencySpinBox->setRange(1,20000);
+    m_frequencyDoubleSpinBox = new QDoubleSpinBox(); //horizontal movement
+    m_frequencyDoubleSpinBox->setRange(1,20000);
+    m_frequencyDoubleSpinBox->setSingleStep(0.1);
     m_frequencyLayout->addWidget(m_frequencyLabel);
-    m_frequencyLayout->addWidget(m_frequencySpinBox);
+    m_frequencyLayout->addWidget(m_frequencyDoubleSpinBox);
+    connect(m_frequencyDoubleSpinBox,&QDoubleSpinBox::editingFinished,
+            this,&MainWindow::triggered_frequencySpinBox);
+
 
     m_amplitudeLayout = new QHBoxLayout();
     m_amplitudeLabel = new QLabel("Amplitude");
@@ -131,6 +135,19 @@ void MainWindow::initializeUI(){
     addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_projectDockWidget);
 }
 
+void MainWindow::clicked_projectSignalBlockButton(){
+    onAddTrackClicked();
+}
+
+void MainWindow::triggered_frequencySpinBox(){
+
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        block->setFrequency(m_frequencyDoubleSpinBox->value());
+    }
+    updateSignal(blocks);
+}
+
 QPushButton* MainWindow::createIconButton(QString icon){
     QPushButton *colorBtn = new QPushButton();
     colorBtn->setIcon(QIcon(icon));
@@ -164,7 +181,7 @@ void MainWindow::createTrackWidget(){
             m_yPositionSpinBox->setValue(sp.y);
             m_timeSpinBox->setValue(sp.time);
             m_signalTypeComboBox->setCurrentIndex(sp.type);
-            m_frequencySpinBox->setValue(sp.frequency);
+            m_frequencyDoubleSpinBox->setValue(sp.frequency);
             m_amplitudeDoubleSpinBox->setValue(sp.amplitude);
             m_phaseSpinBox->setValue(sp.phase);
             m_blockAttributeDockWidget->setWidget(m_blockAttributeScrollArea);

@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QDockWidget>
 #include <signaldialog.h>
+#include <QDoubleSpinBox>
 
 #include <QAudio>
 #include <QAudioSink>
@@ -61,6 +62,8 @@ public slots:
 
     //new slots
     void clicked_projectSignalBlockButton();
+    void triggered_frequencySpinBox();
+
 private:
     QVBoxLayout *m_trackMainLayout = nullptr;
     QVBoxLayout *m_generalMainLayout = nullptr;
@@ -139,7 +142,7 @@ private:
 
     QHBoxLayout *m_frequencyLayout;
     QLabel *m_frequencyLabel;
-    QSpinBox *m_frequencySpinBox;
+    QDoubleSpinBox *m_frequencyDoubleSpinBox;
 
 
     QHBoxLayout *m_amplitudeLayout;

@@ -68,9 +68,6 @@ MainWindow::MainWindow(QWidget *parent)
     createGeneralWidget();
 }
 
-void MainWindow::clicked_projectSignalBlockButton(){
-    onAddTrackClicked();
-}
 
 void MainWindow::playSignal(){
     QAudioFormat format;
@@ -324,7 +321,7 @@ void MainWindow::addTrack(QVector<SignalProperties> sp)
     QVector<Block*> tempBlock;
     for(int i=0;i<sp.size();++i){
         Block *block = new Block(sp[i]);
-        display(sp[i]);
+        //display(sp[i]);
         QVector<QPointF> sig;
         SignalProcess::generateSignal(sig,sp[i]); //this signal is generated for default values
         m_blockList[block] = sig;
