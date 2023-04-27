@@ -204,16 +204,22 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
-        qDebug()<<"scale activated";
-        m_updateBlockList={m_lastPressedBlock};
-        qreal width = m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()
-                      -m_lastMouseMovePos.x();
+//        m_updateBlockList={m_lastPressedBlock};
+//        qreal width = m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()
+//                      -m_lastMouseMovePos.x();
 
-        m_lastPressedBlock->setRect(0,
-                                    0,
-                                    width,
-                                    m_lastPressedBlock->sceneBoundingRect().height());
-        m_lastPressedBlock->setWidth(width);
+//        m_lastPressedBlock->setRect(0,
+//                                    0,
+//                                    width,
+//                                    m_lastPressedBlock->sceneBoundingRect().height());
+//        m_lastPressedBlock->setWidth(width);
+          QList<Block*> blocks = getSelectedBlocks();
+          for(auto block:blocks){
+              qreal width = block->sceneBoundingRect().width()+currentMousePosition.x()
+                            -m_lastMouseMovePos.x();
+              block->setRect(0,0,width,block->sceneBoundingRect().height());
+              block->setWidth(width);
+          }
     }
 
     m_lastMouseMovePos = mapToScene(event->pos());
@@ -323,10 +329,16 @@ void CustomGraphicsView::showEvent(QShowEvent *event)
 
     for(int i=0;i<1000;++i){
         QGraphicsLineItem *scale = new QGraphicsLineItem();
+        int x1 = 30+i*5;
+        int y1 = 30;
+        int x2 = x1;
+        int y2 = 10;
+        int y3 = 20;
+
         if(i*5%50==0)
-            scale->setLine(30+i*5,30,30+i*5,10);
+            scale->setLine(x1,y1,x2,y2);
         else
-            scale->setLine(30+i*5,30,30+i*5,20);
+            scale->setLine(x1,y1,x2,y3);
         scale->setPen(QColor(128,128,128,50));
         scene()->addItem(scale);
     }

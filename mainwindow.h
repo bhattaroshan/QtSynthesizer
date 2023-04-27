@@ -61,10 +61,13 @@ public slots:
 
 
     //new slots
+    void triggered_xPositionSpinBox();
+    void triggered_yPositionSpinBox();
     void clicked_projectSignalBlockButton();
     void triggered_frequencySpinBox();
     void clicked_signalTypeComboBox(int);
     void triggered_harmonicsSpinBox();
+    void triggered_amplitudeSpinBox();
 
 private:
     QVBoxLayout *m_trackMainLayout = nullptr;

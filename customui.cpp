@@ -10,9 +10,11 @@ void MainWindow::initializeUI(){
     m_xPositionLayout = new QHBoxLayout();
     m_xPositionLabel = new QLabel("X");
     m_xPositionSpinBox = new QSpinBox(); //horizontal movement
-    m_xPositionSpinBox->setRange(0,20);
+    m_xPositionSpinBox->setRange(0,1000000);
     m_xPositionLayout->addWidget(m_xPositionLabel);
     m_xPositionLayout->addWidget(m_xPositionSpinBox);
+    connect(m_xPositionSpinBox,&QSpinBox::editingFinished,
+            this, &MainWindow::triggered_xPositionSpinBox);
 
     m_yPositionLayout = new QHBoxLayout();
     m_yPositionLabel = new QLabel("Y");
@@ -20,6 +22,8 @@ void MainWindow::initializeUI(){
     m_yPositionSpinBox->setRange(0,20);
     m_yPositionLayout->addWidget(m_yPositionLabel);
     m_yPositionLayout->addWidget(m_yPositionSpinBox);
+    connect(m_yPositionSpinBox,&QSpinBox::editingFinished,
+            this, &MainWindow::triggered_yPositionSpinBox);
 
     m_timeLayout = new QHBoxLayout();
     m_timeLabel = new QLabel("Time (ms)");
@@ -65,6 +69,8 @@ void MainWindow::initializeUI(){
     m_amplitudeDoubleSpinBox->setSingleStep(0.1);
     m_amplitudeLayout->addWidget(m_amplitudeLabel);
     m_amplitudeLayout->addWidget(m_amplitudeDoubleSpinBox);
+    connect(m_amplitudeDoubleSpinBox,&QDoubleSpinBox::editingFinished,
+            this,&MainWindow::triggered_amplitudeSpinBox);
 
     m_phaseLayout = new QHBoxLayout();
     m_phaseLabel = new QLabel("Phase");
@@ -153,6 +159,24 @@ void MainWindow::clicked_projectSignalBlockButton(){
     onAddTrackClicked();
 }
 
+void MainWindow::triggered_xPositionSpinBox(){
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        qreal newPos = m_xPositionSpinBox->value();
+        block->setX(newPos);
+        block->setPos(newPos+30,block->getY());
+    }
+    updateSignal(blocks);
+}
+
+void MainWindow::triggered_yPositionSpinBox(){
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        block->setY(m_yPositionSpinBox->value()*30+30);
+    }
+    updateSignal(blocks);
+}
+
 void MainWindow::triggered_frequencySpinBox(){
 
     QList<Block*> blocks = graphicsView->getSelectedBlocks();
@@ -174,6 +198,14 @@ void MainWindow::triggered_harmonicsSpinBox(){
     QList<Block*> blocks = graphicsView->getSelectedBlocks();
     for(auto block:blocks){
         block->setHarmonics(m_harmonicsSpinBox->value());
+    }
+    updateSignal(blocks);
+}
+
+void MainWindow::triggered_amplitudeSpinBox(){
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        block->setAmplitude(m_amplitudeDoubleSpinBox->value());
     }
     updateSignal(blocks);
 }
@@ -207,12 +239,13 @@ void MainWindow::createTrackWidget(){
         if(track==currentTrack){
             track->setZValue(1);
             SignalProperties sp = track->getBlockProperties();
-            m_xPositionSpinBox->setValue(sp.x);
+            m_xPositionSpinBox->setValue(sp.x-30);
             m_yPositionSpinBox->setValue(sp.y);
             m_timeSpinBox->setValue(sp.time);
             m_signalTypeComboBox->setCurrentIndex(sp.type);
             m_frequencyDoubleSpinBox->setValue(sp.frequency);
             m_amplitudeDoubleSpinBox->setValue(sp.amplitude);
+            m_harmonicsSpinBox->setValue(sp.harmonics);
             m_phaseSpinBox->setValue(sp.phase);
             m_blockAttributeDockWidget->setWidget(m_blockAttributeScrollArea);
 

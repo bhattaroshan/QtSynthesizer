@@ -352,6 +352,9 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
     for(auto block:blocks){
         QVector<QPointF> sig;
         SignalProperties sp = block->getBlockProperties();
+
+        //exceptional case for transformation on each update signal
+        m_xPositionSpinBox->setValue(sp.x-30);
         //display(sp);
         SignalProcess::generateSignal(sig,sp);
         m_blockList[block] = sig;
