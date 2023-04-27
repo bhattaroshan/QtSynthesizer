@@ -236,9 +236,11 @@ void MainWindow::createTrackWidget(){
     Block* currentTrack = dynamic_cast<Block*>(sender());
     m_lastClickedTrack = currentTrack;
 
-    QList<Block*> tracks = graphicsView->getAllBlocks();
+    //QList<Block*> tracks = graphicsView->getAllBlocks();
+    QList<Block*> tracks = graphicsView->getSelectedBlocks();
+
     for(auto track:tracks){
-        if(track==currentTrack){
+   //     if(track==currentTrack){
             track->setZValue(1);
             SignalProperties sp = track->getBlockProperties();
             m_xPositionSpinBox->setValue(sp.x-30);
@@ -532,9 +534,9 @@ void MainWindow::createTrackWidget(){
 //            widget->setLayout(m_trackMainLayout);
 //            m_dockWidget->setWidget(widget);
 
-        }else{
-            track->setZValue(0);
-        }
+//        }else{
+//            track->setZValue(0);
+//        }
     }
 
 }

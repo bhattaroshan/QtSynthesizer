@@ -108,6 +108,11 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton){
         m_isLeftButtonClicked = false;
+
+        if(getSelectedBlocks().size()>0){
+            emit blockClicked();
+        }
+
         if(m_updateBlockList.size()){
             emit blockUpdated(m_updateBlockList);
             m_updateBlockList.clear();
@@ -200,26 +205,15 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     }
                 }
             }
-            block->setX(x);
-            block->setY(y);
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
-//        m_updateBlockList={m_lastPressedBlock};
-//        qreal width = m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()
-//                      -m_lastMouseMovePos.x();
-
-//        m_lastPressedBlock->setRect(0,
-//                                    0,
-//                                    width,
-//                                    m_lastPressedBlock->sceneBoundingRect().height());
-//        m_lastPressedBlock->setWidth(width);
           QList<Block*> blocks = getSelectedBlocks();
+          m_updateBlockList = blocks;
           for(auto block:blocks){
               qreal width = block->sceneBoundingRect().width()+currentMousePosition.x()
                             -m_lastMouseMovePos.x();
               block->setRect(0,0,width,block->sceneBoundingRect().height());
-              block->setWidth(width);
           }
     }
 
