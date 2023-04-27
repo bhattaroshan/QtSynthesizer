@@ -172,7 +172,9 @@ void MainWindow::triggered_xPositionSpinBox(){
 void MainWindow::triggered_yPositionSpinBox(){
     QList<Block*> blocks = graphicsView->getSelectedBlocks();
     for(auto block:blocks){
-        block->setY(m_yPositionSpinBox->value()*30+30);
+        qreal newPos = m_yPositionSpinBox->value()*30;
+        block->setY(newPos);
+        block->setPos(block->getX(),newPos+30);
     }
     updateSignal(blocks);
 }
@@ -240,7 +242,7 @@ void MainWindow::createTrackWidget(){
             track->setZValue(1);
             SignalProperties sp = track->getBlockProperties();
             m_xPositionSpinBox->setValue(sp.x-30);
-            m_yPositionSpinBox->setValue(sp.y);
+            m_yPositionSpinBox->setValue(int((sp.y-30)/30));
             m_timeSpinBox->setValue(sp.time);
             m_signalTypeComboBox->setCurrentIndex(sp.type);
             m_frequencyDoubleSpinBox->setValue(sp.frequency);

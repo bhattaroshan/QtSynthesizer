@@ -22,6 +22,7 @@ public:
     void addItem(Block*);
     QList<Block *> getSelectedBlocks();
     QList<Block *> getAllBlocks();
+    void resizeScrollBar();
 
 signals:
     void blockClicked();
@@ -33,7 +34,6 @@ private:
     QRectF createRectToTop(Block *block, int width=1);
     QRectF createRectToBottom(Block *block, int width=1);
     QList<Block*> getCollidingItems(Block *block, QRectF rect);
-
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

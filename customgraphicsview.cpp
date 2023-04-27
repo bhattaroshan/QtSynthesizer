@@ -9,6 +9,7 @@ CustomGraphicsView::CustomGraphicsView(QWidget *parent)
     setDragMode(QGraphicsView::RubberBandDrag);
     setCursor(Qt::ArrowCursor);
     installEventFilter(this);
+    setMouseTracking(false);
 }
 
 qreal CustomGraphicsView::getSeekBarCenterPos()
@@ -281,16 +282,14 @@ bool CustomGraphicsView::eventFilter(QObject *watched, QEvent *event)
                     spVector.append(sp);
                 }
                 emit addTrack(spVector);
+                resizeScrollBar();
             }
         }
     }
     return QGraphicsView::eventFilter(watched,event);
 }
 
-void CustomGraphicsView::resizeEvent(QResizeEvent *event)
-{
-    //this->scene()->setSceneRect(0,0,this->width(),this->height());
-    //this->scene()->setSceneRect(0,0,2000,2000);
+void CustomGraphicsView::resizeScrollBar(){
     QList<Block*> blocks = getAllBlocks();
     qreal width = this->parentWidget()->width();
     qreal height = this->parentWidget()->height();
@@ -304,6 +303,13 @@ void CustomGraphicsView::resizeEvent(QResizeEvent *event)
     }
 
     this->setSceneRect(0,0,width+100,height+50);
+}
+
+void CustomGraphicsView::resizeEvent(QResizeEvent *event)
+{
+    //this->scene()->setSceneRect(0,0,this->width(),this->height());
+    //this->scene()->setSceneRect(0,0,2000,2000);
+    resizeScrollBar();
     QGraphicsView::resizeEvent(event);
 }
 

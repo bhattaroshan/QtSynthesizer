@@ -187,7 +187,7 @@ void MainWindow::onMenuAction_Open(){
         spList.append(sp);
     }
     addTrack(spList);
-
+    graphicsView->resizeScrollBar();
 }
 
 void MainWindow::onMenuAction_Save()
@@ -355,6 +355,7 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
 
         //exceptional case for transformation on each update signal
         m_xPositionSpinBox->setValue(sp.x-30);
+        m_yPositionSpinBox->setValue(int((sp.y-30)/30));
         //display(sp);
         SignalProcess::generateSignal(sig,sp);
         m_blockList[block] = sig;
