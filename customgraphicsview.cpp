@@ -63,9 +63,17 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
         m_lastMouseMovePos = mapToScene(event->pos());
         m_lastMousePressPos = mapToScene(event->pos());
 
-        QGraphicsItem *clickedItem = this->itemAt(event->pos());
-        Block *block = dynamic_cast<Block*>(clickedItem);
-        if(block){ //block is clicked
+        QList<QGraphicsItem*> clickedItems = this->items(event->pos());
+        QList<Block*> blocks;
+        for(auto item:clickedItems) {
+            Block *b = dynamic_cast<Block*>(item);
+            if(b){
+                blocks.append(b);
+            }
+        }
+
+        if(blocks.size()>0){ //block is clicked
+            Block *block = blocks[0];
             emit blockClicked();
             m_lastPressedBlock = block;
             qreal x = block->pos().x();
@@ -196,6 +204,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
+        qDebug()<<"scale activated";
         m_updateBlockList={m_lastPressedBlock};
         qreal width = m_lastPressedBlock->sceneBoundingRect().width()+currentMousePosition.x()
                       -m_lastMouseMovePos.x();
