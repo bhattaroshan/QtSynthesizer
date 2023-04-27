@@ -16,7 +16,9 @@ void SignalProcess::generateSignal(QVector<QPointF> &sig, SignalProperties sp){
     qreal originalFrequency = sp.frequency;
     qreal originalAmplitude = sp.amplitude;
     int step = 1;
-    if(sp.type==SIGNAL_TYPE_SQUARE) step = 2;
+    if(sp.type==SIGNAL_TYPE_SQUARE) {
+        step = 2;
+    }
 
     for(int harmonics=1;harmonics<=(sp.harmonics+1)*step;harmonics+=step){ //if harmonics is zero, just run this once
         if(sp.type == SIGNAL_TYPE_SINUSOIDAL){ //perform operation for sinusoidal wave generation

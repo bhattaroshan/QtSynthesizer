@@ -352,6 +352,7 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
     for(auto block:blocks){
         QVector<QPointF> sig;
         SignalProperties sp = block->getBlockProperties();
+        //display(sp);
         SignalProcess::generateSignal(sig,sp);
         m_blockList[block] = sig;
     }

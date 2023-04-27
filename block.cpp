@@ -17,7 +17,7 @@ Block::Block(SignalProperties sp, QGraphicsItem *parent)
     setPen(Qt::NoPen);
     setBrush(m_sp.color);
     setRect(0,0,m_sp.width,30);
-    setPos(sp.x,sp.y);
+    setPos(m_sp.x,m_sp.y);
     setAcceptHoverEvents(true);
 }
 
@@ -27,9 +27,10 @@ bool Block::operator<(const Block &other) const
 }
 
 SignalProperties Block::getBlockProperties(){
-    //m_sp.width = this->sceneBoundingRect().width();
-    //m_sp.time = this->sceneBoundingRect().width()*10;
-    //m_sp.sampleRate = 44100;
+    m_sp.x = this->x();
+    m_sp.y = this->y();
+    m_sp.width = this->sceneBoundingRect().width();
+    m_sp.time  = m_sp.width*10;
     return m_sp;
 }
 

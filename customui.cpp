@@ -44,6 +44,9 @@ void MainWindow::initializeUI(){
     m_signalTypeLayout->addWidget(m_signalTypeLabel);
     m_signalTypeLayout->addWidget(m_signalTypeComboBox);
 
+    connect(m_signalTypeComboBox,&QComboBox::activated,
+            this,&MainWindow::clicked_signalTypeComboBox);
+
     m_frequencyLayout = new QHBoxLayout();
     m_frequencyLabel = new QLabel("Frequency");
     m_frequencyDoubleSpinBox = new QDoubleSpinBox(); //horizontal movement
@@ -70,6 +73,15 @@ void MainWindow::initializeUI(){
     m_phaseLayout->addWidget(m_phaseLabel);
     m_phaseLayout->addWidget(m_phaseSpinBox);
 
+    m_harmonicsLayout = new QHBoxLayout();
+    m_harmonicsLabel = new QLabel("Harmonics");
+    m_harmonicsSpinBox = new QSpinBox();
+    m_harmonicsSpinBox->setRange(0,20);
+    m_harmonicsLayout->addWidget(m_harmonicsLabel);
+    m_harmonicsLayout->addWidget(m_harmonicsSpinBox);
+
+    connect(m_harmonicsSpinBox,&QSpinBox::editingFinished,
+            this,&MainWindow::triggered_harmonicsSpinBox);
 
     m_signalTypeLabel->setMinimumSize(m_frequencyLabel->sizeHint());
 
@@ -77,6 +89,8 @@ void MainWindow::initializeUI(){
     m_signalLayout->addLayout(m_frequencyLayout);
     m_signalLayout->addLayout(m_amplitudeLayout);
     m_signalLayout->addLayout(m_phaseLayout);
+    m_signalLayout->addLayout(m_harmonicsLayout);
+
 
 
     m_transformSection->setContentLayout(*m_transformLayout);
@@ -144,6 +158,22 @@ void MainWindow::triggered_frequencySpinBox(){
     QList<Block*> blocks = graphicsView->getSelectedBlocks();
     for(auto block:blocks){
         block->setFrequency(m_frequencyDoubleSpinBox->value());
+    }
+    updateSignal(blocks);
+}
+
+void MainWindow::clicked_signalTypeComboBox(int index){
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        block->setType(index);
+    }
+    updateSignal(blocks);
+}
+
+void MainWindow::triggered_harmonicsSpinBox(){
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        block->setHarmonics(m_harmonicsSpinBox->value());
     }
     updateSignal(blocks);
 }

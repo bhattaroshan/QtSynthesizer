@@ -63,6 +63,8 @@ public slots:
     //new slots
     void clicked_projectSignalBlockButton();
     void triggered_frequencySpinBox();
+    void clicked_signalTypeComboBox(int);
+    void triggered_harmonicsSpinBox();
 
 private:
     QVBoxLayout *m_trackMainLayout = nullptr;
@@ -152,6 +154,11 @@ private:
     QHBoxLayout *m_phaseLayout;
     QLabel *m_phaseLabel;
     QSpinBox *m_phaseSpinBox;
+
+
+    QHBoxLayout *m_harmonicsLayout;
+    QLabel *m_harmonicsLabel;
+    QSpinBox *m_harmonicsSpinBox;
 
     void initializeUI();
 
