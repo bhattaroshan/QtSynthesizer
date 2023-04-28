@@ -12,5 +12,5 @@ The application can help you experiment with Sinusoidal waves. Currently you can
 - Envelope 
   - You can experiment with ADSR. There is no filed to change S. Software automatically figures out the S once you set Attack, Decay and Release.
   
-![Screen Shot 2566-04-19 at 12 51 28 PM](https://user-images.githubusercontent.com/4207226/232994612-b8595803-a6cd-4ffa-9185-e58b8871e9e4.png)
+<img width="1440" alt="Screen Shot 2566-04-28 at 11 06 48 PM" src="https://user-images.githubusercontent.com/4207226/235213350-e875e1bc-718e-4200-8b8a-b49a4ed3fc79.png">
 
