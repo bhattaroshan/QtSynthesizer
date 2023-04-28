@@ -31,6 +31,9 @@ void MainWindow::initializeUI(){
     m_timeSpinBox->setRange(10,1000000);
     m_timeLayout->addWidget(m_timeLabel);
     m_timeLayout->addWidget(m_timeSpinBox);
+    connect(m_timeSpinBox,&QSpinBox::editingFinished,
+            this, &MainWindow::triggered_timeSpinBox);
+
 
     m_transformLayout->addLayout(m_xPositionLayout);
     m_transformLayout->addLayout(m_yPositionLayout);
@@ -208,6 +211,16 @@ void MainWindow::triggered_amplitudeSpinBox(){
     QList<Block*> blocks = graphicsView->getSelectedBlocks();
     for(auto block:blocks){
         block->setAmplitude(m_amplitudeDoubleSpinBox->value());
+    }
+    updateSignal(blocks);
+}
+
+void MainWindow::triggered_timeSpinBox(){
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        int width = m_timeSpinBox->value()/10;
+        block->setWidth(width);
+        block->setRect(0,0,width,block->sceneBoundingRect().height());
     }
     updateSignal(blocks);
 }

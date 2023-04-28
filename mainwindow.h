@@ -68,6 +68,7 @@ public slots:
     void clicked_signalTypeComboBox(int);
     void triggered_harmonicsSpinBox();
     void triggered_amplitudeSpinBox();
+    void triggered_timeSpinBox();
 
 private:
     QVBoxLayout *m_trackMainLayout = nullptr;
