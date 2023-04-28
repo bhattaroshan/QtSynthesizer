@@ -81,6 +81,8 @@ void MainWindow::initializeUI(){
     m_phaseSpinBox->setRange(0,359);
     m_phaseLayout->addWidget(m_phaseLabel);
     m_phaseLayout->addWidget(m_phaseSpinBox);
+    connect(m_phaseSpinBox,&QSpinBox::editingFinished,
+            this,&MainWindow::triggered_phaseSpinBox);
 
     m_harmonicsLayout = new QHBoxLayout();
     m_harmonicsLabel = new QLabel("Harmonics");
@@ -219,8 +221,16 @@ void MainWindow::triggered_timeSpinBox(){
     QList<Block*> blocks = graphicsView->getSelectedBlocks();
     for(auto block:blocks){
         int width = m_timeSpinBox->value()/10;
-        block->setWidth(width);
+        //block->setWidth(width);
         block->setRect(0,0,width,block->sceneBoundingRect().height());
+    }
+    updateSignal(blocks);
+}
+
+void MainWindow::triggered_phaseSpinBox(){
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        block->setPhase(m_phaseSpinBox->value());
     }
     updateSignal(blocks);
 }

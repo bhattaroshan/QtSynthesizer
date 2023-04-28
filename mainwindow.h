@@ -69,6 +69,7 @@ public slots:
     void triggered_harmonicsSpinBox();
     void triggered_amplitudeSpinBox();
     void triggered_timeSpinBox();
+    void triggered_phaseSpinBox();
 
 private:
     QVBoxLayout *m_trackMainLayout = nullptr;

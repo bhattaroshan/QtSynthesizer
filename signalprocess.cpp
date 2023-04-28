@@ -37,7 +37,7 @@ void SignalProcess::generateSignal(QVector<QPointF> &sig, SignalProperties sp){
 void SignalProcess::generateSinWave(QVector<QPointF> &sig, SignalProperties sp){
     qreal samples = SAMPLES(sp.time,sp.sampleRate);
     qreal inc = (sp.frequency*2*M_PI)/sp.sampleRate;
-    qreal currPhase = sp.phase;
+    qreal currPhase = (sp.phase*M_PI)/180.0;
 
     for(int x=0;x<samples;++x){
         qreal y = sp.amplitude*qSin(currPhase);
@@ -59,7 +59,7 @@ void SignalProcess::generateSquareWave(QVector<QPointF> &sig, SignalProperties s
 {
     qreal samples = SAMPLES(sp.time,sp.sampleRate);
     qreal inc = (sp.frequency*2*M_PI)/sp.sampleRate;
-    qreal currPhase = sp.phase;
+    qreal currPhase = (sp.phase*M_PI)/180.0;
 
     for(int x=0;x<samples;++x){
         qreal y = sp.amplitude*qSin(currPhase); //take signal slightly below highest level
