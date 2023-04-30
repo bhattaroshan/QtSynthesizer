@@ -90,7 +90,6 @@ void MainWindow::initializeUI(){
     m_harmonicsSpinBox->setRange(0,20);
     m_harmonicsLayout->addWidget(m_harmonicsLabel);
     m_harmonicsLayout->addWidget(m_harmonicsSpinBox);
-
     connect(m_harmonicsSpinBox,&QSpinBox::editingFinished,
             this,&MainWindow::triggered_harmonicsSpinBox);
 
@@ -118,9 +117,16 @@ void MainWindow::initializeUI(){
     m_blockAttributeScrollArea->setWidgetResizable(true);
     m_blockAttributeDockWidget->setMinimumWidth(200);
 
+    QPushButton *addEffect = new QPushButton("Add Effect");
+    //addEffect->setFixedHeight(40);
+    //addEffect->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+
     m_blockAttributeLayout->addWidget(m_transformSection);
     m_blockAttributeLayout->addWidget(m_signalSection);
+    m_blockAttributeLayout->addWidget(addEffect);
     m_blockAttributeWidget->setLayout(m_blockAttributeLayout);
+
+
     m_blockAttributeScrollArea->setWidget(m_blockAttributeWidget);
 
     addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea,m_blockAttributeDockWidget);
@@ -155,6 +161,7 @@ void MainWindow::initializeUI(){
     m_projectScrollArea = new QScrollArea();
     m_projectScrollArea->setWidgetResizable(true);
     m_projectScrollArea->setWidget(m_projectWidget);
+
     m_projectDockWidget->setWidget(m_projectScrollArea);
 
     addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_projectDockWidget);

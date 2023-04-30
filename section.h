@@ -35,7 +35,9 @@ class Section : public QWidget {
 private:
 
     QVBoxLayout* mainLayout;
+    QHBoxLayout *titleLayout;
     QToolButton* toggleButton;
+    QToolButton* crossButton;
     QParallelAnimationGroup* toggleAnimation;
     QScrollArea* contentArea;
     int animationDuration = 100;
@@ -45,7 +47,7 @@ public slots:
     void toggle(bool collapsed);
 
 public:
-    explicit Section(QString title="",bool expanded=false,QWidget* parent = 0);
+    explicit Section(QString title="",bool expanded=false,bool bClose=false,QWidget* parent = 0);
     void setContentLayout(QLayout & contentLayout);
     QString name() const;
     QString includeFile() const;

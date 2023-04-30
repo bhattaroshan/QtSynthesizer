@@ -4,31 +4,34 @@
 
 #include "section.h"
 
-Section::Section(QString title,bool expanded,QWidget *parent)
+Section::Section(QString title,bool expanded,bool bClose,QWidget *parent)
         : QWidget(parent) {
 
     m_expanded = expanded;
-    toggleButton = new QToolButton(this);
+    titleLayout = new QHBoxLayout();
+    toggleButton = new QToolButton();
+
     //headerLine = new QFrame(this);
-    toggleAnimation = new QParallelAnimationGroup(this);
-    contentArea = new QScrollArea(this);
+    toggleAnimation = new QParallelAnimationGroup();
+    contentArea = new QScrollArea();
     contentArea->setWidgetResizable(true);
     contentArea->setStyleSheet("QScrollArea{"
                                "background-color:#2b2d2f;"
                                "}");
 
-    mainLayout = new QVBoxLayout(this);
+    mainLayout = new QVBoxLayout();
 
     toggleButton->setStyleSheet("QToolButton {"
-                                "border: 1px solid #3b3f43;"
-                                "background-color: #4a4d51;"
+                                //"border: 1px solid #3b3f43;"
+                                "border: none;"
+                                //"background-color: #4a4d51;"
                                 "padding:2px;"
                                 "}"
                                 "QToolButton:hover{"
-                                "background-color: #3b3f43;"
+                                //"background-color: #3b3f43;"
                                 "}"
                                 "QToolButton:pressed{"
-                                "background-color: #2b2d2f;"
+                                //"background-color: #2b2d2f;"
                                 "}");
 
     toggleButton->setFont(QFont("Droid Sans",12,QFont::Bold));
@@ -39,6 +42,25 @@ Section::Section(QString title,bool expanded,QWidget *parent)
     toggleButton->setCheckable(true);
     toggleButton->setChecked(expanded);
     toggleButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    toggleButton->setCursor(Qt::PointingHandCursor);
+
+    if(bClose){
+        crossButton = new QToolButton();
+        crossButton->setStyleSheet("QToolButton {"
+                                //"border: 1px solid #3b3f43;"
+                               "border: none;"
+                                //"background-color: #4a4d51;"
+                                "padding:2px;"
+                                "}"
+                                "QToolButton:hover{"
+                                "background-color: #3b3f43;"
+                                "}"
+                                "QToolButton:pressed{"
+                                "background-color: #2b2d2f;"
+                                "}");
+        crossButton->setIcon(QIcon(":/icons/cross-btn.png"));
+        crossButton->setIconSize(QSize(12,12));
+    }
 
     contentArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -51,11 +73,16 @@ Section::Section(QString title,bool expanded,QWidget *parent)
     toggleAnimation->addAnimation(new QPropertyAnimation(this, "maximumHeight"));
     toggleAnimation->addAnimation(new QPropertyAnimation(contentArea, "maximumHeight"));
     mainLayout->setSpacing(0);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
 
-    int row = 0;
-    mainLayout->addWidget(toggleButton);
+    titleLayout->addWidget(toggleButton,0,Qt::AlignLeft);
+
+    if(bClose){
+        titleLayout->addWidget(crossButton,0,Qt::AlignRight);
+    }
+
+    mainLayout->addLayout(titleLayout);
     mainLayout->addWidget(contentArea);
+    mainLayout->setContentsMargins(0,0,0,0);
     setLayout(mainLayout);
 
     connect(toggleButton, &QToolButton::toggled, this, &Section::toggle);

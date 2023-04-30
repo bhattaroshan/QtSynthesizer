@@ -9,5 +9,6 @@
         <file>pause.png</file>
         <file>down-arrow.png</file>
         <file>right-arrow.png</file>
+        <file>cross-btn.png</file>
     </qresource>
 </RCC>
