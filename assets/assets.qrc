@@ -10,5 +10,7 @@
         <file>down-arrow.png</file>
         <file>right-arrow.png</file>
         <file>cross-btn.png</file>
+        <file>echo-effect.png</file>
+        <file>reverb-effect.png</file>
     </qresource>
 </RCC>
