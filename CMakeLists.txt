@@ -26,6 +26,7 @@ set(PROJECT_SOURCES
     graphicseye.h graphicseye.cpp
     graphicsseek.h graphicsseek.cpp
     section.cpp section.h
+    effectsdialog.h effectsdialog.cpp
     signalproperties.h
     assets/assets.qrc
 )

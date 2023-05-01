@@ -36,7 +36,7 @@ SignalProperties Block::getBlockProperties(){
 
 void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit clicked();
+    //emit clicked();
     QGraphicsRectItem::mousePressEvent(event);
 }
 
@@ -54,53 +54,53 @@ void Block::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
 void Block::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    QMenu menu;
-    QMenu noteMenu("Note");
-    noteMenu.setMinimumWidth(100);
-    QAction *c4Action = noteMenu.addAction("C4");
-    QAction *d4Action = noteMenu.addAction("D4");
-    QAction *e4Action = noteMenu.addAction("E4");
-    QAction *f4Action = noteMenu.addAction("F4");
-    QAction *g4Action = noteMenu.addAction("G4");
-    QAction *a4Action = noteMenu.addAction("A4");
-    QAction *b4Action = noteMenu.addAction("B4");
-    QAction *c5Action = noteMenu.addAction("C5");
-    qreal freq;
+//    QMenu menu;
+//    QMenu noteMenu("Note");
+//    noteMenu.setMinimumWidth(100);
+//    QAction *c4Action = noteMenu.addAction("C4");
+//    QAction *d4Action = noteMenu.addAction("D4");
+//    QAction *e4Action = noteMenu.addAction("E4");
+//    QAction *f4Action = noteMenu.addAction("F4");
+//    QAction *g4Action = noteMenu.addAction("G4");
+//    QAction *a4Action = noteMenu.addAction("A4");
+//    QAction *b4Action = noteMenu.addAction("B4");
+//    QAction *c5Action = noteMenu.addAction("C5");
+//    qreal freq;
 
-    connect(c4Action,&QAction::triggered,this,[=]()mutable{
-        freq = 261;
-        setFrequency(freq);
-    });
-    connect(d4Action,&QAction::triggered,this,[=]()mutable{
-        freq = 293;
-        setFrequency(freq);
-    });
-    connect(e4Action,&QAction::triggered,this,[=]()mutable{
-        freq = 329;
-        setFrequency(freq);
-    });
-    connect(f4Action,&QAction::triggered,this,[=](){
-        setFrequency(349);
-    });
-    connect(g4Action,&QAction::triggered,this,[=](){
-        setFrequency(392);
-    });
-    connect(a4Action,&QAction::triggered,this,[=](){
-        setFrequency(440);
-    });
-    connect(b4Action,&QAction::triggered,this,[=](){
-        setFrequency(493);
-    });
-    connect(c5Action,&QAction::triggered,this,[=](){
-        setFrequency(523);
-    });
+//    connect(c4Action,&QAction::triggered,this,[=]()mutable{
+//        freq = 261;
+//        setFrequency(freq);
+//    });
+//    connect(d4Action,&QAction::triggered,this,[=]()mutable{
+//        freq = 293;
+//        setFrequency(freq);
+//    });
+//    connect(e4Action,&QAction::triggered,this,[=]()mutable{
+//        freq = 329;
+//        setFrequency(freq);
+//    });
+//    connect(f4Action,&QAction::triggered,this,[=](){
+//        setFrequency(349);
+//    });
+//    connect(g4Action,&QAction::triggered,this,[=](){
+//        setFrequency(392);
+//    });
+//    connect(a4Action,&QAction::triggered,this,[=](){
+//        setFrequency(440);
+//    });
+//    connect(b4Action,&QAction::triggered,this,[=](){
+//        setFrequency(493);
+//    });
+//    connect(c5Action,&QAction::triggered,this,[=](){
+//        setFrequency(523);
+//    });
 
-    menu.addMenu(&noteMenu);
-    menu.addAction("Copy");
-    menu.addAction("Paste");
-    menu.addAction("Delete");
-    menu.addAction("Properties");
-    menu.exec(event->screenPos());
+//    menu.addMenu(&noteMenu);
+//    menu.addAction("Copy");
+//    menu.addAction("Paste");
+//    menu.addAction("Delete");
+//    menu.addAction("Properties");
+//    menu.exec(event->screenPos());
 }
 
 void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

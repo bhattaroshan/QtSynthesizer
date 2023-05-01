@@ -24,6 +24,7 @@
 #include "customgraphicsscene.h"
 #include "customgraphicsview.h"
 #include "section.h"
+#include "effectsdialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -44,6 +45,8 @@ public slots:
     void updateSignal(QVector<Block*> blocks);
     void deleteSignal(QVector<Block*> blocks);
     void combineSignals();
+
+    void showEffectsDialog();
 
     //audio functions
     void playSignal();

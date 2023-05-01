@@ -118,6 +118,7 @@ void MainWindow::initializeUI(){
     m_blockAttributeDockWidget->setMinimumWidth(200);
 
     QPushButton *addEffect = new QPushButton("Add Effect");
+    connect(addEffect,&QPushButton::clicked,this,&MainWindow::showEffectsDialog);
     //addEffect->setFixedHeight(40);
     //addEffect->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 
@@ -165,6 +166,13 @@ void MainWindow::initializeUI(){
     m_projectDockWidget->setWidget(m_projectScrollArea);
 
     addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_projectDockWidget);
+    //showEffectsDialog();
+}
+
+void MainWindow::showEffectsDialog(){
+    EffectsDialog *effectsDialog = new EffectsDialog();
+    effectsDialog->exec();
+    delete effectsDialog;
 }
 
 void MainWindow::clicked_projectSignalBlockButton(){

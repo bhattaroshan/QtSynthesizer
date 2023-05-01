@@ -256,15 +256,12 @@ void MainWindow::onAddTrackClicked(){
         blockY = minY;
     }
 
-
     sp.x = blockX;
     sp.y = blockY;
     sp.frequency = 220;
     sp.attack = 1;
     sp.decay = 1;
     sp.release = 1;
-
-
 
     addTrack({sp});
 }
