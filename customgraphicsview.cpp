@@ -108,8 +108,16 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton){
         m_isLeftButtonClicked = false;
+        QVector<Block*> selectedBlocks = getSelectedBlocks();
 
-        if(getSelectedBlocks().size()>0){
+        if(selectedBlocks.size()>0){ //dragged and selected the blocks
+            //store the order of blocks here
+            m_selectedBlocksInOrder = getBlocksInOrder(selectedBlocks);
+            m_selectedBlocksDistancesInOrder.clear(); //clear previous values
+            for(auto layers:m_selectedBlocksInOrder){
+                m_selectedBlocksDistancesInOrder.push_back(getBlocksDistance(layers));
+            }
+
             emit blockClicked();
         }
 
@@ -217,18 +225,17 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
               block->setRect(0,0,width,block->sceneBoundingRect().height());
               //block->setPos(block->x()+deltax,block->y());
-              QVector<QVector<Block*>> res = getBlocksInOrder(blocks);
-              for(int row=0;row<res.size();++row){
+              for(int row=0;row<m_selectedBlocksInOrder.size();++row){
                   //skip re-positioning first block
-                  for(int col=1;col<res[row].size();++col){
-                    qreal pbx = res[row][col-1]->x()+res[row][col-1]->sceneBoundingRect().width();
-                    qreal cbx = res[row][col]->x();
-
-                    if(qAbs(pbx-cbx)<=5){
-                        res[row][col]->setPos(res[row][col-1]->x()+res[row][col-1]->sceneBoundingRect().width(),
-                            res[row][col]->y());
-                    }
-                  }
+                  for(int col=1;col<m_selectedBlocksInOrder[row].size();++col){
+                      m_selectedBlocksInOrder[row][col]->
+                        setPos(
+                               m_selectedBlocksInOrder[row][col-1]->x()+
+                               m_selectedBlocksInOrder[row][col-1]->sceneBoundingRect().width()+
+                               m_selectedBlocksDistancesInOrder[row][col],
+                               m_selectedBlocksInOrder[row][col]->y()
+                              );
+      }
               }
           }
     }
@@ -236,6 +243,17 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
     m_lastMouseMovePos = mapToScene(event->pos());
 
     return QGraphicsView::mouseMoveEvent(event);
+}
+
+QVector<qreal> CustomGraphicsView::getBlocksDistance(QVector<Block*> blocks){
+    QVector<qreal> distance;
+    distance.push_back(0); //first block has nothing to compare with
+
+    for(int i=1;i<blocks.size();++i){
+        distance.push_back(blocks[i]->x()-blocks[i-1]->x()-blocks[i-1]->sceneBoundingRect().width());
+    }
+
+    return distance;
 }
 
 QVector<QVector<Block*>> CustomGraphicsView::getBlocksInOrder(QVector<Block*> blocks){

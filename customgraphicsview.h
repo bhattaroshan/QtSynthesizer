@@ -24,6 +24,7 @@ public:
     QList<Block *> getAllBlocks();
     void resizeScrollBar();
     QVector<QVector<Block*>> getBlocksInOrder(QVector<Block*> blocks);
+    QVector<qreal> getBlocksDistance(QVector<Block*> blocks);
 
 signals:
     void blockClicked();
@@ -60,6 +61,9 @@ protected:
     bool m_blockUpdateNecessary = false;
 
     QVector<Block*> m_updateBlockList;
+
+    QVector<QVector<Block*>> m_selectedBlocksInOrder;
+    QVector<QVector<qreal>> m_selectedBlocksDistancesInOrder;
 
 signals:
     void onMousePress();
