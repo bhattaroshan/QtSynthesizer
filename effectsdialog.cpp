@@ -15,9 +15,9 @@ EffectsDialog::EffectsDialog(QWidget *parent)
     int dialogHeight = 400;
     setFixedSize(dialogWidth,dialogHeight);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout();
+    mainLayout = new QVBoxLayout();
 
-    QListWidget *listWidget = new QListWidget();
+    listWidget = new QListWidget();
     //listWidget->setGeometry(0,0,dialogWidth,dialogHeight);
     QListWidgetItem *item1 = new QListWidgetItem("Echo",listWidget);
     QListWidgetItem *item2 = new QListWidgetItem("Reverb",listWidget);
@@ -42,10 +42,10 @@ EffectsDialog::EffectsDialog(QWidget *parent)
                               //"border: 1px solid #a4b0be;"
                               "border-bottom: 1px solid #a4b0be;"
                               "height:40px;"
-                              "background-color:#34495e;"
+                              "background-color:#495057;"
                               "}"
                               "QListWidget::item:alternate{"
-                              "background-color:#2c3e50;"
+                              "background-color:#6c757d;"
                               "}"
                               "QListWidget::item::hover{"
                               "background-color:#3498db;"
@@ -55,7 +55,7 @@ EffectsDialog::EffectsDialog(QWidget *parent)
                               "}");
     //listWidget->setMinimumWidth(dialogWidth);
 
-    QPushButton *addBtn = new QPushButton("Add");
+    addBtn = new QPushButton("Add");
     addBtn->setFixedWidth(80);
     addBtn->setFixedHeight(30);
     addBtn->setStyleSheet("QPushButton{"
@@ -68,7 +68,9 @@ EffectsDialog::EffectsDialog(QWidget *parent)
                           "QPushButton::pressed{"
                           "background-color:#7f7f7f;"
                           "}");
+    addBtn->setEnabled(false);
 
+    connect(addBtn,&QPushButton::clicked,this,&EffectsDialog::addBtnClicked);
 
     listWidget->addItem(item1);
     listWidget->addItem(item2);
@@ -78,11 +80,19 @@ EffectsDialog::EffectsDialog(QWidget *parent)
     listWidget->addItem(item6);
     listWidget->addItem(item7);
     listWidget->setMinimumHeight(dialogHeight*0.7f);
-    //listWidget->show();
+
+    connect(listWidget,&QListWidget::itemClicked,this,[=](){
+        addBtn->setEnabled(true);
+    });
 
     mainLayout->addWidget(listWidget,0,Qt::AlignTop);
     mainLayout->addWidget(addBtn,0,Qt::AlignBottom|Qt::AlignCenter);
     mainLayout->setContentsMargins(0,0,0,20);
     setLayout(mainLayout);
 
+}
+
+void EffectsDialog::addBtnClicked(){
+    emit clicked(listWidget->currentRow());
+    this->close();
 }

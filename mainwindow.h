@@ -26,6 +26,23 @@
 #include "section.h"
 #include "effectsdialog.h"
 
+class DelayEffectUI:public QHBoxLayout{
+
+public:
+    DelayEffectUI(){
+        label = new QLabel("Delay (ms)");
+        spinBox = new QSpinBox();
+        spinBox->setRange(1,1000000);
+        spinBox->setFocusPolicy(Qt::StrongFocus);
+        addWidget(label);
+        addWidget(spinBox);
+    }
+
+private:
+    QLabel *label;
+    QSpinBox *spinBox;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -73,15 +90,16 @@ public slots:
     void triggered_amplitudeSpinBox();
     void triggered_timeSpinBox();
     void triggered_phaseSpinBox();
+    void dialogAddClicked(int);
 
 private:
+    QVector<QVariant> m_effects;
+
     QVBoxLayout *m_trackMainLayout = nullptr;
     QVBoxLayout *m_generalMainLayout = nullptr;
 
     CustomGraphicsScene *scene;
     CustomGraphicsView *graphicsView;
-    //QGraphicsScene *scene;
-    //QGraphicsView *graphicsView;
 
     QWidget *window;
     QVBoxLayout *mainLayout;
@@ -168,8 +186,9 @@ private:
     QLabel *m_harmonicsLabel;
     QSpinBox *m_harmonicsSpinBox;
 
+    //EFFECTS ATTRIBUTE
+
+
     void initializeUI();
-
-
 };
 #endif // MAINWINDOW_H

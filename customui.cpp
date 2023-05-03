@@ -1,6 +1,7 @@
 
 #include "mainwindow.h"
 #include "signalproperties.h"
+#include <QScrollBar>
 
 void MainWindow::initializeUI(){
 
@@ -117,6 +118,12 @@ void MainWindow::initializeUI(){
     m_blockAttributeScrollArea->setWidgetResizable(true);
     m_blockAttributeDockWidget->setMinimumWidth(200);
 
+    //update rendering issue when scroll bar moves in dockwidget
+    QScrollBar *verticalScroll = m_blockAttributeScrollArea->verticalScrollBar();
+    connect(verticalScroll,&QScrollBar::valueChanged,this,[=](){
+        m_blockAttributeScrollArea->update();
+    });
+
     QPushButton *addEffect = new QPushButton("Add Effect");
     connect(addEffect,&QPushButton::clicked,this,&MainWindow::showEffectsDialog);
     //addEffect->setFixedHeight(40);
@@ -167,12 +174,26 @@ void MainWindow::initializeUI(){
 
     addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_projectDockWidget);
     //showEffectsDialog();
+    installEventFilter(this);
+    dialogAddClicked(0);
 }
+
 
 void MainWindow::showEffectsDialog(){
     EffectsDialog *effectsDialog = new EffectsDialog();
+    connect(effectsDialog,&EffectsDialog::clicked,this,&MainWindow::dialogAddClicked);
     effectsDialog->exec();
     delete effectsDialog;
+}
+
+void MainWindow:: dialogAddClicked(int index){
+    if(index==0){ //echo clicked
+        DelayEffectUI *delayEffect = new DelayEffectUI();
+        m_effects.push_back(QVariant::fromValue(delayEffect));
+        Section *section = new Section("Echo",true,true);
+        section->setContentLayout(*delayEffect);
+        m_blockAttributeLayout->insertWidget(m_blockAttributeLayout->count()-1,section);
+    }
 }
 
 void MainWindow::clicked_projectSignalBlockButton(){
