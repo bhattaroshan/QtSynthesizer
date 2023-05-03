@@ -23,6 +23,7 @@ public:
     QList<Block *> getSelectedBlocks();
     QList<Block *> getAllBlocks();
     void resizeScrollBar();
+    QVector<QVector<Block*>> getBlocksInOrder(QVector<Block*> blocks);
 
 signals:
     void blockClicked();

@@ -37,6 +37,9 @@ public:
         addWidget(label);
         addWidget(spinBox);
     }
+    int getValue(){
+        return spinBox->value();
+    }
 
 private:
     QLabel *label;
@@ -105,7 +108,6 @@ private:
     QVBoxLayout *mainLayout;
 
     Block *m_lastClickedTrack = nullptr;
-    QVector<QRectF> m_graphBar;
     QRectF m_barRect;
     SignalProcess *signal;
     Graph *m_graph;

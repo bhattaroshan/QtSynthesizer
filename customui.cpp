@@ -173,9 +173,6 @@ void MainWindow::initializeUI(){
     m_projectDockWidget->setWidget(m_projectScrollArea);
 
     addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea,m_projectDockWidget);
-    //showEffectsDialog();
-    installEventFilter(this);
-    dialogAddClicked(0);
 }
 
 
@@ -193,6 +190,7 @@ void MainWindow:: dialogAddClicked(int index){
         Section *section = new Section("Echo",true,true);
         section->setContentLayout(*delayEffect);
         m_blockAttributeLayout->insertWidget(m_blockAttributeLayout->count()-1,section);
+        qDebug()<<"total effects = "<<m_effects.size();
     }
 }
 

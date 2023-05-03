@@ -211,15 +211,56 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
           QList<Block*> blocks = getSelectedBlocks();
           m_updateBlockList = blocks;
           for(auto block:blocks){
-              qreal width = block->sceneBoundingRect().width()+currentMousePosition.x()
-                            -m_lastMouseMovePos.x();
+              //implementation of resizing according
+              qreal deltax = currentMousePosition.x()-m_lastMouseMovePos.x();
+              qreal width = block->sceneBoundingRect().width()+deltax;
+
               block->setRect(0,0,width,block->sceneBoundingRect().height());
+              //block->setPos(block->x()+deltax,block->y());
+              QVector<QVector<Block*>> res = getBlocksInOrder(blocks);
+              for(int row=0;row<res.size();++row){
+                  //skip re-positioning first block
+                  for(int col=1;col<res[row].size();++col){
+                    qreal pbx = res[row][col-1]->x()+res[row][col-1]->sceneBoundingRect().width();
+                    qreal cbx = res[row][col]->x();
+
+                    if(qAbs(pbx-cbx)<=5){
+                        res[row][col]->setPos(res[row][col-1]->x()+res[row][col-1]->sceneBoundingRect().width(),
+                            res[row][col]->y());
+                    }
+                  }
+              }
           }
     }
 
     m_lastMouseMovePos = mapToScene(event->pos());
 
     return QGraphicsView::mouseMoveEvent(event);
+}
+
+QVector<QVector<Block*>> CustomGraphicsView::getBlocksInOrder(QVector<Block*> blocks){
+    QMap<qreal,QVector<Block*>> res;
+    QVector<QVector<Block*>> fin;
+
+    //adding all blocks according to layers
+    for(auto block:blocks){
+        res[block->y()].push_back(block);
+    }
+
+    //sorting all blocks according to their order in x axis
+    for(auto it=res.begin();it!=res.end();++it){
+        QVector<Block*> bList = it.value();
+        std::sort(bList.begin(),bList.end(),[](Block *b1,Block *b2){
+            return b1->x()<b2->x();
+        });
+
+        //re-equate value according x-axis sort
+        //res[it.key()]=bList;
+        fin.push_back(bList);
+
+    }
+
+    return fin;
 }
 
 void CustomGraphicsView::keyPressEvent(QKeyEvent *event)
