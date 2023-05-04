@@ -22,9 +22,13 @@ public:
     void addItem(Block*);
     QList<Block *> getSelectedBlocks();
     QList<Block *> getAllBlocks();
+    QList<Block*> getSelectedBlocksAtRegion(QPointF point);
     void resizeScrollBar();
     QVector<QVector<Block*>> getBlocksInOrder(QVector<Block*> blocks);
     QVector<qreal> getBlocksDistance(QVector<Block*> blocks);
+
+//    QVector<Block*> getBlocksInOrder(QVector<Block*> blocks);
+//    QVector<qreal> getBlocksDistance(QVector<Block*> blocks);
 
 signals:
     void blockClicked();
@@ -64,6 +68,13 @@ protected:
 
     QVector<QVector<Block*>> m_selectedBlocksInOrder;
     QVector<QVector<qreal>> m_selectedBlocksDistancesInOrder;
+
+//    QVector<Block*> m_selectedBlocksInOrder;
+//    QVector<qreal> m_selectedBlocksDistancesInOrder;
+
+    QVector<Block*> m_selectedBlocks;
+    QMap<Block*,qreal> m_getBlockDistance;
+
 
 signals:
     void onMousePress();

@@ -113,10 +113,12 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
         if(selectedBlocks.size()>0){ //dragged and selected the blocks
             //store the order of blocks here
             m_selectedBlocksInOrder = getBlocksInOrder(selectedBlocks);
+            //m_selectedBlocksInOrder = getBlocksInOrder(selectedBlocks);
             m_selectedBlocksDistancesInOrder.clear(); //clear previous values
             for(auto layers:m_selectedBlocksInOrder){
                 m_selectedBlocksDistancesInOrder.push_back(getBlocksDistance(layers));
             }
+            //m_selectedBlocksDistancesInOrder = getBlocksDistance(m_selectedBlocksInOrder);
 
             emit blockClicked();
         }
@@ -216,15 +218,32 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
-          QList<Block*> blocks = getSelectedBlocks();
-          m_updateBlockList = blocks;
-          for(auto block:blocks){
-              //implementation of resizing according
-              qreal deltax = currentMousePosition.x()-m_lastMouseMovePos.x();
-              qreal width = block->sceneBoundingRect().width()+deltax;
+            QList<Block*> blocks = getSelectedBlocks();
+            m_updateBlockList = blocks;
 
-              block->setRect(0,0,width,block->sceneBoundingRect().height());
-              //block->setPos(block->x()+deltax,block->y());
+            for(int i=0;i<blocks.size();++i){
+                Block *block = blocks[i];
+                //implementation of resizing according
+                qreal deltax = currentMousePosition.x()-m_lastMouseMovePos.x();
+                qreal width = block->sceneBoundingRect().width()+deltax;
+
+                if(width>=10){
+                    block->setRect(0,0,width,block->sceneBoundingRect().height());
+                }
+
+//                if(i!=0){
+//                    block->setPos(ref-diff,block->y());
+//                }
+
+//                for(int i=1;i<m_selectedBlocksInOrder.size();++i){
+//                    qreal posX = m_selectedBlocksInOrder[i-1]->x()+
+//                                m_selectedBlocksInOrder[i-1]->sceneBoundingRect().width()+
+//                                m_selectedBlocksDistancesInOrder[i];
+//                    if(posX>=30){
+//                        m_selectedBlocksInOrder[i]->setPos(posX,m_selectedBlocksInOrder[i]->y());
+//                    }
+//                }
+
               for(int row=0;row<m_selectedBlocksInOrder.size();++row){
                   //skip re-positioning first block
                   for(int col=1;col<m_selectedBlocksInOrder[row].size();++col){
@@ -235,15 +254,36 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                                m_selectedBlocksDistancesInOrder[row][col],
                                m_selectedBlocksInOrder[row][col]->y()
                               );
-      }
-              }
-          }
+                    }
+                }
+            }
     }
 
     m_lastMouseMovePos = mapToScene(event->pos());
 
     return QGraphicsView::mouseMoveEvent(event);
 }
+
+//QVector<qreal> CustomGraphicsView::getBlocksDistance(QVector<Block*> blocks){
+//    QVector<qreal> distance;
+//    distance.push_back(0); //first block has nothing to compare with
+
+//    for(int i=1;i<blocks.size();++i){
+//        distance.push_back(blocks[i]->x()-blocks[i-1]->x()-blocks[i-1]->sceneBoundingRect().width());
+//    }
+//    return distance;
+//}
+
+//QVector<Block*> CustomGraphicsView::getBlocksInOrder(QVector<Block*> blocks){
+
+//    //adding all blocks according to layers
+//    QVector<Block*> b = blocks;
+//    std::sort(b.begin(),b.end(),[](Block *b1,Block *b2){
+//      return b1->x()<b2->x();
+//    });
+
+//    return b;
+//}
 
 QVector<qreal> CustomGraphicsView::getBlocksDistance(QVector<Block*> blocks){
     QVector<qreal> distance;
@@ -408,6 +448,20 @@ void CustomGraphicsView::showEvent(QShowEvent *event)
     scene()->addItem(m_seek);
 
     QGraphicsView::showEvent(event);
+}
+
+QList<Block*> CustomGraphicsView::getSelectedBlocksAtRegion(QPointF point){
+    QList<QGraphicsItem *> items = scene()->items(point);
+    QList<Block*> blocks;
+
+    for(auto item:items){
+        Block* block = dynamic_cast<Block*>(item);
+        if(block){
+            blocks.append(block);
+        }
+    }
+    return blocks;
+
 }
 
 QList<Block *> CustomGraphicsView::getSelectedBlocks()
