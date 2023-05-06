@@ -25,7 +25,9 @@ public:
     QList<Block*> getSelectedBlocksAtRegion(QPointF point);
     void resizeScrollBar();
     QVector<QVector<Block*>> getBlocksInOrder(QVector<Block*> blocks);
-    QVector<qreal> getBlocksDistance(QVector<Block*> blocks);
+    QVector<QPoint> getBlocksDistance(QVector<Block*> blocks);
+    Block* getLeftMostSelectedBlock(QVector<QVector<Block*>> blocks);
+    QRect getBlockRect(Block *block);
 
 //    QVector<Block*> getBlocksInOrder(QVector<Block*> blocks);
 //    QVector<qreal> getBlocksDistance(QVector<Block*> blocks);
@@ -67,13 +69,21 @@ protected:
     QVector<Block*> m_updateBlockList;
 
     QVector<QVector<Block*>> m_selectedBlocksInOrder;
-    QVector<QVector<qreal>> m_selectedBlocksDistancesInOrder;
+    QVector<QVector<QPoint>> m_selectedBlocksDistancesInOrder;
+
+    QVector<QVector<Block*>> m_blocksInOrder;
+    QVector<QVector<QRect>> m_blocksTransformInOrder;
+    QMap<Block*,QRect> m_blocksTransform;
+    Block *m_leftMostSelectedBlock;
+    QRect m_leftMostSelectedBlockRect;
 
 //    QVector<Block*> m_selectedBlocksInOrder;
 //    QVector<qreal> m_selectedBlocksDistancesInOrder;
 
     QVector<Block*> m_selectedBlocks;
     QMap<Block*,qreal> m_getBlockDistance;
+
+
 
 
 signals:

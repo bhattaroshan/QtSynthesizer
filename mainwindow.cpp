@@ -354,7 +354,6 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
         m_xPositionSpinBox->setValue(sp.x-30);
         m_yPositionSpinBox->setValue(int((sp.y-30)/30));
         m_timeSpinBox->setValue(sp.time);
-        //display(sp);
         SignalProcess::generateSignal(sig,sp);
         m_blockList[block] = sig;
     }
