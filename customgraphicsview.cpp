@@ -267,7 +267,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                                              m_blocksTransform[m_leftMostSelectedBlock].width()
                                             );
 
-                                xPos = m_blocksTransform[m_leftMostSelectedBlock].x()+
+                                xPos = m_leftMostSelectedBlock->x()+
                                         m_leftMostSelectedBlock->sceneBoundingRect().width()+
                                         distance;
                             }else{
@@ -284,11 +284,11 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                             }
 
                             qreal width = currentBlock->sceneBoundingRect().width()+deltax;
-                            if(width>=10){
+                            if(width>=1){
                                 currentBlock->setRect(0,0,width,currentBlock->sceneBoundingRect().height());
                             }
 
-                            if(currentBlock!=m_leftMostSelectedBlock){
+                            if(currentBlock!=m_leftMostSelectedBlock and xPos>=30){
                                 currentBlock->setPos(xPos,currentBlock->y());
                             }
                         }
