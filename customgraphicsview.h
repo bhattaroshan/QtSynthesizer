@@ -5,6 +5,8 @@
 #include<QGraphicsView>
 #include<QApplication>
 #include <QMimeData>
+#include <QToolTip>
+#include <QLabel>
 #include "block.h"
 #include "graphicsseek.h"
 
@@ -28,7 +30,7 @@ public:
     QVector<QPoint> getBlocksDistance(QVector<Block*> blocks);
     Block* getLeftMostSelectedBlock(QVector<QVector<Block*>> blocks);
     QRect getBlockRect(Block *block);
-
+    void setToolTip(QPoint point);
 //    QVector<Block*> getBlocksInOrder(QVector<Block*> blocks);
 //    QVector<qreal> getBlocksDistance(QVector<Block*> blocks);
 
@@ -76,6 +78,9 @@ protected:
     QMap<Block*,QRect> m_blocksTransform;
     Block *m_leftMostSelectedBlock;
     QRect m_leftMostSelectedBlockRect;
+    qreal answer = 0;
+    QLabel *m_seekToolTip;
+    //QString m_seekBarToolTip = "Hello I'm here";
 
 //    QVector<Block*> m_selectedBlocksInOrder;
 //    QVector<qreal> m_selectedBlocksDistancesInOrder;

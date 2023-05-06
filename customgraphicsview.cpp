@@ -1,11 +1,15 @@
 #include "customgraphicsview.h"
 #include "graphicseye.h"
 #include <QMessageBox>
+#include <QToolTip>
 
 
 CustomGraphicsView::CustomGraphicsView(QWidget *parent)
     :QGraphicsView(parent)
 {
+    m_seekToolTip = new QLabel();
+    m_seekToolTip->setWindowFlag(Qt::ToolTip);
+
     setDragMode(QGraphicsView::RubberBandDrag);
     setCursor(Qt::ArrowCursor);
     installEventFilter(this);
@@ -87,18 +91,18 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
             }
         }else{
             //either seekbar or offtrackclicked
-            if(m_lastMousePressPos.y()<=m_timelineHeight){
+            if(m_lastMousePressPos.y()<=m_timelineHeight){ //seekbar clicked
                 setDragMode(QGraphicsView::NoDrag);
                 qreal newPos = m_lastMousePressPos.x()-5;
                 newPos = qMax(newPos,m_seekBarStartPos);
                 m_seek->setPos(newPos,m_seekBarHeight);
+                setToolTip(mapToGlobal(event->pos()));
             }else{ //offtrack clicked
                 setDragMode(QGraphicsView::RubberBandDrag);
                 emit offBlockClicked();
             }
             m_trackMoveMode = TRACK_IDLE_MODE;
         }
-
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -108,6 +112,7 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::LeftButton){
         m_isLeftButtonClicked = false;
+        m_seekToolTip->hide();
         QVector<Block*> selectedBlocks = getSelectedBlocks();
 
         if(selectedBlocks.size()>0){ //dragged and selected the blocks
@@ -152,6 +157,15 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
     QGraphicsView::mouseReleaseEvent(event);
 }
 
+void CustomGraphicsView::setToolTip(QPoint point){
+    m_seekToolTip->move(point+(QPoint(16,16)));
+    m_seekToolTip->setFixedWidth(QString::number(m_seek->x()-25).length()*8);
+    m_seekToolTip->setText(QString::number(m_seek->x()-25));
+    if(m_seekToolTip->isHidden()){
+        m_seekToolTip->show();
+    }
+}
+
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF currentMousePosition = mapToScene(event->pos());
@@ -161,6 +175,11 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
         qreal newPos = m_seek->x()+(currentMousePosition.x()-m_lastMouseMovePos.x());
         newPos = qMax(newPos,m_seekBarStartPos);
         m_seek->setPos(newPos,m_seekBarHeight);
+        setToolTip(mapToGlobal(event->pos()));
+        //if(QToolTip::isVisible()){
+
+
+        //}
     }
 
     if(m_trackMoveMode != TRACK_IDLE_MODE){ //resizing tracks
