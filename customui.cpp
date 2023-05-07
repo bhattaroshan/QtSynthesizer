@@ -253,39 +253,28 @@ void MainWindow::triggered_amplitudeSpinBox(){
 
 void MainWindow::triggered_timeSpinBox(){
     QVector<QVector<Block*>> blocks = graphicsView->getBlocksInOrder(graphicsView->getSelectedBlocks());
+    QVector<Block*> updateBlocks;
     int changedValue = m_timeSpinBox->value();
     int newWidth = changedValue/10.0;
-    int layers,block;
 
-    for(layers=0;layers<blocks.size();++layers){
+    for(int layers=0;layers<blocks.size();++layers){
+        qreal startPos = blocks[layers][0]->x();
+        for(int block=0;block<blocks[layers].size();++block){
+            Block *currBlock = blocks[layers][block];
+            qreal dist = 0;
 
-        for(block=0;block<blocks[layers].size()-1;++block){
-            qreal lastWidth = blocks[layers][block]->sceneBoundingRect().width();
-            qreal x2 = blocks[layers][block+1]->x();
-            qreal x1 = blocks[layers][block]->x() + lastWidth;
-            qreal distance = x2 - x1;
+            if(block<blocks[layers].size()-1){
+                dist = blocks[layers][block+1]->x()-(currBlock->x()+currBlock->sceneBoundingRect().width());
+            }
 
-            blocks[layers][block]->setRect(0,0,newWidth,blocks[layers][block]->sceneBoundingRect().height());
-
-            qreal newX = blocks[layers][block]->x()+blocks[layers][block]->sceneBoundingRect().width();
-            blocks[layers][block+1]->setPos(newX+distance,blocks[layers][block+1]->y());
+            currBlock->setPos(startPos,currBlock->y());
+            currBlock->setRect(0,0,newWidth,currBlock->sceneBoundingRect().height());
+            startPos = currBlock->x()+currBlock->sceneBoundingRect().width()+dist;
+            updateBlocks.push_back(currBlock);
         }
     }
 
-//    QList<Block*> blocks = graphicsView->getSelectedBlocks();
-//    for(auto block:blocks){
-//        int width = m_timeSpinBox->value()/10;
-
-//        //get the rect of currect state
-////        qreal currentWidth = block->sceneBoundingRect().width();
-////        qreal difference = currentWidth-width;
-////        qreal posX = block->x()-difference;
-////        if(posX<30) posX = 30;
-////        block->setPos(posX,block->y());
-//        //set the rect of the block
-//        block->setRect(0,0,width,block->sceneBoundingRect().height());
-//    }
-//    updateSignal(blocks);
+    updateSignal(updateBlocks);
 }
 
 void MainWindow::triggered_phaseSpinBox(){
