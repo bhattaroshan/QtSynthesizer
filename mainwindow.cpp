@@ -313,12 +313,9 @@ void display(SignalProperties sp){
 
 void MainWindow::addTrack(QVector<SignalProperties> sp)
 {
-
-    //optimize here
     QVector<Block*> tempBlock;
     for(int i=0;i<sp.size();++i){
         Block *block = new Block(sp[i]);
-        //display(sp[i]);
         QVector<QPointF> sig;
         SignalProcess::generateSignal(sig,sp[i]); //this signal is generated for default values
         m_blockList[block] = sig;
@@ -327,15 +324,6 @@ void MainWindow::addTrack(QVector<SignalProperties> sp)
         tempBlock.append(block);
     }
     updateSignal(tempBlock);
-
-//    //bp.signal = signal->generateSinWave(sp);
-//    m_blocks.append(bp);
-
-//    Block *b = new Block(sp);
-//    b->setSignal(m_blocks.last());
-//    b->setColor(setBrushFromFrequency(sp.frequency));
-//    graphicsView->addItem(b);
-//    connect(b,&Block::clicked,this,&MainWindow::onTrackSingleClicked);
 }
 
 
@@ -387,7 +375,7 @@ void MainWindow::combineSignals()
                 int signalLength = m_signal.size();
                 m_signal.resize(signalSize); //ensure that size is atleast the signal container+start point
                 for(int i=signalLength;i<m_signal.size();++i){
-                m_signal[i] = QPointF(i,0.0);
+                    m_signal[i] = QPointF(i,0.0);
                 }
             }
             for(int i=0;i<sig.size();++i){

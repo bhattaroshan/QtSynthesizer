@@ -10,9 +10,10 @@
 #include "block.h"
 #include "graphicsseek.h"
 
-#define TRACK_IDLE_MODE  0
-#define TRACK_MOVE_MODE  1
-#define TRACK_SCALE_MODE 2
+#define TRACK_IDLE_MODE      0
+#define TRACK_MOVE_MODE      1
+#define TRACK_SCALE_MODE     2
+#define TRACK_TRANSLATE_MODE 3
 
 class CustomGraphicsView:public QGraphicsView
 {
@@ -31,8 +32,6 @@ public:
     Block* getLeftMostSelectedBlock(QVector<QVector<Block*>> blocks);
     QRect getBlockRect(Block *block);
     void setToolTip(QPoint point);
-//    QVector<Block*> getBlocksInOrder(QVector<Block*> blocks);
-//    QVector<qreal> getBlocksDistance(QVector<Block*> blocks);
 
 signals:
     void blockClicked();

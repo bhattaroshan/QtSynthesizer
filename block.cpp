@@ -43,8 +43,12 @@ void Block::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Block::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     int ax = this->boundingRect().width()+this->boundingRect().x();
+    int start = this->boundingRect().x();
+
     if(qAbs(event->pos().x()-ax)<=5){
         setCursor(Qt::SizeHorCursor);
+    }else if(qAbs(event->pos().x()-start)<=5){
+        setCursor(Qt::SizeAllCursor);
     }else{
         setCursor(Qt::ArrowCursor);
     }
@@ -129,8 +133,9 @@ void Block::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     int width = metrics.horizontalAdvance(QString::number(m_sp.frequency));
     int height = metrics.height();
     painter->setPen(QPen(Qt::white,1,Qt::SolidLine));
-    if(this->rect().width()>=30){
-        painter->drawText(QPointF(this->rect().width()/2-width/2,this->rect().height()-height/2),QString::number(m_sp.frequency));
+    painter->setFont(QFont("",10));
+    if(this->rect().width()>=40){
+        painter->drawText(QPointF(this->rect().width()/2-width/2,this->rect().height()-height/1.5),QString::number(m_sp.frequency));
     }
 
 }

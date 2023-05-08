@@ -86,7 +86,10 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent *event)
 
             if(x+width-m_lastMousePressPos.x()<=5){
                 m_trackMoveMode = TRACK_SCALE_MODE;
-            }else{
+            }else if(qAbs(x-m_lastMousePressPos.x())<=5){
+                m_trackMoveMode = TRACK_TRANSLATE_MODE;
+            }
+            else{
                 m_trackMoveMode = TRACK_MOVE_MODE;
             }
         }else{
@@ -176,10 +179,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
         newPos = qMax(newPos,m_seekBarStartPos);
         m_seek->setPos(newPos,m_seekBarHeight);
         setToolTip(mapToGlobal(event->pos()));
-        //if(QToolTip::isVisible()){
-
-
-        //}
     }
 
     if(m_trackMoveMode != TRACK_IDLE_MODE){ //resizing tracks
@@ -198,12 +197,12 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
         this->setSceneRect(0,0,width+100,height+50);
     }
 
-    if(m_trackMoveMode == TRACK_MOVE_MODE){
+    if(m_trackMoveMode == TRACK_MOVE_MODE || m_trackMoveMode == TRACK_TRANSLATE_MODE){
         QList<Block*> blocks = getSelectedBlocks();
         m_updateBlockList = blocks;
         int distance = currentMousePosition.y()-m_lastMousePressPos.y();
         QPointF delta = currentMousePosition-m_lastMouseMovePos;
-
+        int spread = 1;
         for(auto block:blocks){
             int x = block->pos().x();
             int y = block->pos().y();
@@ -251,21 +250,12 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     }
                 }
             }
+
+
+            if(x<30) x=30;
             block->setPos(x,y);
         }
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
-//            QList<Block*> blocks = getSelectedBlocks();
-//            m_updateBlockList = blocks;
-
-//            for(int i=0;i<blocks.size();++i){
-//                Block *block = blocks[i];
-//                //implementation of resizing according
-//                qreal deltax = currentMousePosition.x()-m_lastMouseMovePos.x();
-//                qreal width = block->sceneBoundingRect().width()+deltax;
-
-//                if(width>=10){
-//                    block->setRect(0,0,width,block->sceneBoundingRect().height());
-//                }
                 m_updateBlockList.clear();
                 qreal deltax = currentMousePosition.x()-m_lastMouseMovePos.x();
                 //qDebug()<<"-------------------------";
@@ -304,6 +294,13 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
                             qreal width = currentBlock->sceneBoundingRect().width()+deltax;
                             if(width>=1){
+                                if(block<m_blocksInOrder[layers].size()-1){
+                                    Block *nextBlock = m_blocksInOrder[layers][block+1];
+                                    if(currentBlock->x()+currentBlock->sceneBoundingRect().width()>=nextBlock->x()
+                                            and deltax>0){
+                                        width = nextBlock->x()-currentBlock->x();
+                                    }
+                                }
                                 currentBlock->setRect(0,0,width,currentBlock->sceneBoundingRect().height());
                             }
 
@@ -315,52 +312,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     }
                 }
 
-//                if(i!=0){
-//                    block->setPos(ref-diff,block->y());
-//                }
-
-//                for(int i=1;i<m_selectedBlocksInOrder.size();++i){
-//                    qreal posX = m_selectedBlocksInOrder[i-1]->x()+
-//                                m_selectedBlocksInOrder[i-1]->sceneBoundingRect().width()+
-//                                m_selectedBlocksDistancesInOrder[i];
-//                    if(posX>=30){
-//                        m_selectedBlocksInOrder[i]->setPos(posX,m_selectedBlocksInOrder[i]->y());
-//                    }
-//                }
-
-//              for(int row=0;row<m_selectedBlocksInOrder.size();++row){
-//                  skip re-positioning first block
-//                  for(int col=0;col<m_selectedBlocksInOrder[row].size();++col){
-//                      qreal newRow = row;
-//                      qreal newCol = col-1;
-
-//                      if(row>=1 and col==0){
-//                          newRow -= 1;
-//                          newCol = 0;
-//                      }
-
-//                      if(newCol==-1) continue;
-//                      qreal posX = 	m_selectedBlocksInOrder[newRow][newCol]->x()+
-//                                    m_selectedBlocksInOrder[newRow][newCol]->sceneBoundingRect().width()+
-//                                    (m_selectedBlocksDistancesInOrder[row][col].x()-
-//                                    m_selectedBlocksDistancesInOrder[newRow][newCol].y());
-//                      qreal posY = m_selectedBlocksInOrder[row][col]->y();
-//                      if(posX>=30){
-//                            //getSelectedBlocksAtRegion(QPointF(posX,m_selectedBlocksInOrder[row][col]->y())).size()==0){
-//                          if(m_selectedBlocksInOrder[row][col]->y()>
-//                             m_selectedBlocksInOrder[row][col]->sceneBoundingRect().x()+
-//                                  m_selectedBlocksInOrder[row][col]->sceneBoundingRect().width()){
-//                             qDebug()<<"squeezing the bar";
-//                          }else{
-//                             qDebug()<<"expanding the bar";
-//                          }
-//                          //getSelectedBlocksAtRegion(QPointF(posX,posY)).size()==0
-//                            m_selectedBlocksInOrder[row][col]->setPos(posX,posY);
-
-//                      }
-//                    }
-//                }
-//            }
     }
 
     m_lastMouseMovePos = mapToScene(event->pos());
