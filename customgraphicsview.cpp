@@ -297,7 +297,7 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
                                 if(block<m_blocksInOrder[layers].size()-1){
                                     Block *nextBlock = m_blocksInOrder[layers][block+1];
                                     if(currentBlock->x()+currentBlock->sceneBoundingRect().width()>=nextBlock->x()
-                                            and deltax>0){
+                                            and deltax>0 and !nextBlock->isSelected()){
                                         width = nextBlock->x()-currentBlock->x();
                                     }
                                 }

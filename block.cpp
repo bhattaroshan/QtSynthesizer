@@ -48,7 +48,7 @@ void Block::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
     if(qAbs(event->pos().x()-ax)<=5){
         setCursor(Qt::SizeHorCursor);
     }else if(qAbs(event->pos().x()-start)<=5){
-        setCursor(Qt::SizeAllCursor);
+        //setCursor(Qt::SizeAllCursor);
     }else{
         setCursor(Qt::ArrowCursor);
     }
