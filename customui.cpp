@@ -184,6 +184,7 @@ void MainWindow::showEffectsDialog(){
 }
 
 void MainWindow:: dialogAddClicked(int index){
+
     QList<Block*> blocks = graphicsView->getSelectedBlocks();
     for(auto block:blocks){
         if(index==0){
@@ -212,16 +213,7 @@ void MainWindow:: dialogAddClicked(int index){
                 item->widget()->hide();
             }
 
-            if(blocks.size()==1){
-                for(int i=0;i<m_blockList[block].effects.size();++i){
-                    int sz = m_blockList[block].effects.size();
-                    for(int j=0;j<sz;++j){
-                        Section *section = m_blockList[block].effects[j]->section;
-                        section->show();
-                    }
-                }
 
-            }
             QSpinBox *spin = section->findChild<QSpinBox*>("delayValue");
             connect(spin,&QSpinBox::editingFinished,this,[=](){
                 updateSignal({block});
