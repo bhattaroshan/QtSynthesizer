@@ -52,6 +52,12 @@ struct Effects{
     Section *section;
 };
 
+struct BlockAttributes{
+    QVector<QPointF> signal;
+    QVector<Effects*> effects;
+};
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -71,8 +77,6 @@ public slots:
     void updateSignal(QVector<Block*> blocks);
     void deleteSignal(QVector<Block*> blocks);
     void combineSignals();
-    void sectionClosed();
-
 
     void showEffectsDialog();
 
@@ -113,8 +117,6 @@ private:
     QWidget *window;
     QVBoxLayout *mainLayout;
 
-    Block *m_lastClickedTrack = nullptr;
-    QRectF m_barRect;
     SignalProcess *signal;
     Graph *m_graph;
 
@@ -133,7 +135,8 @@ private:
     qreal m_timelineHeight = 30;
 
     QVector<QPointF> m_signal;
-    QMap<Block*,QVector<QPointF>> m_blockList;
+    //QMap<Block*,QVector<QPointF>> m_blockList;
+    QMap<Block*, BlockAttributes> m_blockList;
 
     //PROJECT DOCK WIDGET
     QVBoxLayout *m_projectLayout;

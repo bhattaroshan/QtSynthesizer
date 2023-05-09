@@ -184,34 +184,46 @@ void MainWindow::showEffectsDialog(){
 }
 
 void MainWindow:: dialogAddClicked(int index){
-    if(index==0){ //echo clicked
-        DelayEffectUI *delayEffect = new DelayEffectUI();
-        Section *section = new Section("Echo",true,true);
-        section->setContentLayout(*delayEffect);
+    QList<Block*> blocks = graphicsView->getSelectedBlocks();
+    for(auto block:blocks){
+        if(index==0){
+            DelayEffectUI *delayEffect = new DelayEffectUI();
+            Section *section = new Section("Echo",true,true);
+            section->setContentLayout(*delayEffect);
 
-        Effects *effects = new Effects;
-        effects->effectsIndex = index;
-        effects->section = section;
+            Effects *effects = new Effects;
+            effects->effectsIndex = index;
+            effects->section = section;
 
-        effectsVec.push_back(effects);
+            effectsVec.push_back(effects);
+            m_blockList[block].effects.push_back(effects);
 
-        connect(section,&Section::closed,this,[=]() mutable {
-            for(int i=0;i<effectsVec.size();++i){
-                if(effectsVec[i]==effects){
-                    QWidget *widget = effectsVec[i]->section;
-                    m_blockAttributeLayout->removeWidget(widget);
-                    effectsVec.remove(i);
-                    delete widget;
-                }
+            connect(section,&Section::closed,this,[=]() mutable {
+                QWidget *widget = section;
+                m_blockAttributeLayout->removeWidget(widget);
+                m_blockList[block].effects.removeOne(effects);
+                delete widget;
+            });
+
+            //skip first two section and last button
+            for(int i=2;i<m_blockAttributeLayout->count()-1;++i){
+                QLayoutItem *item = m_blockAttributeLayout->itemAt(i);
+                item->widget()->hide();
             }
-        });
-        m_blockAttributeLayout->insertWidget(m_blockAttributeLayout->count()-1,section);
-    }
-}
 
-void MainWindow::sectionClosed(){
-    m_blockAttributeLayout->removeWidget(static_cast<Section*>(sender()));
-    m_blockAttributeLayout->invalidate();
+            if(blocks.size()==1){
+                for(int i=0;i<m_blockList[block].effects.size();++i){
+                    int sz = m_blockList[block].effects.size();
+                    for(int j=0;j<sz;++j){
+                        Section *section = m_blockList[block].effects[j]->section;
+                        section->show();
+                    }
+                }
+
+            }
+            m_blockAttributeLayout->insertWidget(m_blockAttributeLayout->count()-1,section);
+        }
+    }
 }
 
 void MainWindow::clicked_projectSignalBlockButton(){
@@ -327,7 +339,6 @@ QPushButton* MainWindow::createIconButton(QString icon){
 void MainWindow::createTrackWidget(){
 
     Block* currentTrack = dynamic_cast<Block*>(sender());
-    m_lastClickedTrack = currentTrack;
 
     //QList<Block*> tracks = graphicsView->getAllBlocks();
     QList<Block*> tracks = graphicsView->getSelectedBlocks();
@@ -343,6 +354,26 @@ void MainWindow::createTrackWidget(){
             m_harmonicsSpinBox->setValue(sp.harmonics);
             m_phaseSpinBox->setValue(sp.phase);
             m_blockAttributeDockWidget->setWidget(m_blockAttributeScrollArea);
+
+            //skip first two section and last button
+            for(int i=2;i<m_blockAttributeLayout->count()-1;++i){
+                QLayoutItem *item = m_blockAttributeLayout->itemAt(i);
+                item->widget()->hide();
+            }
+
+            if(tracks.size()==1){
+                for(int i=0;i<m_blockList[track].effects.size();++i){
+                    int sz = m_blockList[track].effects.size();
+                    for(int j=0;j<sz;++j){
+                        Section *section = m_blockList[track].effects[j]->section;
+                        section->show();
+                    }
+                }
+
+            }
+
+            BlockAttributes blockAttributes = m_blockList[track];
+
     }
 
 }

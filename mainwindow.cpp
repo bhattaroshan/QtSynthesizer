@@ -318,7 +318,7 @@ void MainWindow::addTrack(QVector<SignalProperties> sp)
         Block *block = new Block(sp[i]);
         QVector<QPointF> sig;
         SignalProcess::generateSignal(sig,sp[i]); //this signal is generated for default values
-        m_blockList[block] = sig;
+        m_blockList[block].signal = sig;
         graphicsView->addItem(block);
         connect(block,&Block::clicked,this,&MainWindow::onTrackSingleClicked);
         tempBlock.append(block);
@@ -343,7 +343,7 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
         m_yPositionSpinBox->setValue(int((sp.y-30)/30));
         m_timeSpinBox->setValue(sp.time);
         SignalProcess::generateSignal(sig,sp);
-        m_blockList[block] = sig;
+        m_blockList[block].signal = sig;
     }
     combineSignals();
 
@@ -367,7 +367,7 @@ void MainWindow::combineSignals()
     if(m_blockList.size()){
        for(auto it=m_blockList.begin();it!=m_blockList.end();++it){
             Block *block = it.key();
-            QVector<QPointF> sig = it.value();
+            QVector<QPointF> sig = it.value().signal;
             int startPos = block->getX();
             int startIndex = (startPos-30)*441;
             int signalSize = startIndex+sig.size();
