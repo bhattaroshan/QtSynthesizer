@@ -6,6 +6,7 @@
 #include <QGraphicsTextItem>
 #include <QStyle>
 #include <QApplication>
+#include <QPushButton>
 
 Block::Block(SignalProperties sp, QGraphicsItem *parent)
     :QGraphicsRectItem(parent)

@@ -57,6 +57,9 @@ public:
     QString whatsThis() const;
     bool isContainer() const;
     QWidget *createWidget(QString title, QWidget *parent);
+
+signals:
+    void closed();
 };
 
 #endif // SECTION_H

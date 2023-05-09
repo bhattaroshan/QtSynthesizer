@@ -26,6 +26,7 @@
 #include "section.h"
 #include "effectsdialog.h"
 
+
 class DelayEffectUI:public QHBoxLayout{
 
 public:
@@ -44,6 +45,11 @@ public:
 private:
     QLabel *label;
     QSpinBox *spinBox;
+};
+
+struct Effects{
+    int effectsIndex;
+    Section *section;
 };
 
 class MainWindow : public QMainWindow
@@ -65,6 +71,8 @@ public slots:
     void updateSignal(QVector<Block*> blocks);
     void deleteSignal(QVector<Block*> blocks);
     void combineSignals();
+    void sectionClosed();
+
 
     void showEffectsDialog();
 
@@ -96,8 +104,6 @@ public slots:
     void dialogAddClicked(int);
 
 private:
-    QVector<QVariant> m_effects;
-
     QVBoxLayout *m_trackMainLayout = nullptr;
     QVBoxLayout *m_generalMainLayout = nullptr;
 
@@ -189,7 +195,7 @@ private:
     QSpinBox *m_harmonicsSpinBox;
 
     //EFFECTS ATTRIBUTE
-
+    QVector<Effects*> effectsVec;
 
     void initializeUI();
 };

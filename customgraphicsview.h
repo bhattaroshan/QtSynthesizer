@@ -69,9 +69,6 @@ protected:
 
     QVector<Block*> m_updateBlockList;
 
-    QVector<QVector<Block*>> m_selectedBlocksInOrder;
-    QVector<QVector<QPoint>> m_selectedBlocksDistancesInOrder;
-
     QVector<QVector<Block*>> m_blocksInOrder;
     QVector<QVector<QRect>> m_blocksTransformInOrder;
     QMap<Block*,QRect> m_blocksTransform;
@@ -81,8 +78,6 @@ protected:
     QLabel *m_seekToolTip;
     //QString m_seekBarToolTip = "Hello I'm here";
 
-//    QVector<Block*> m_selectedBlocksInOrder;
-//    QVector<qreal> m_selectedBlocksDistancesInOrder;
 
     QVector<Block*> m_selectedBlocks;
     QMap<Block*,qreal> m_getBlockDistance;

@@ -119,14 +119,6 @@ void CustomGraphicsView::mouseReleaseEvent(QMouseEvent *event)
         QVector<Block*> selectedBlocks = getSelectedBlocks();
 
         if(selectedBlocks.size()>0){ //dragged and selected the blocks
-            //store the order of blocks here
-            m_selectedBlocksInOrder = getBlocksInOrder(selectedBlocks);
-            //m_selectedBlocksInOrder = getBlocksInOrder(selectedBlocks);
-            m_selectedBlocksDistancesInOrder.clear(); //clear previous values
-            for(auto layers:m_selectedBlocksInOrder){
-                m_selectedBlocksDistancesInOrder.push_back(getBlocksDistance(layers));
-            }
-            //m_selectedBlocksDistancesInOrder = getBlocksDistance(m_selectedBlocksInOrder);
 
             //experimentation from this point
             m_blocksTransform.clear(); //clear all previous keys and values
@@ -258,7 +250,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
     }else if(m_trackMoveMode == TRACK_SCALE_MODE){
                 m_updateBlockList.clear();
                 qreal deltax = currentMousePosition.x()-m_lastMouseMovePos.x();
-                //qDebug()<<"-------------------------";
                 for(int layers=0;layers<m_blocksInOrder.size();++layers){
                     for(int block=0;block<m_blocksInOrder[layers].size();++block){
                         Block *currentBlock = m_blocksInOrder[layers][block];
@@ -319,27 +310,6 @@ void CustomGraphicsView::mouseMoveEvent(QMouseEvent *event)
     return QGraphicsView::mouseMoveEvent(event);
 }
 
-//QVector<qreal> CustomGraphicsView::getBlocksDistance(QVector<Block*> blocks){
-//    QVector<qreal> distance;
-//    distance.push_back(0); //first block has nothing to compare with
-
-//    for(int i=1;i<blocks.size();++i){
-//        distance.push_back(blocks[i]->x()-blocks[i-1]->x()-blocks[i-1]->sceneBoundingRect().width());
-//    }
-//    return distance;
-//}
-
-//QVector<Block*> CustomGraphicsView::getBlocksInOrder(QVector<Block*> blocks){
-
-//    //adding all blocks according to layers
-//    QVector<Block*> b = blocks;
-//    std::sort(b.begin(),b.end(),[](Block *b1,Block *b2){
-//      return b1->x()<b2->x();
-//    });
-
-//    return b;
-//}
-
 QVector<QPoint> CustomGraphicsView::getBlocksDistance(QVector<Block*> blocks){
     //QVector<qreal> distance;
     QVector<QPoint> distance;
@@ -347,7 +317,6 @@ QVector<QPoint> CustomGraphicsView::getBlocksDistance(QVector<Block*> blocks){
     //distance.push_back(QPoint(0,0)); //first block has nothing to compare with
 
     for(int i=0;i<blocks.size();++i){
-        //distance.push_back(blocks[i]->x()-blocks[i-1]->x()-blocks[i-1]->sceneBoundingRect().width());
         distance.push_back(QPoint(blocks[i]->x(),blocks[i]->x()+blocks[i]->sceneBoundingRect().width()));
     }
     return distance;

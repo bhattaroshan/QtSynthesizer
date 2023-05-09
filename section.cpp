@@ -60,6 +60,9 @@ Section::Section(QString title,bool expanded,bool bClose,QWidget *parent)
                                 "}");
         crossButton->setIcon(QIcon(":/icons/cross-btn.png"));
         crossButton->setIconSize(QSize(12,12));
+        connect(crossButton,&QToolButton::clicked,this,[=](){
+            emit closed();
+        });
     }
 
     contentArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);

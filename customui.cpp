@@ -186,12 +186,32 @@ void MainWindow::showEffectsDialog(){
 void MainWindow:: dialogAddClicked(int index){
     if(index==0){ //echo clicked
         DelayEffectUI *delayEffect = new DelayEffectUI();
-        m_effects.push_back(QVariant::fromValue(delayEffect));
         Section *section = new Section("Echo",true,true);
         section->setContentLayout(*delayEffect);
+
+        Effects *effects = new Effects;
+        effects->effectsIndex = index;
+        effects->section = section;
+
+        effectsVec.push_back(effects);
+
+        connect(section,&Section::closed,this,[=]() mutable {
+            for(int i=0;i<effectsVec.size();++i){
+                if(effectsVec[i]==effects){
+                    QWidget *widget = effectsVec[i]->section;
+                    m_blockAttributeLayout->removeWidget(widget);
+                    effectsVec.remove(i);
+                    delete widget;
+                }
+            }
+        });
         m_blockAttributeLayout->insertWidget(m_blockAttributeLayout->count()-1,section);
-        qDebug()<<"total effects = "<<m_effects.size();
     }
+}
+
+void MainWindow::sectionClosed(){
+    m_blockAttributeLayout->removeWidget(static_cast<Section*>(sender()));
+    m_blockAttributeLayout->invalidate();
 }
 
 void MainWindow::clicked_projectSignalBlockButton(){
