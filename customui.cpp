@@ -151,6 +151,12 @@ void MainWindow::initializeUI(){
     connect(m_projectSignalBlockButton,&QPushButton::clicked,
             this,&MainWindow::clicked_projectSignalBlockButton);
 
+    connect(m_projectMediaBlockButton,&QPushButton::clicked,
+            this,[=](){
+
+        dialogAddClicked(0);
+    });
+
     m_projectSignalSection->setContentLayout(*m_projectSignalLayout);
 
     //project dock
@@ -207,18 +213,12 @@ void MainWindow:: dialogAddClicked(int index){
                 updateSignal({block});
             });
 
-            //skip first two section and last button
-            for(int i=2;i<m_blockAttributeLayout->count()-1;++i){
-                QLayoutItem *item = m_blockAttributeLayout->itemAt(i);
-                item->widget()->hide();
-            }
-
-
             QSpinBox *spin = section->findChild<QSpinBox*>("delayValue");
             connect(spin,&QSpinBox::editingFinished,this,[=](){
                 updateSignal({block});
             });
             m_blockAttributeLayout->insertWidget(m_blockAttributeLayout->count()-1,section);
+            createTrackWidget();
         }
     }
     updateSignal(blocks); //update required here for new delay added signals
@@ -336,9 +336,6 @@ QPushButton* MainWindow::createIconButton(QString icon){
 
 void MainWindow::createTrackWidget(){
 
-    Block* currentTrack = dynamic_cast<Block*>(sender());
-
-    //QList<Block*> tracks = graphicsView->getAllBlocks();
     QList<Block*> tracks = graphicsView->getSelectedBlocks();
 
     for(auto track:tracks){
@@ -362,6 +359,7 @@ void MainWindow::createTrackWidget(){
             if(tracks.size()==1){
                 for(int i=0;i<m_blockList[track].effects.size();++i){
                     int sz = m_blockList[track].effects.size();
+
                     for(int j=0;j<sz;++j){
                         Section *section = m_blockList[track].effects[j]->section;
                         section->show();

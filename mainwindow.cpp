@@ -350,7 +350,6 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
             if(effects[i]->effectsIndex==0){ //this is delay effect, call the function
                 Section *section = m_blockList[block].effects[i]->section;
                 QSpinBox *delaySpin = section->findChild<QSpinBox*>("delayValue");
-                qDebug()<<delaySpin->value();
                 SignalProcess::addDelayEffect(sig,delaySpin->value());
             }
         }
