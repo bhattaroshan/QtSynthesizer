@@ -195,14 +195,15 @@ void MainWindow:: dialogAddClicked(int index){
             effects->effectsIndex = index;
             effects->section = section;
 
-            effectsVec.push_back(effects);
             m_blockList[block].effects.push_back(effects);
 
             connect(section,&Section::closed,this,[=]() mutable {
                 QWidget *widget = section;
+                m_blockList[block].effects.removeOne(effects);
                 m_blockAttributeLayout->removeWidget(widget);
                 m_blockList[block].effects.removeOne(effects);
                 delete widget;
+                updateSignal({block});
             });
 
             //skip first two section and last button
@@ -221,9 +222,14 @@ void MainWindow:: dialogAddClicked(int index){
                 }
 
             }
+            QSpinBox *spin = section->findChild<QSpinBox*>("delayValue");
+            connect(spin,&QSpinBox::editingFinished,this,[=](){
+                updateSignal({block});
+            });
             m_blockAttributeLayout->insertWidget(m_blockAttributeLayout->count()-1,section);
         }
     }
+    updateSignal(blocks); //update required here for new delay added signals
 }
 
 void MainWindow::clicked_projectSignalBlockButton(){
@@ -371,9 +377,6 @@ void MainWindow::createTrackWidget(){
                 }
 
             }
-
-            BlockAttributes blockAttributes = m_blockList[track];
-
     }
 
 }

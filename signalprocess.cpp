@@ -94,6 +94,15 @@ void SignalProcess::normalizeSignal(QVector<QPointF> &sig)
     }
 }
 
+void SignalProcess::addDelayEffect(QVector<QPointF> &sig, qreal delayTime)
+{
+    qreal index = (delayTime*44100.0)/1000.0;
+
+    for(int i=index;i<sig.size();++i){
+        sig[i] = QPointF(sig[i].x(),sig[i].y()+sig[i-index].y());
+    }
+}
+
 QVector<QPointF> SignalProcess::generateSinWave(SignalProperties sp){
 
     qreal samples = sp.width*m_sampleRate/100;

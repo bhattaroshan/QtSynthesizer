@@ -16,6 +16,7 @@ public:
     static void generateSinWave(QVector<QPointF> &sig, SignalProperties sp);
     static void generateSquareWave(QVector<QPointF> &sig, SignalProperties sp);
     static void normalizeSignal(QVector<QPointF> &sig);
+    static void addDelayEffect(QVector<QPointF> &sig,qreal delayTime);
 
     QVector<QPointF> generateSinWave(SignalProperties sp);
     void addSignalToContainer(QVector<QPointF> &signal, int start);

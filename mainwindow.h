@@ -28,13 +28,18 @@
 
 
 class DelayEffectUI:public QHBoxLayout{
-
+    Q_OBJECT
 public:
     DelayEffectUI(){
         label = new QLabel("Delay (ms)");
         spinBox = new QSpinBox();
         spinBox->setRange(1,1000000);
         spinBox->setFocusPolicy(Qt::StrongFocus);
+        spinBox->setObjectName("delayValue");
+        connect(spinBox,&QSpinBox::editingFinished,this,[=](){
+            emit value(spinBox->value());
+        });
+
         addWidget(label);
         addWidget(spinBox);
     }
@@ -42,6 +47,8 @@ public:
         return spinBox->value();
     }
 
+signals:
+    void value(int v);
 private:
     QLabel *label;
     QSpinBox *spinBox;
@@ -196,9 +203,6 @@ private:
     QHBoxLayout *m_harmonicsLayout;
     QLabel *m_harmonicsLabel;
     QSpinBox *m_harmonicsSpinBox;
-
-    //EFFECTS ATTRIBUTE
-    QVector<Effects*> effectsVec;
 
     void initializeUI();
 };

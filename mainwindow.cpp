@@ -343,6 +343,19 @@ void MainWindow::updateSignal(QVector<Block *> blocks)
         m_yPositionSpinBox->setValue(int((sp.y-30)/30));
         m_timeSpinBox->setValue(sp.time);
         SignalProcess::generateSignal(sig,sp);
+
+        //get all the effects and apply it to the existing signal here
+        QVector<Effects*> effects = m_blockList[block].effects;
+        for(int i=0;i<effects.size();++i){
+            if(effects[i]->effectsIndex==0){ //this is delay effect, call the function
+                Section *section = m_blockList[block].effects[i]->section;
+                QSpinBox *delaySpin = section->findChild<QSpinBox*>("delayValue");
+                qDebug()<<delaySpin->value();
+                SignalProcess::addDelayEffect(sig,delaySpin->value());
+            }
+        }
+
+
         m_blockList[block].signal = sig;
     }
     combineSignals();
@@ -368,6 +381,7 @@ void MainWindow::combineSignals()
        for(auto it=m_blockList.begin();it!=m_blockList.end();++it){
             Block *block = it.key();
             QVector<QPointF> sig = it.value().signal;
+
             int startPos = block->getX();
             int startIndex = (startPos-30)*441;
             int signalSize = startIndex+sig.size();
