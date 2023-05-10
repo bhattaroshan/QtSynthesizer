@@ -121,6 +121,8 @@ void MainWindow::loadMenuBar()
     QMenuBar *menuBar = new QMenuBar();
 
     QMenu *fileMenu = menuBar->addMenu("File");
+    QMenu *editMenu = menuBar->addMenu("Edit");
+
     fileMenu->setFixedSize(400,100);
 
     QAction *newAction = new QAction("&New\tCtrl+N");
@@ -129,12 +131,16 @@ void MainWindow::loadMenuBar()
     QAction *saveAsAction = new QAction("S&ave As\tCtrl+A");
     QAction *exitAction = new QAction("&Close\tCtrl+C");
 
+    QAction *pasteAction = new QAction("&Paste");
+
     fileMenu->addAction(newAction);
     fileMenu->addAction(openAction);
     fileMenu->addAction(saveAction);
     fileMenu->addAction(saveAsAction);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
+
+    editMenu->addAction(pasteAction);
 
     connect(openAction,&QAction::triggered,this,&MainWindow::onMenuAction_Open);
     connect(saveAction,&QAction::triggered,this,&MainWindow::onMenuAction_Save);

@@ -6,10 +6,6 @@ SignalProcess::SignalProcess()
 
 }
 
-void addVector(){
-
-}
-
 void SignalProcess::generateSignal(QVector<QPointF> &sig, SignalProperties sp){
     qreal samples = SAMPLES(sp.time,sp.sampleRate);
     sig.resize(samples,QPointF(0,0)); //confirm that container size is exact the sample size
